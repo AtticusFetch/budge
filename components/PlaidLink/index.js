@@ -17,38 +17,30 @@ export const PlaidLink = (props) => {
   const onSuccess = useCallback((data) => {
     const { publicToken } = data;
     exchangeToken(publicToken, props.user.id)
-      .then(data => {
+      .then((data) => {
         return data;
       })
-      .catch(e => console.error('Token exchange failed', e));
+      .catch((e) => console.error('Token exchange failed', e));
   }, []);
 
-  const onExit = useCallback((data) => { }, []);
-  const onEvent = useCallback((data) => { }, []);
+  const onExit = useCallback((data) => {}, []);
+  const onEvent = useCallback((data) => {}, []);
 
-  const onPress = useCallback(
-    () => {
-      openLink({
-        tokenConfig: {
-          token: props.linkToken,
-          logLevel: LinkLogLevel.ERROR,
-          noLoadingState: false,
-        },
-        onSuccess,
-        onExit,
-        onEvent,
-        iOSPresentationStyle: LinkIOSPresentationStyle.MODAL,
-      })
-    },
-    [props.linkToken],
-  )
+  const onPress = useCallback(() => {
+    openLink({
+      tokenConfig: {
+        token: props.linkToken,
+        logLevel: LinkLogLevel.ERROR,
+        noLoadingState: false,
+      },
+      onSuccess,
+      onExit,
+      onEvent,
+      iOSPresentationStyle: LinkIOSPresentationStyle.MODAL,
+    });
+  }, [props.linkToken]);
 
-
-  return (
-    <ColorButton inverted={true} onPress={onPress} text="Add Account" />
-  );
+  return <ColorButton inverted={true} onPress={onPress} text="Add Account" />;
 };
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});

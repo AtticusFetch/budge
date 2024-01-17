@@ -33,7 +33,7 @@ export const UserProvider = ({ children }) => {
 };
 
 export const userActions = {
-  set: (payload) => ({ type: ACTIONS.SET, payload}),
+  set: (payload) => ({ type: ACTIONS.SET, payload }),
 };
 
 export const useUserContext = () => useContext(UserContext);

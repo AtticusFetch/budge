@@ -27,7 +27,7 @@ const transactionsReducer = (state, action) => {
     case ACTIONS.REMOVE:
       return {
         ...state,
-        transactions: state.transactions.filter(t => t.id !== action.payload),
+        transactions: state.transactions.filter((t) => t.id !== action.payload),
       };
     default:
       return state;
@@ -35,9 +35,9 @@ const transactionsReducer = (state, action) => {
 };
 
 export const transactionsActions = {
-  add: (payload) => ({ type: ACTIONS.ADD, payload}),
-  addBulk: (payload) => ({ type: ACTIONS.ADD_BULK, payload}),
-  remove: (payload) => ({ type: ACTIONS.REMOVE, payload}),
+  add: (payload) => ({ type: ACTIONS.ADD, payload }),
+  addBulk: (payload) => ({ type: ACTIONS.ADD_BULK, payload }),
+  remove: (payload) => ({ type: ACTIONS.REMOVE, payload }),
 };
 
 export const TransactionsProvider = ({ children }) => {

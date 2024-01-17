@@ -1,7 +1,6 @@
 const fetchFromApi = (endpoint, params) => {
   const url = `${process.env.EXPO_PUBLIC_SERVER_BASE}/api/${endpoint}`;
-  return fetch(url, params)
-    .then(response => response.json());
+  return fetch(url, params).then((response) => response.json());
 };
 
 export const createLinkToken = () => {

@@ -8,23 +8,27 @@ export default function ProfileSelect({ navigation }) {
   const { state, dispatch } = useUserContext();
   const [users, setUsers] = useState([]);
   useEffect(() => {
-    getUsers()
-      .then(setUsers);
+    getUsers().then(setUsers);
   }, []);
 
-  const onUserSelect = useCallback((userId) => {
-    dispatch(userActions.set(users.find(({ id }) => id === userId )));
-    navigation.navigate('Home');
-  }, [users]);
+  const onUserSelect = useCallback(
+    (userId) => {
+      dispatch(userActions.set(users.find(({ id }) => id === userId)));
+      navigation.navigate('Home');
+    },
+    [users],
+  );
 
   return (
     <View style={styles.container}>
       <FlatList
-          data={users}
-          style={styles.list}
-          renderItem={(user) => <UserListItem {...user.item} onPress={onUserSelect} />}
-          keyExtractor={user => user.id}
-        />
+        data={users}
+        style={styles.list}
+        renderItem={(user) => (
+          <UserListItem {...user.item} onPress={onUserSelect} />
+        )}
+        keyExtractor={(user) => user.id}
+      />
     </View>
   );
 }

@@ -9,7 +9,6 @@ import Transactions from './screens/Transactions';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-
   return (
     <UserProvider>
       <TransactionsProvider>

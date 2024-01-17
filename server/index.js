@@ -2,7 +2,12 @@
 
 // read env vars from .env file
 require('dotenv').config();
-const { Configuration, PlaidApi, Products, PlaidEnvironments} = require('plaid');
+const {
+  Configuration,
+  PlaidApi,
+  Products,
+  PlaidEnvironments,
+} = require('plaid');
 const util = require('util');
 const { v4: uuidv4 } = require('uuid');
 const express = require('express');
@@ -20,9 +25,9 @@ const users = JSON.parse(readFileSync('./users.json'));
 // PLAID_PRODUCTS is a comma-separated list of products to use when initializing
 // Link. Note that this list must contain 'assets' in order for the app to be
 // able to create and retrieve asset reports.
-const PLAID_PRODUCTS = (process.env.PLAID_PRODUCTS || Products.Transactions).split(
-  ',',
-);
+const PLAID_PRODUCTS = (
+  process.env.PLAID_PRODUCTS || Products.Transactions
+).split(',');
 
 // PLAID_COUNTRY_CODES is a comma-separated list of countries for which users
 // will be able to select institutions from.
@@ -120,7 +125,7 @@ app.post('/api/create_link_token', function (request, response, next) {
       response.json(createTokenResponse.data);
     })
     .catch(next);
-  });
+});
 
 // Retrieve Transactions for an Item
 // https://plaid.com/docs/#transactions
@@ -143,7 +148,7 @@ app.get('/api/transactions/:userId', function (request, response, next) {
           access_token: user.accessToken,
           cursor: cursor,
         };
-        const response = await client.transactionsSync(request)
+        const response = await client.transactionsSync(request);
         const data = response.data;
         // Add this page of results
         added = added.concat(data.added);
@@ -155,10 +160,13 @@ app.get('/api/transactions/:userId', function (request, response, next) {
         prettyPrintResponse(response);
       }
 
-      const compareTxnsByDateAscending = (a, b) => (a.date > b.date) - (a.date < b.date);
+      const compareTxnsByDateAscending = (a, b) =>
+        (a.date > b.date) - (a.date < b.date);
       // Return the 8 most recent transactions
-      const recently_added = [...added].sort(compareTxnsByDateAscending).slice(-8);
-      response.json({latest_transactions: recently_added});
+      const recently_added = [...added]
+        .sort(compareTxnsByDateAscending)
+        .slice(-8);
+      response.json({ latest_transactions: recently_added });
     })
     .catch(next);
 });
@@ -168,7 +176,7 @@ app.get('/api/users', function (request, response) {
 });
 
 app.post('/api/user', function (request, response) {
-  console.log('=== request', request.body)
+  console.log('=== request', request.body);
   response.json(users);
 });
 
@@ -191,7 +199,7 @@ app.post('/api/exchange', async function (request, response) {
     writeFileSync('./users.json', JSON.stringify(users));
     response.json(user);
   } catch (err) {
-    console.error('Exchange error', err);;
+    console.error('Exchange error', err);
   }
 });
 

@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import { Animated, Pressable, StyleSheet, Text } from "react-native";
-import { getTextColor } from "../../utils/getTextColor";
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text } from 'react-native';
+import { getTextColor } from '../../utils/getTextColor';
 
 export const ColorButton = (props) => {
   const { text, onPress, children, inverted } = props;
   const [randomColor, setRandomColor] = useState('purple');
   const buttonOpacity = useRef(new Animated.Value(1)).current;
   useEffect(() => {
-    setRandomColor(`#${Math.floor(Math.random()*16777215).toString(16)}`);
+    setRandomColor(`#${Math.floor(Math.random() * 16777215).toString(16)}`);
   }, [text, inverted]);
   let containerStyle = {
     backgroundColor: randomColor,
@@ -46,7 +46,7 @@ export const ColorButton = (props) => {
             toValue: 1,
             duration: 100,
             useNativeDriver: true,
-          })
+          }),
         ]).start();
       }}
     >
