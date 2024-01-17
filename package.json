@@ -8,8 +8,10 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "prettier": "prettier . --check",
-    "prettier:fix": "prettier . --write"
+    "prettier:fix": "prettier . --write",
+    "cleanup": "npm run prettier:fix && npm run lint:fix"
   },
   "dependencies": {
     "@react-navigation/native": "^6.1.9",

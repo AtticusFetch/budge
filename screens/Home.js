@@ -1,25 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import { Fragment, useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Button,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import {
-  createLinkToken,
-  getTransactions,
-  updateUser,
-} from './../utils/plaidApi';
-import { useUserContext } from './../context/User';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+
 import { PlaidLink } from './../components/PlaidLink';
+import { useUserContext } from './../context/User';
+import { createLinkToken } from './../utils/plaidApi';
 import { ColorButton } from '../components/ColorButton';
 
 export default function Home(props) {
   const {
     state: { user },
-    dispatch,
   } = useUserContext();
   const [linkToken, setLinkToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +20,7 @@ export default function Home(props) {
         setLinkToken(data.link_token);
         setIsLoading(false);
       })
-      .catch((e) => {
+      .catch(() => {
         setIsLoading(false);
       });
   }, []);
@@ -47,7 +37,7 @@ export default function Home(props) {
         <View style={styles.buttonsWrapper}>
           <ColorButton
             onPress={showTransactions}
-            inverted={true}
+            inverted
             text="Transactions"
           />
           <PlaidLink user={user} linkToken={linkToken} />

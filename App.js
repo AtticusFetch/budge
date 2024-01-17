@@ -1,9 +1,10 @@
-import { TransactionsProvider } from './context/Transactions';
-import { UserProvider } from './context/User';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import ProfileSelect from './screens/ProfileSelect';
+
+import { TransactionsProvider } from './context/Transactions';
+import { UserProvider } from './context/User';
 import Home from './screens/Home';
+import ProfileSelect from './screens/ProfileSelect';
 import Transactions from './screens/Transactions';
 
 const Stack = createNativeStackNavigator();

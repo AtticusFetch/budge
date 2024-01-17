@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { getUsers } from '../utils/plaidApi';
-import { useUserContext, userActions } from '../context/User';
+import { FlatList, StyleSheet, View } from 'react-native';
+
 import { UserListItem } from '../components/UserListItem';
+import { useUserContext, userActions } from '../context/User';
+import { getUsers } from '../utils/plaidApi';
 
 export default function ProfileSelect({ navigation }) {
-  const { state, dispatch } = useUserContext();
+  const { dispatch } = useUserContext();
   const [users, setUsers] = useState([]);
   useEffect(() => {
     getUsers().then(setUsers);

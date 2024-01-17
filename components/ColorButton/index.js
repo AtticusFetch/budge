@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
+
 import { getTextColor } from '../../utils/getTextColor';
 
 export const ColorButton = (props) => {
@@ -64,7 +65,6 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderRadius: 8,
     width: '100%',
-    height: 70,
   },
   button: {
     flex: 1,

@@ -1,19 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Button,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import {
-  createLinkToken,
-  getTransactions,
-  updateUser,
-} from './../utils/plaidApi';
-import { useUserContext } from './../context/User';
-import { PlaidLinkWrapper } from './../components/PlaidLink';
+import { StyleSheet, Text, View } from 'react-native';
+
 import { useTransactionsContext } from '../context/Transactions';
 
 export default function Transactions() {

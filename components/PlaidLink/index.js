@@ -1,12 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useCallback } from 'react';
 import {
   openLink,
   LinkLogLevel,
   LinkIOSPresentationStyle,
   usePlaidEmitter,
 } from 'react-native-plaid-link-sdk';
-import { exchangeToken, getTransactions } from '../../utils/plaidApi';
-import { useCallback } from 'react';
+
+import { exchangeToken } from '../../utils/plaidApi';
 import { ColorButton } from '../ColorButton';
 
 export const PlaidLink = (props) => {
@@ -40,7 +40,5 @@ export const PlaidLink = (props) => {
     });
   }, [props.linkToken]);
 
-  return <ColorButton inverted={true} onPress={onPress} text="Add Account" />;
+  return <ColorButton inverted onPress={onPress} text="Add Account" />;
 };
-
-const styles = StyleSheet.create({});

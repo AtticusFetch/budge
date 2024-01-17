@@ -2,6 +2,10 @@
 
 // read env vars from .env file
 require('dotenv').config();
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const express = require('express');
+const { readFileSync, writeFileSync } = require('fs');
 const {
   Configuration,
   PlaidApi,
@@ -9,12 +13,6 @@ const {
   PlaidEnvironments,
 } = require('plaid');
 const util = require('util');
-const { v4: uuidv4 } = require('uuid');
-const express = require('express');
-const bodyParser = require('body-parser');
-const moment = require('moment');
-const cors = require('cors');
-const { readFileSync, writeFileSync } = require('fs');
 
 const APP_PORT = process.env.APP_PORT || 8000;
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
@@ -50,19 +48,19 @@ const PLAID_ANDROID_PACKAGE_NAME = process.env.PLAID_ANDROID_PACKAGE_NAME || '';
 
 // We store the access_token in memory - in production, store it in a secure
 // persistent data store
-let ACCESS_TOKEN = null;
-let PUBLIC_TOKEN = null;
-let ITEM_ID = null;
-let ACCOUNT_ID = null;
+const ACCESS_TOKEN = null;
+const PUBLIC_TOKEN = null;
+const ITEM_ID = null;
+const ACCOUNT_ID = null;
 // The payment_id is only relevant for the UK/EU Payment Initiation product.
 // We store the payment_id in memory - in production, store it in a secure
 // persistent data store along with the Payment metadata, such as userId .
-let PAYMENT_ID = null;
+const PAYMENT_ID = null;
 // The transfer_id and authorization_id are only relevant for Transfer ACH product.
 // We store the transfer_id in memory - in production, store it in a secure
 // persistent data store
-let AUTHORIZATION_ID = null;
-let TRANSFER_ID = null;
+const AUTHORIZATION_ID = null;
+const TRANSFER_ID = null;
 
 // Initialize the Plaid client
 // Find your API keys in the Dashboard (https://dashboard.plaid.com/account/keys)
@@ -146,7 +144,7 @@ app.get('/api/transactions/:userId', function (request, response, next) {
       while (hasMore) {
         const request = {
           access_token: user.accessToken,
-          cursor: cursor,
+          cursor,
         };
         const response = await client.transactionsSync(request);
         const data = response.data;
