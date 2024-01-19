@@ -1,6 +1,8 @@
 const fetchFromApi = (endpoint, params) => {
   const url = `${process.env.EXPO_PUBLIC_SERVER_BASE}/api/${endpoint}`;
-  return fetch(url, params).then((response) => response.json());
+  return fetch(url, params).then((response) => {
+    return response.json();
+  });
 };
 
 export const createLinkToken = () => {
@@ -14,6 +16,10 @@ export const createLinkToken = () => {
 
 export const getTransactions = (userId) => {
   return fetchFromApi(`transactions/${userId}`);
+};
+
+export const getTransactionUpdates = (userId) => {
+  return fetchFromApi(`transactions/${userId}/sync`);
 };
 
 export const getAccaounts = () => {
@@ -34,6 +40,16 @@ export const exchangeToken = (publicToken, userId) => {
       publicToken,
       userId,
     }),
+  });
+};
+
+export const updateUserBudget = (data) => {
+  return fetchFromApi('budget', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
   });
 };
 

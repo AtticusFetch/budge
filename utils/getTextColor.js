@@ -1,5 +1,7 @@
 // https://wunnle.com/dynamic-text-color-based-on-background
 
+import { colors } from './colors';
+
 function getRGB(c) {
   return parseInt(c, 16) || c;
 }
@@ -28,5 +30,5 @@ export function getTextColor(bgColor) {
   const whiteContrast = getContrast(bgColor, '#ffffff');
   const blackContrast = getContrast(bgColor, '#000000');
 
-  return whiteContrast > blackContrast ? '#ffffff' : '#000000';
+  return whiteContrast > blackContrast ? '#ffffff' : colors.grey;
 }

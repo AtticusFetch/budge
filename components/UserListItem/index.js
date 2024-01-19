@@ -1,7 +1,16 @@
 import { ColorButton } from '../ColorButton';
 
-export const UserListItem = (props) => {
-  const { id, name, onPress } = props;
+const colorRoulette = ['orange', 'blue', 'yellow', 'lightBlue'];
 
-  return <ColorButton onPress={() => onPress(id)} text={name} />;
+export const UserListItem = (props) => {
+  const { id, name, onPress, index } = props;
+  const colorIndex = index % colorRoulette.length;
+
+  return (
+    <ColorButton
+      colorName={colorRoulette[colorIndex]}
+      onPress={() => onPress(id)}
+      text={name}
+    />
+  );
 };

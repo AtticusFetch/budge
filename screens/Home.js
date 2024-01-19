@@ -6,6 +6,7 @@ import { PlaidLink } from './../components/PlaidLink';
 import { useUserContext } from './../context/User';
 import { createLinkToken } from './../utils/plaidApi';
 import { ColorButton } from '../components/ColorButton';
+import { colors } from '../utils/colors';
 
 export default function Home(props) {
   const {
@@ -29,17 +30,18 @@ export default function Home(props) {
     props.navigation.navigate('Transactions');
   }, [user, linkToken]);
 
+  const showBudget = useCallback(() => {
+    props.navigation.navigate('Budget');
+  }, [user, linkToken]);
+
   return (
     <View style={styles.container}>
       {isLoading ? (
-        <ActivityIndicator size="large" color="orange" />
+        <ActivityIndicator size="large" color={colors.orange} />
       ) : (
         <View style={styles.buttonsWrapper}>
-          <ColorButton
-            onPress={showTransactions}
-            inverted
-            text="Transactions"
-          />
+          <ColorButton onPress={showBudget} text="Set Budget" />
+          <ColorButton onPress={showTransactions} text="Transactions" />
           <PlaidLink user={user} linkToken={linkToken} />
         </View>
       )}
@@ -51,13 +53,13 @@ export default function Home(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
   },
   buttonsWrapper: {
     flex: 1,
     paddingHorizontal: 40,
     paddingVertical: 40,
-    backgroundColor: 'white',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
   },
 });

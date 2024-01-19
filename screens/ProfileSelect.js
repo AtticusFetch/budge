@@ -25,8 +25,8 @@ export default function ProfileSelect({ navigation }) {
       <FlatList
         data={users}
         style={styles.list}
-        renderItem={(user) => (
-          <UserListItem {...user.item} onPress={onUserSelect} />
+        renderItem={({ item, index }) => (
+          <UserListItem {...item} index={index} onPress={onUserSelect} />
         )}
         keyExtractor={(user) => user.id}
       />
@@ -37,7 +37,6 @@ export default function ProfileSelect({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
   },

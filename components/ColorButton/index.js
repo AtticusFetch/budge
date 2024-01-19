@@ -1,40 +1,29 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 
-import { getTextColor } from '../../utils/getTextColor';
+import { colors } from '../../utils/colors';
 
 export const ColorButton = (props) => {
-  const { text, onPress, children, inverted } = props;
-  const [randomColor, setRandomColor] = useState('purple');
+  const { text, onPress, children, colorName = 'orange', size = '' } = props;
+  const color = colors[colorName];
+  const colorSeeThrough = colors.seeThrough[colorName];
   const buttonOpacity = useRef(new Animated.Value(1)).current;
-  useEffect(() => {
-    setRandomColor(`#${Math.floor(Math.random() * 16777215).toString(16)}`);
-  }, [text, inverted]);
-  let containerStyle = {
-    backgroundColor: randomColor,
+  const containerStyle = {
+    backgroundColor: colorSeeThrough,
   };
-  let buttonStyle = {
+  const buttonStyle = {
     opacity: buttonOpacity,
-    borderColor: randomColor,
-    backgroundColor: 'white',
+    borderColor: color,
   };
-  let textColor = { color: 'black' };
-
-  if (inverted) {
-    containerStyle = {
-      backgroundColor: 'white',
-    };
-    buttonStyle = {
-      opacity: buttonOpacity,
-      borderColor: randomColor,
-      backgroundColor: randomColor,
-    };
-    textColor = { color: getTextColor(randomColor) };
-  }
+  const textColor = { color: colors.grey };
 
   return (
     <Pressable
-      style={[styles.buttonWrapper, containerStyle]}
+      style={[
+        styles.buttonWrapper,
+        sizedStyles[size]?.buttonWrapper,
+        containerStyle,
+      ]}
       onPress={onPress}
       onPressIn={() => {
         Animated.sequence([
@@ -51,26 +40,45 @@ export const ColorButton = (props) => {
         ]).start();
       }}
     >
-      <Animated.View style={[styles.button, buttonStyle]}>
-        {children || <Text style={[styles.label, textColor]}>{text}</Text>}
+      <Animated.View
+        style={[styles.button, sizedStyles[size]?.button, buttonStyle]}
+      >
+        {children || (
+          <Text style={[styles.label, sizedStyles[size]?.label, textColor]}>
+            {text}
+          </Text>
+        )}
       </Animated.View>
     </Pressable>
   );
 };
 
+const sizedStyles = StyleSheet.create({
+  slim: {
+    buttonWrapper: {
+      height: 50,
+    },
+    button: {
+      padding: 10,
+    },
+    label: {
+      fontSize: 15,
+    },
+  },
+});
+
 const styles = StyleSheet.create({
   buttonWrapper: {
-    height: 'auto',
     marginVertical: 10,
-    borderColor: 'white',
-    borderRadius: 8,
     width: '100%',
+    borderRadius: 8,
+    height: 70,
   },
   button: {
     flex: 1,
     padding: 20,
+    borderRadius: 8,
     borderWidth: 2,
-    borderRadius: 6,
     justifyContent: 'center',
     alignItems: 'center',
   },
