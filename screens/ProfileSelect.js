@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 
+import { ColorButton } from '../components/ColorButton';
 import { UserListItem } from '../components/UserListItem';
 import { useUserContext, userActions } from '../context/User';
+import { colors } from '../utils/colors';
 import { getUsers } from '../utils/plaidApi';
 
 export default function ProfileSelect({ navigation }) {
@@ -29,6 +32,11 @@ export default function ProfileSelect({ navigation }) {
           <UserListItem {...item} index={index} onPress={onUserSelect} />
         )}
         keyExtractor={(user) => user.id}
+        ListFooterComponent={
+          <ColorButton>
+            <Icon name="plus" size={30} color={colors.grey} />
+          </ColorButton>
+        }
       />
     </View>
   );

@@ -1,6 +1,13 @@
 const { getUsersFromDb } = require('../db');
 
-exports.getUsers = async (request, response) => {
+const getUsers = async (request, response) => {
   const dbUsers = await getUsersFromDb();
-  response.json(dbUsers);
+  const users = [];
+  dbUsers.forEach((u) => {
+    const { transactions, ...rest } = u;
+    users.push(rest);
+  });
+  response.json(users);
 };
+
+exports.getUsers = getUsers;

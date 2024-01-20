@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { Modal, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { ColorButton } from '../components/ColorButton';
-import { useUserContext } from '../context/User';
+import { useUserContext, userActions } from '../context/User';
 import { colors } from '../utils/colors';
 import { updateUserBudget } from '../utils/plaidApi';
 
@@ -20,8 +20,11 @@ export default function Budget({ navigation }) {
     setBudgetInputValue(e);
   }, []);
   const onSaveBudget = useCallback(() => {
-    updateUserBudget({ budget: budgetInputValue, userId: user.id }).then((u) =>
-      setBudgetInputValue(u.budget),
+    updateUserBudget({ budget: budgetInputValue, userId: user.id }).then(
+      (u) => {
+        setBudgetInputValue(u.budget);
+        userActions.set(u);
+      },
     );
     setModalVisible(false);
   }, [budgetInputValue]);

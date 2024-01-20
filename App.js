@@ -5,6 +5,7 @@ import { TransactionsProvider } from './context/Transactions';
 import { UserProvider } from './context/User';
 import Budget from './screens/Budget';
 import Home from './screens/Home';
+import Overview from './screens/Overview';
 import ProfileSelect from './screens/ProfileSelect';
 import Transactions from './screens/Transactions';
 import { colors } from './utils/colors';
@@ -27,6 +28,7 @@ export default function App() {
           >
             <Stack.Screen name="Profile Select" component={ProfileSelect} />
             <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Overview" component={Overview} />
             <Stack.Screen name="Transactions" component={Transactions} />
             <Stack.Screen name="Budget" component={Budget} />
           </Stack.Navigator>

@@ -34,6 +34,10 @@ export default function Home(props) {
     props.navigation.navigate('Budget');
   }, [user, linkToken]);
 
+  const showOverview = useCallback(() => {
+    props.navigation.navigate('Overview');
+  }, [user, linkToken]);
+
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -42,6 +46,7 @@ export default function Home(props) {
         <View style={styles.buttonsWrapper}>
           <ColorButton onPress={showBudget} text="Set Budget" />
           <ColorButton onPress={showTransactions} text="Transactions" />
+          <ColorButton onPress={showOverview} text="Overview" />
           <PlaidLink user={user} linkToken={linkToken} />
         </View>
       )}

@@ -18,6 +18,10 @@ export const getTransactions = (userId) => {
   return fetchFromApi(`transactions/${userId}`);
 };
 
+export const getMonthlyTransactions = (userId, date) => {
+  return fetchFromApi(`transactions/filter/${userId}/${date}`);
+};
+
 export const getTransactionUpdates = (userId) => {
   return fetchFromApi(`transactions/${userId}/sync`);
 };

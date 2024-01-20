@@ -3,7 +3,7 @@ const { prettyPrintResponse } = require('../utils');
 
 // Create a link token with configs which we can then use to initialize Plaid Link client-side.
 // See https://plaid.com/docs/#create-link-token
-exports.createLinkToken = (request, response, next) => {
+const createLinkToken = (request, response, next) => {
   Promise.resolve()
     .then(async function () {
       const configs = {
@@ -30,3 +30,5 @@ exports.createLinkToken = (request, response, next) => {
     })
     .catch(next);
 };
+
+exports.createLinkToken = createLinkToken;

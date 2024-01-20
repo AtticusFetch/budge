@@ -9,11 +9,11 @@ const express = require('express');
 const { createLinkToken } = require('./api/createLinkToken');
 const { exchangeToken } = require('./api/exchangeToken');
 const { getTransactions } = require('./api/getTransactions');
+const { getTransactionsForMonth } = require('./api/getTransactionsForMonth');
 const { getUsers } = require('./api/getUsers');
 const { postInfo } = require('./api/info');
 const { postUser } = require('./api/postUser');
 const { postUserBudget } = require('./api/postUserBudget');
-const { prettyPrintResponse } = require('./utils');
 
 const APP_PORT = process.env.APP_PORT || 8000;
 
@@ -35,6 +35,8 @@ app.post('/api/create_link_token', createLinkToken);
 
 app.get('/api/transactions/:userId/:sync?', getTransactions);
 
+app.get('/api/transactions/filter/:userId/:forMonth', getTransactionsForMonth);
+
 app.get('/api/users', getUsers);
 
 app.post('/api/user', postUser);
@@ -44,11 +46,10 @@ app.post('/api/budget', postUserBudget);
 app.post('/api/exchange', exchangeToken);
 
 app.use('/api', function (error, request, response, next) {
-  prettyPrintResponse(error.response);
   response.json(formatError(error.response));
 });
 
-const server = app.listen(APP_PORT, function () {
+app.listen(APP_PORT, function () {
   console.log('listening on port ' + APP_PORT);
 });
 

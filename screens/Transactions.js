@@ -50,7 +50,7 @@ export default function Transactions() {
       });
   }, [user.id]);
 
-  if (!user.accessToken) {
+  if (!user.items) {
     return null;
   }
 
@@ -64,7 +64,7 @@ export default function Transactions() {
         renderItem={(transaction) => {
           return <TransactionListItem {...transaction.item} />;
         }}
-        keyExtractor={(transaction) => transaction.transaction_id}
+        keyExtractor={(transaction) => transaction?.transaction_id}
       />
     </SafeAreaView>
   );
