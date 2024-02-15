@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { PlaidLink } from './../components/PlaidLink';
 import { useUserContext } from './../context/User';
@@ -15,16 +15,16 @@ export default function Home(props) {
   const [linkToken, setLinkToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    createLinkToken()
-      .then((data) => {
-        setLinkToken(data.link_token);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setIsLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   createLinkToken()
+  //     .then((data) => {
+  //       setLinkToken(data.link_token);
+  //       setIsLoading(false);
+  //     })
+  //     .catch(() => {
+  //       setIsLoading(false);
+  //     });
+  // }, []);
 
   const showTransactions = useCallback(() => {
     props.navigation.navigate('Transactions');

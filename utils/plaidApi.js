@@ -5,13 +5,18 @@ const fetchFromApi = (endpoint, params) => {
   });
 };
 
-export const createLinkToken = () => {
-  return fetchFromApi('create_link_token', {
+const postToApi = (url, body = {}) => {
+  return fetchFromApi(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify(body),
   });
+};
+
+export const createLinkToken = () => {
+  return postToApi('create_link_token');
 };
 
 export const getTransactions = (userId) => {
@@ -34,35 +39,51 @@ export const getUsers = () => {
   return fetchFromApi('users');
 };
 
+export const signUpUser = (email, password, username) => {
+  return postToApi('user/signup', {
+    email,
+    password,
+    username,
+  });
+};
+
+export const confirmUser = (username, code) => {
+  return postToApi('user/confirm', {
+    code,
+    username,
+  });
+};
+
+export const createUser = (username) => {
+  return postToApi('user/create', {
+    username,
+  });
+};
+
+export const verifyUserSession = (token) => {
+  return postToApi('user/verify', {
+    token,
+  });
+};
+
+export const authUser = (password, username) => {
+  return postToApi('user/authenticate', {
+    password,
+    username,
+  });
+};
+
 export const exchangeToken = (publicToken, userId) => {
-  return fetchFromApi('exchange', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      publicToken,
-      userId,
-    }),
+  return postToApi('exchange', {
+    publicToken,
+    userId,
   });
 };
 
 export const updateUserBudget = (data) => {
-  return fetchFromApi('budget', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+  return postToApi('budget', data);
 };
 
 export const updateUser = (data) => {
-  return fetchFromApi('user', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+  return postToApi('user', data);
 };

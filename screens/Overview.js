@@ -74,7 +74,9 @@ export default function Overview({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text>{dailySpending}</Text>
+      <Text>
+        {numbro(dailySpending).format({ output: 'percent', mantissa: 0 })}
+      </Text>
       <FillBar
         fillValue={monthlySpentPercent}
         highlightSection={1}
@@ -96,6 +98,7 @@ export default function Overview({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 40,

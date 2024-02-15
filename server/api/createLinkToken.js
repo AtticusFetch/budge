@@ -25,6 +25,7 @@ const createLinkToken = (request, response, next) => {
         configs.android_package_name = config.PLAID_ANDROID_PACKAGE_NAME;
       }
       const createTokenResponse = await plaidClient().linkTokenCreate(configs);
+      console.log('=== createLinkToken:');
       prettyPrintResponse(createTokenResponse);
       response.json(createTokenResponse.data);
     })

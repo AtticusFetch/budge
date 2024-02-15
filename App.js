@@ -6,7 +6,7 @@ import { UserProvider } from './context/User';
 import Budget from './screens/Budget';
 import Home from './screens/Home';
 import Overview from './screens/Overview';
-import ProfileSelect from './screens/ProfileSelect';
+import SignIn from './screens/SignIn';
 import Transactions from './screens/Transactions';
 import { colors } from './utils/colors';
 
@@ -24,9 +24,9 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator
             screenOptions={defaultOptions}
-            initialRouteName="ProfileSelect"
+            initialRouteName="SignIn"
           >
-            <Stack.Screen name="Profile Select" component={ProfileSelect} />
+            <Stack.Screen name="Sign In" component={SignIn} />
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Overview" component={Overview} />
             <Stack.Screen name="Transactions" component={Transactions} />

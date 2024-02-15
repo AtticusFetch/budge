@@ -3,21 +3,28 @@ import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from './../../utils/colors';
 
-const getSeparator = (index, isHighlighted, label, style) => (
+const getSeparator = ({ index, isHighlighted, label, isLast }) => (
   <View
     key={index}
-    style={[styles.separator, isHighlighted && styles.separatorHighlight]}
+    style={[
+      styles.separator,
+      isLast && styles.separatorLast,
+      isHighlighted && styles.separatorHighlight,
+    ]}
   >
     {label ? <Text>{label}</Text> : null}
   </View>
 );
 
 const generateSeparators = (labels = [], count, highlightSection) => {
-  const separators = new Array(count)
-    .fill(0)
-    .map((i, index) =>
-      getSeparator(index, highlightSection === index, labels[index]),
-    );
+  const separators = new Array(count).fill(0).map((i, index) =>
+    getSeparator({
+      index,
+      isHighlighted: highlightSection === index,
+      label: labels[index],
+      isLast: index === count - 1,
+    }),
+  );
   return separators;
 };
 
@@ -86,9 +93,11 @@ const styles = StyleSheet.create({
     borderColor: colors.grey,
     borderRightWidth: 1,
     height: 40,
-    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  separatorLast: {
+    borderRightWidth: 0,
   },
   separatorHighlight: {
     borderColor: colors.red,
@@ -98,13 +107,13 @@ const styles = StyleSheet.create({
     width: '100%',
     borderWidth: 0.5,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 6,
     borderColor: colors.grey,
     flexDirection: 'row',
     marginBottom: 20,
   },
   barInner: {
-    borderRadius: 20,
+    borderRadius: 6,
   },
   full: {},
 });

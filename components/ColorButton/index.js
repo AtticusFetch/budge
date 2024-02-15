@@ -65,6 +65,11 @@ const sizedStyles = StyleSheet.create({
       fontSize: 15,
     },
   },
+  thick: {
+    buttonWrapper: {
+      height: 140,
+    },
+  },
 });
 
 const styles = StyleSheet.create({

@@ -9,14 +9,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.514.0",
+    "@aws-sdk/client-dynamodb": "^3.514.0",
+    "@aws-sdk/lib-dynamodb": "^3.514.0",
+    "amazon-cognito-identity-js": "^6.3.7",
+    "aws-jwt-verify": "^4.0.1",
     "body-parser": "1.18.x",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "ejs": "2.5.x",
     "express": "4.16.x",
+    "jsonwebtoken": "^9.0.2",
+    "jwk-to-pem": "^2.0.5",
     "moment": "2.22.x",
+    "node-fetch": "^3.3.2",
     "nodemon": "^2.0.20",
     "plaid": "^14.0.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.1"
   }
 }

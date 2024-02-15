@@ -6,7 +6,10 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
 
+const { authenticateUser } = require('./api/authenticateUser');
+const { confirmUser } = require('./api/confirmUser');
 const { createLinkToken } = require('./api/createLinkToken');
+const { createUser } = require('./api/createUser');
 const { exchangeToken } = require('./api/exchangeToken');
 const { getTransactions } = require('./api/getTransactions');
 const { getTransactionsForMonth } = require('./api/getTransactionsForMonth');
@@ -14,6 +17,8 @@ const { getUsers } = require('./api/getUsers');
 const { postInfo } = require('./api/info');
 const { postUser } = require('./api/postUser');
 const { postUserBudget } = require('./api/postUserBudget');
+const { signUpUser } = require('./api/signUp');
+const { verifyUser } = require('./api/verifyUser');
 
 const APP_PORT = process.env.APP_PORT || 8000;
 
@@ -40,6 +45,11 @@ app.get('/api/transactions/filter/:userId/:forMonth', getTransactionsForMonth);
 app.get('/api/users', getUsers);
 
 app.post('/api/user', postUser);
+app.post('/api/user/signup', signUpUser);
+app.post('/api/user/confirm', confirmUser);
+app.post('/api/user/authenticate', authenticateUser);
+app.post('/api/user/create', createUser);
+app.post('/api/user/verify', verifyUser);
 
 app.post('/api/budget', postUserBudget);
 
