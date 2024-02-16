@@ -1,13 +1,9 @@
 const {
-  CognitoUserPool,
   AuthenticationDetails,
   CognitoUser,
 } = require('amazon-cognito-identity-js');
-const poolData = {
-  UserPoolId: 'us-east-2_pn7gQHo7F',
-  ClientId: '4ufjsimo5bhv3k1u5hu3k486nd',
-};
-const userPool = new CognitoUserPool(poolData);
+
+const { USER_POOL } = require('../auth/userPool');
 
 const authenticateUser = async (request, response) => {
   const { password, username } = request.body;
@@ -21,19 +17,28 @@ const authenticateUser = async (request, response) => {
 
   const userData = {
     Username: username,
-    Pool: userPool,
+    Pool: USER_POOL,
   };
   const cognitoUser = new CognitoUser(userData);
 
   cognitoUser.authenticateUser(authenticationDetails, {
     onSuccess(result) {
-      const accessToken = result.getAccessToken().getJwtToken();
+      const userInfo = { username };
+      userInfo.token = result.getAccessToken().getJwtToken();
+      cognitoUser.getUserAttributes(function (err, attributes) {
+        if (err) {
+          console.error(err.message || JSON.stringify(err));
+          return;
+        }
+        const id = attributes.find((a) => a.getName() === 'sub').getValue();
+        userInfo.id = id;
 
-      response.json(accessToken);
+        response.json(userInfo);
+      });
     },
 
     onFailure(err) {
-      alert(err.message || JSON.stringify(err));
+      console.error(err.message || JSON.stringify(err));
     },
   });
 };

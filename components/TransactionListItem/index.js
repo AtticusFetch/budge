@@ -1,19 +1,13 @@
+import numbro from 'numbro';
+import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { ColorButton } from '../ColorButton';
-import { useCallback, useState } from 'react';
 
 export const TransactionListItem = (props) => {
   const [expanded, setExpanded] = useState(false);
-  const {
-    name,
-    amount,
-    iso_currency_code,
-    category,
-    date,
-    personal_finance_category,
-  } = props;
-  const text = `${name} ${amount} ${iso_currency_code}`;
+  const { name, amount, category, date, personal_finance_category, id } = props;
+  const text = `${name} ${numbro(amount).formatCurrency({ mantissa: 2 })}`;
   const colorName = parseFloat(amount) < 0 ? 'green' : 'red';
   const onPress = useCallback(() => {
     setExpanded(!expanded);

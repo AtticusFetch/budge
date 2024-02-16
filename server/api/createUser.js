@@ -1,23 +1,23 @@
 const { PutCommand, GetCommand } = require('@aws-sdk/lib-dynamodb');
-const { v4: uuidv4 } = require('uuid');
 
 const { ddbClient } = require('../db/client');
+const { TABLE_NAMES } = require('../db/constants');
 
 const createUser = async (request, response) => {
-  const { username } = request.body;
-  const newId = uuidv4();
+  const { username, id } = request.body;
   let newUserResult;
   const putCommand = new PutCommand({
-    TableName: 'Users',
+    TableName: TABLE_NAMES.USERS,
     Item: {
       username,
-      id: newId,
+      transactions: [],
+      id,
     },
   });
   const getCommand = new GetCommand({
-    TableName: 'Users',
+    TableName: TABLE_NAMES.USERS,
     Key: {
-      id: newId,
+      id,
     },
   });
 

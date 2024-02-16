@@ -21,3 +21,7 @@ export const getUserSession = async () => {
 export const saveUserSession = async (payload) => {
   await AsyncStorage.setItem(KEYS.session, JSON.stringify(payload));
 };
+
+export const clearUserSession = async () => {
+  await AsyncStorage.clear();
+};

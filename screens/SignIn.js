@@ -4,14 +4,23 @@ import * as Keychain from 'react-native-keychain';
 
 import { ColorButton } from '../components/ColorButton';
 import { useUserContext, userActions } from '../context/User';
-import SignUpModal from '../modals/SignUp';
-import { getUserSession, saveUserSession } from '../utils/asyncStorage';
+import SignInModal from '../modals/SignInModal';
+import SignUpModal from '../modals/SignUpModal';
+import {
+  clearUserSession,
+  getUserSession,
+  saveUserSession,
+} from '../utils/asyncStorage';
 import { colors } from '../utils/colors';
-import { authUser, verifyUserSession } from '../utils/plaidApi';
+import { authUser, getUserById, verifyUserSession } from '../utils/plaidApi';
 
 export default function SignIn({ navigation }) {
-  const { dispatch } = useUserContext();
+  const {
+    dispatch,
+    state: { user },
+  } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSignUpVisible, setisSignUpVisible] = useState(false);
   const [isSignInVisible, setisSignInVisible] = useState(false);
 
   useEffect(() => {
@@ -23,27 +32,32 @@ export default function SignIn({ navigation }) {
         isValidSession = isValid;
       }
       if (isValidSession) {
-        console.log('=== session is valid', session);
         const credentials = await Keychain.getGenericPassword();
-        const token = await authUser(
+        const userInfo = await authUser(
           credentials.password,
           credentials.username,
         );
+        const user = await getUserById(userInfo.id);
         saveUserSession({
-          ...session,
-          token,
+          ...userInfo,
+          ...user,
         });
-        dispatch(userActions.set(session));
+        dispatch(userActions.set(user));
         await navigation.navigate('Home');
+      } else {
+        clearUserSession();
+        await Keychain.resetGenericPassword();
       }
       setIsLoading(false);
     };
     getSession();
-  }, []);
+  }, [user?.username]);
 
-  const showSignUpModal = useCallback(() => setisSignInVisible(true), []);
+  const showSignUpModal = useCallback(() => setisSignUpVisible(true), []);
+  const closeSignUpModal = useCallback(() => setisSignUpVisible(false), []);
 
-  const closeSignUpModal = useCallback(() => setisSignInVisible(false), []);
+  const showSignInModal = useCallback(() => setisSignInVisible(true), []);
+  const closeSignInModal = useCallback(() => setisSignInVisible(false), []);
 
   return (
     <View style={[styles.container, isLoading && styles.loadingContainer]}>
@@ -56,9 +70,22 @@ export default function SignIn({ navigation }) {
             text="Sign Up"
             colorName="blue"
           />
-          <ColorButton text="Sign In" colorName="orange" />
+          <ColorButton
+            onPress={showSignInModal}
+            text="Sign In"
+            colorName="orange"
+          />
         </>
       )}
+      <Modal
+        animationType="slide"
+        visible={isSignUpVisible}
+        onRequestClose={() => {
+          setisSignUpVisible(false);
+        }}
+      >
+        <SignUpModal onClose={closeSignUpModal} />
+      </Modal>
       <Modal
         animationType="slide"
         visible={isSignInVisible}
@@ -66,7 +93,7 @@ export default function SignIn({ navigation }) {
           setisSignInVisible(false);
         }}
       >
-        <SignUpModal onClose={closeSignUpModal} />
+        <SignInModal onClose={closeSignInModal} />
       </Modal>
     </View>
   );

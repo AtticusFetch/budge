@@ -1,8 +1,10 @@
 const { CognitoJwtVerifier } = require('aws-jwt-verify');
 
+const { POOL_DATA } = require('../auth/config');
+
 const poolData = {
-  userPoolId: 'us-east-2_pn7gQHo7F',
-  clientId: '4ufjsimo5bhv3k1u5hu3k486nd',
+  userPoolId: POOL_DATA.UserPoolId,
+  clientId: POOL_DATA.ClientId,
 };
 
 const verifyUser = async (request, response) => {
@@ -13,7 +15,7 @@ const verifyUser = async (request, response) => {
   });
 
   try {
-    const payload = await verifier.verify(token);
+    await verifier.verify(token);
     response.json({ isValid: true });
   } catch (e) {
     console.log('Token not valid!', e);

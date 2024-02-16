@@ -35,8 +35,15 @@ export const getAccaounts = () => {
   return fetchFromApi('accounts');
 };
 
-export const getUsers = () => {
-  return fetchFromApi('users');
+export const getUserById = (id) => {
+  return fetchFromApi(`user/${id}`);
+};
+
+export const createTransactionForUser = (transaction, id) => {
+  return postToApi('user/transaction/create', {
+    transaction,
+    userId: id,
+  });
 };
 
 export const signUpUser = (email, password, username) => {
@@ -54,9 +61,10 @@ export const confirmUser = (username, code) => {
   });
 };
 
-export const createUser = (username) => {
+export const createUser = (username, id) => {
   return postToApi('user/create', {
     username,
+    id,
   });
 };
 

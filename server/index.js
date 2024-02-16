@@ -10,10 +10,11 @@ const { authenticateUser } = require('./api/authenticateUser');
 const { confirmUser } = require('./api/confirmUser');
 const { createLinkToken } = require('./api/createLinkToken');
 const { createUser } = require('./api/createUser');
+const { createUserTransaction } = require('./api/createUserTransaction');
 const { exchangeToken } = require('./api/exchangeToken');
 const { getTransactions } = require('./api/getTransactions');
 const { getTransactionsForMonth } = require('./api/getTransactionsForMonth');
-const { getUsers } = require('./api/getUsers');
+const { getUserById } = require('./api/getUserById');
 const { postInfo } = require('./api/info');
 const { postUser } = require('./api/postUser');
 const { postUserBudget } = require('./api/postUserBudget');
@@ -42,7 +43,7 @@ app.get('/api/transactions/:userId/:sync?', getTransactions);
 
 app.get('/api/transactions/filter/:userId/:forMonth', getTransactionsForMonth);
 
-app.get('/api/users', getUsers);
+app.get('/api/user/:id', getUserById);
 
 app.post('/api/user', postUser);
 app.post('/api/user/signup', signUpUser);
@@ -50,6 +51,8 @@ app.post('/api/user/confirm', confirmUser);
 app.post('/api/user/authenticate', authenticateUser);
 app.post('/api/user/create', createUser);
 app.post('/api/user/verify', verifyUser);
+
+app.post('/api/user/transaction/create', createUserTransaction);
 
 app.post('/api/budget', postUserBudget);
 

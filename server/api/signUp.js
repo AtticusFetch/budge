@@ -1,14 +1,6 @@
-const {
-  CognitoUserPool,
-  CognitoUserAttribute,
-} = require('amazon-cognito-identity-js');
+const { CognitoUserAttribute } = require('amazon-cognito-identity-js');
 
-const poolData = {
-  UserPoolId: 'us-east-2_pn7gQHo7F',
-  ClientId: '4ufjsimo5bhv3k1u5hu3k486nd',
-};
-
-const userPool = new CognitoUserPool(poolData);
+const { USER_POOL } = require('../auth/userPool');
 
 const signUpUser = async (request, response) => {
   const { email, password, username } = request.body;
@@ -24,7 +16,7 @@ const signUpUser = async (request, response) => {
 
   attributeList.push(attributeEmail);
 
-  userPool.signUp(username, password, attributeList, null, (err, result) => {
+  USER_POOL.signUp(username, password, attributeList, null, (err, result) => {
     if (err) {
       response.json(err);
       console.log(err);

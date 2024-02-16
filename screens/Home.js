@@ -13,7 +13,7 @@ export default function Home(props) {
     state: { user },
   } = useUserContext();
   const [linkToken, setLinkToken] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // useEffect(() => {
   //   createLinkToken()
