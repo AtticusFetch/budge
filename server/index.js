@@ -12,6 +12,7 @@ const { createLinkToken } = require('./api/createLinkToken');
 const { createUser } = require('./api/createUser');
 const { createUserTransaction } = require('./api/createUserTransaction');
 const { exchangeToken } = require('./api/exchangeToken');
+const { getCategories } = require('./api/getCategories');
 const { getTransactions } = require('./api/getTransactions');
 const { getTransactionsForMonth } = require('./api/getTransactionsForMonth');
 const { getUserById } = require('./api/getUserById');
@@ -44,6 +45,7 @@ app.get('/api/transactions/:userId/:sync?', getTransactions);
 app.get('/api/transactions/filter/:userId/:forMonth', getTransactionsForMonth);
 
 app.get('/api/user/:id', getUserById);
+app.get('/api/categories', getCategories);
 
 app.post('/api/user', postUser);
 app.post('/api/user/signup', signUpUser);

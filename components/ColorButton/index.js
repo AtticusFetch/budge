@@ -4,12 +4,21 @@ import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 import { colors } from '../../utils/colors';
 
 export const ColorButton = (props) => {
-  const { text, onPress, children, colorName = 'orange', size = '' } = props;
+  const {
+    text,
+    onPress,
+    children,
+    colorName = 'orange',
+    size = '',
+    style,
+    transparent = false,
+    childrenWrapperStyle,
+  } = props;
   const color = colors[colorName];
   const colorSeeThrough = colors.seeThrough[colorName];
   const buttonOpacity = useRef(new Animated.Value(1)).current;
   const containerStyle = {
-    backgroundColor: colorSeeThrough,
+    backgroundColor: transparent ? colorSeeThrough : 'white',
   };
   const buttonStyle = {
     opacity: buttonOpacity,
@@ -23,6 +32,7 @@ export const ColorButton = (props) => {
         styles.buttonWrapper,
         sizedStyles[size]?.buttonWrapper,
         containerStyle,
+        style,
       ]}
       onPress={onPress}
       onPressIn={() => {
@@ -41,7 +51,12 @@ export const ColorButton = (props) => {
       }}
     >
       <Animated.View
-        style={[styles.button, sizedStyles[size]?.button, buttonStyle]}
+        style={[
+          styles.button,
+          sizedStyles[size]?.button,
+          buttonStyle,
+          childrenWrapperStyle,
+        ]}
       >
         {children || (
           <Text style={[styles.label, sizedStyles[size]?.label, textColor]}>
@@ -81,6 +96,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+    flexDirection: 'row',
     padding: 20,
     borderRadius: 8,
     borderWidth: 2,

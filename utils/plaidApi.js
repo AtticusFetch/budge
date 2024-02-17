@@ -39,6 +39,10 @@ export const getUserById = (id) => {
   return fetchFromApi(`user/${id}`);
 };
 
+export const getCategories = () => {
+  return fetchFromApi('categories');
+};
+
 export const createTransactionForUser = (transaction, id) => {
   return postToApi('user/transaction/create', {
     transaction,

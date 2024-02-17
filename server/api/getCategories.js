@@ -15,14 +15,14 @@ const getCategories = async (request, response) => {
     console.error(e);
   }
 
-  if (!categories) {
+  if (!categories?.Items) {
     response.status(500);
     response.send();
 
     return;
   }
 
-  response.json(categories);
+  response.json(categories?.Items);
 };
 
 exports.getCategories = getCategories;

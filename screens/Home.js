@@ -4,14 +4,16 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { PlaidLink } from './../components/PlaidLink';
 import { useUserContext } from './../context/User';
-import { createLinkToken } from './../utils/plaidApi';
+import { createLinkToken, getCategories } from './../utils/plaidApi';
 import { ColorButton } from '../components/ColorButton';
+import { categoriesActions, useCategoriesContext } from '../context/Categories';
 import { colors } from '../utils/colors';
 
 export default function Home(props) {
   const {
     state: { user },
   } = useUserContext();
+  const { dispatch } = useCategoriesContext();
   const [linkToken, setLinkToken] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,8 +28,12 @@ export default function Home(props) {
   //     });
   // }, []);
 
-  const showTransactions = useCallback(() => {
+  const showTransactions = useCallback(async () => {
+    setIsLoading(true);
+    const categories = await getCategories();
+    dispatch(categoriesActions.set(categories));
     props.navigation.navigate('Transactions');
+    setIsLoading(false);
   }, [user, linkToken]);
 
   const showBudget = useCallback(() => {

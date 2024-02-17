@@ -5,7 +5,7 @@ export const colors = {
   lightBlue: 'rgb(61, 164, 171)',
   yellow: 'rgb(246, 205, 97)',
   red: 'rgb(255, 111, 105)',
-  green: 'rgb(136, 216, 176)',
+  green: 'rgb(0, 169, 85)',
   seeThrough: {
     orange: 'rgba(254, 138, 113, 0.1)',
     grey: 'rgba(74, 78, 77, 0.1)',
