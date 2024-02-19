@@ -100,6 +100,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 8,
     borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   label: {
     fontSize: 20,

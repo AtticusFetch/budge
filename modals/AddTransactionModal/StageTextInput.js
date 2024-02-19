@@ -1,6 +1,6 @@
 import { StyleSheet, TextInput, View } from 'react-native';
 
-import { colors } from '../../../utils/colors';
+import { colors } from '../../utils/colors';
 
 export const StageTextInput = (props) => {
   const { value, onChange, ...rest } = props;

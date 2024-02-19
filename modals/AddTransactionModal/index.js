@@ -3,9 +3,10 @@ import numbro from 'numbro';
 import { useCallback, useRef, useState } from 'react';
 import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
 
-import { StageTextInput } from './stages/StageTextInput';
+import { StageTextInput } from './StageTextInput';
 import { StageWrapper } from './stages/StageWrapper';
 import { CategoriesList } from '../../components/CategoriesList';
+import { DatePicker } from '../../components/DatePicker';
 
 const deviceWidth = Dimensions.get('window').width;
 
@@ -41,7 +42,7 @@ export default function AddTransactionModal(props) {
   }, [stage]);
 
   const onInputChange = useCallback(
-    (e, v) => {
+    (e) => {
       switch (stage) {
         case STAGES.amount:
           setamount(e);
@@ -50,7 +51,7 @@ export default function AddTransactionModal(props) {
           setcategory(e);
           break;
         case STAGES.date:
-          setdate(v);
+          setdate(e);
           break;
         case STAGES.note:
           setnote(e);
@@ -99,12 +100,7 @@ export default function AddTransactionModal(props) {
         />
       </StageWrapper>
       <StageWrapper {...stageProps}>
-        <DateTimePicker
-          value={date}
-          mode="date"
-          is24Hour
-          onChange={onInputChange}
-        />
+        <DatePicker value={date} onChange={onInputChange} />
       </StageWrapper>
       <StageWrapper {...stageProps}>
         <StageTextInput
