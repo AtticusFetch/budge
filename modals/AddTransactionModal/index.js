@@ -1,3 +1,4 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import numbro from 'numbro';
 import { useCallback, useRef, useState } from 'react';
 import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
@@ -18,7 +19,7 @@ const STAGES = {
 export default function AddTransactionModal(props) {
   const [amount, setamount] = useState('');
   const [note, setnote] = useState('');
-  const [date, setdate] = useState('');
+  const [date, setdate] = useState(new Date());
   const [category, setcategory] = useState(null);
   const [stage, setstage] = useState(STAGES.amount);
 
@@ -40,19 +41,19 @@ export default function AddTransactionModal(props) {
   }, [stage]);
 
   const onInputChange = useCallback(
-    (value) => {
+    (e, v) => {
       switch (stage) {
         case STAGES.amount:
-          setamount(value);
+          setamount(e);
           break;
         case STAGES.category:
-          setcategory(value);
+          setcategory(e);
           break;
         case STAGES.date:
-          setdate(value);
+          setdate(v);
           break;
         case STAGES.note:
-          setnote(value);
+          setnote(e);
           break;
       }
     },
@@ -62,7 +63,7 @@ export default function AddTransactionModal(props) {
   const onSubmitInput = useCallback(() => {
     const isLastStage = stage === STAGES.note;
     if (isLastStage) {
-      props.onSubmit({ amount, category, note });
+      props.onSubmit({ amount, category, note, date });
     }
     setstage(stage + 1);
     animateSlide();
@@ -72,13 +73,15 @@ export default function AddTransactionModal(props) {
     props.onClose();
   }, []);
 
+  const stageProps = {
+    style: slideOutStyle,
+    onSubmitStage: onSubmitInput,
+    onCancel,
+  };
+
   return (
     <View style={styles.wrapper}>
-      <StageWrapper
-        style={slideOutStyle}
-        onSubmitStage={onSubmitInput}
-        onCancel={onCancel}
-      >
+      <StageWrapper {...stageProps}>
         <StageTextInput
           onChange={onInputChange}
           value={amount}
@@ -89,39 +92,25 @@ export default function AddTransactionModal(props) {
           returnKeyType="next"
         />
       </StageWrapper>
-      <StageWrapper
-        style={slideOutStyle}
-        onSubmitStage={onSubmitInput}
-        onCancel={onCancel}
-      >
+      <StageWrapper {...stageProps}>
         <CategoriesList
           categories={props.categories}
           onSelectedCategoryChange={onInputChange}
         />
       </StageWrapper>
-      <StageWrapper
-        style={slideOutStyle}
-        onSubmitStage={onSubmitInput}
-        onCancel={onCancel}
-      >
+      <StageWrapper {...stageProps}>
+        <DateTimePicker
+          value={date}
+          mode="date"
+          is24Hour
+          onChange={onInputChange}
+        />
+      </StageWrapper>
+      <StageWrapper {...stageProps}>
         <StageTextInput
           onChange={onInputChange}
           value={note}
           placeholder="Note"
-          keyboardType="default"
-          enterKeyHint="next"
-          returnKeyType="next"
-        />
-      </StageWrapper>
-      <StageWrapper
-        style={slideOutStyle}
-        onSubmitStage={onSubmitInput}
-        onCancel={onCancel}
-      >
-        <StageTextInput
-          onChange={onInputChange}
-          value={date}
-          placeholder="Date"
           keyboardType="default"
           enterKeyHint="next"
           returnKeyType="next"

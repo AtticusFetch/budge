@@ -1,3 +1,4 @@
+import moment from 'moment';
 import numbro from 'numbro';
 import { useCallback, useState } from 'react';
 import { LayoutAnimation, StyleSheet, Text, View } from 'react-native';
@@ -37,12 +38,13 @@ export const TransactionListItem = (props) => {
         </Text>
       </View>
       {expanded && (
-        <View style={styles.categoryNameContainer}>
-          <Text style={styles.categoryName}>{category.name}</Text>
+        <View style={styles.extraContent}>
+          {note && <Text>{note}</Text>}
+          {date && <Text>{moment(date).format('MMM D, YYYY')}</Text>}
+          <View style={styles.categoryNameContainer}>
+            <Text style={styles.categoryName}>{category.name}</Text>
+          </View>
         </View>
-      )}
-      {expanded && (
-        <View style={styles.extraContent}>{note && <Text>{note}</Text>}</View>
       )}
     </ColorButton>
   );
@@ -50,14 +52,13 @@ export const TransactionListItem = (props) => {
 
 const styles = StyleSheet.create({
   itemContainer: {
+    flex: 1,
     flexDirection: 'column',
     padding: 0,
-    justifyContent: 'flex-start',
     alignItems: 'center',
+    width: '100%',
   },
   button: {
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
     marginVertical: 5,
     width: '50%',
   },
@@ -74,18 +75,18 @@ const styles = StyleSheet.create({
   },
   categoryNameContainer: {
     opacity: 0.5,
-    position: 'absolute',
-    top: 2,
     backgroundColor: colors.grey,
     borderRadius: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,
     maxHeight: 18,
+    marginTop: 8,
   },
   categoryName: {
     color: 'white',
     fontSize: 10,
     fontWeight: '600',
+    textAlign: 'center',
   },
   text: {
     fontSize: 15,
