@@ -50,7 +50,7 @@ export default function Home(props) {
         <ActivityIndicator size="large" color={colors.orange} />
       ) : (
         <View style={styles.buttonsWrapper}>
-          <ColorButton onPress={showBudget} text="Set Budget" />
+          <ColorButton onPress={showBudget} text="Budget" />
           <ColorButton onPress={showTransactions} text="Transactions" />
           <ColorButton onPress={showOverview} text="Overview" />
           <PlaidLink user={user} linkToken={linkToken} />

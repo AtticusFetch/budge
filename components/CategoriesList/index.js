@@ -1,9 +1,7 @@
 import { useCallback, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { colors } from '../../utils/colors';
 import { CategoryListItem } from '../CategoryListItem';
-import { ColorButton } from '../ColorButton';
 
 const splitIntoRows = (countPerRow, arr = []) => {
   const rows = [];
@@ -28,8 +26,8 @@ export const CategoriesList = (props) => {
   );
   return (
     <View style={styles.container}>
-      {splitCategories.map((row) => (
-        <View style={styles.row}>
+      {splitCategories.map((row, i) => (
+        <View key={i} style={styles.row}>
           {row.map((category) => (
             <CategoryListItem
               onPress={onItemPress}
