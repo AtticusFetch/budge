@@ -1,9 +1,16 @@
+const { addUserAttribute } = require('../db/commands');
+
 const postUserBudget = async (request, response) => {
-  // const { budget, userId } = request.body;
-  // const user = await getUserById(userId);
-  // user.budget = budget;
-  // await updateUser(user);
-  // response.json(user);
+  const { budget, userId } = request.body;
+
+  try {
+    const result = await addUserAttribute(userId, 'budget', budget);
+
+    response.json(result.Attributes);
+  } catch (e) {
+    response.status(500);
+    response.json({ error: e });
+  }
 };
 
 exports.postUserBudget = postUserBudget;

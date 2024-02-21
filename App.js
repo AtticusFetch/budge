@@ -30,7 +30,13 @@ export default function App() {
               initialRouteName="SignIn"
             >
               <Stack.Screen name="Sign In" component={SignIn} />
-              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen
+                options={{
+                  headerBackVisible: false,
+                }}
+                name="Home"
+                component={Home}
+              />
               <Stack.Screen name="Overview" component={Overview} />
               <Stack.Screen name="Transactions" component={Transactions} />
               <Stack.Screen name="Budget" component={Budget} />

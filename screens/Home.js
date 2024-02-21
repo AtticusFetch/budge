@@ -39,6 +39,7 @@ export default function Home(props) {
   }, [user]);
 
   const signOut = useCallback(async () => {
+    console.log('=== user.username', user.username);
     await signOutUser(user.username);
     dispatchUserAction(userActions.set(null));
     clearUserSession();
@@ -52,10 +53,14 @@ export default function Home(props) {
       ) : (
         <View style={styles.buttonsWrapper}>
           <ColorButton onPress={showBudget} text="Budget" />
-          <ColorButton onPress={showTransactions} text="Transactions" />
+          <ColorButton
+            colorName="green"
+            onPress={showTransactions}
+            text="Transactions"
+          />
           <ColorButton onPress={showOverview} text="Overview" />
-          <ColorButton onPress={showFriends} text="Friends" />
-          <ColorButton onPress={signOut} text="Sign Out" />
+          <ColorButton colorName="green" onPress={showFriends} text="Friends" />
+          <ColorButton colorName="green" onPress={signOut} text="Sign Out" />
           <PlaidLink user={user} linkToken={linkToken} />
         </View>
       )}
