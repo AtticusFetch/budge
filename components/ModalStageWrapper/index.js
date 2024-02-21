@@ -1,14 +1,24 @@
 import { Animated, KeyboardAvoidingView, StyleSheet } from 'react-native';
 
-import { ColorButton } from '../../../components/ColorButton';
-import { colors } from '../../../utils/colors';
+import { colors } from '../../utils/colors';
+import { ColorButton } from '../ColorButton';
 
-export const StageWrapper = ({ children, onSubmitStage, onCancel, style }) => {
+export const StageWrapper = ({
+  children,
+  onSubmitStage,
+  onCancel,
+  style,
+  submitLabel,
+}) => {
   return (
     <Animated.View style={[styles.animatedWrapper, style]}>
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <KeyboardAvoidingView style={[styles.container]} behavior="padding">
         {children}
-        <ColorButton onPress={onSubmitStage} text="Next" size="slim" />
+        <ColorButton
+          onPress={onSubmitStage}
+          text={submitLabel || 'Next'}
+          size="slim"
+        />
         <ColorButton onPress={onCancel} text="Cancel" size="slim" />
       </KeyboardAvoidingView>
     </Animated.View>
@@ -20,7 +30,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    maxWidth: '50%',
   },
   container: {
     flex: 0.5,

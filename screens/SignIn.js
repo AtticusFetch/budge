@@ -14,7 +14,7 @@ import {
 import { colors } from '../utils/colors';
 import { authUser, getUserById, verifyUserSession } from '../utils/plaidApi';
 
-export default function SignIn({ navigation }) {
+export default function SignIn({ navigation, route }) {
   const {
     dispatch,
     state: { user },
@@ -47,17 +47,22 @@ export default function SignIn({ navigation }) {
       } else {
         clearUserSession();
         await Keychain.resetGenericPassword();
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     getSession();
-  }, [user?.username]);
+  }, [route.params?.signedOut]);
 
   const showSignUpModal = useCallback(() => setisSignUpVisible(true), []);
   const closeSignUpModal = useCallback(() => setisSignUpVisible(false), []);
 
   const showSignInModal = useCallback(() => setisSignInVisible(true), []);
-  const closeSignInModal = useCallback(() => setisSignInVisible(false), []);
+  const closeSignInModal = useCallback(async ({ success }) => {
+    if (success) {
+      await navigation.navigate('Home');
+    }
+    setisSignInVisible(false);
+  }, []);
 
   return (
     <View style={[styles.container, isLoading && styles.loadingContainer]}>

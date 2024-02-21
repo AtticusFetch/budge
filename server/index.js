@@ -6,11 +6,13 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
 
+const { acceptFriendRequest } = require('./api/acceptFriendRequest');
 const { authenticateUser } = require('./api/authenticateUser');
 const { confirmUser } = require('./api/confirmUser');
 const { createLinkToken } = require('./api/createLinkToken');
 const { createUser } = require('./api/createUser');
 const { createUserTransaction } = require('./api/createUserTransaction');
+const { declineFriendRequest } = require('./api/declineFriendRequest');
 const { exchangeToken } = require('./api/exchangeToken');
 const { getCategories } = require('./api/getCategories');
 const { getTransactions } = require('./api/getTransactions');
@@ -19,6 +21,8 @@ const { getUserById } = require('./api/getUserById');
 const { postInfo } = require('./api/info');
 const { postUser } = require('./api/postUser');
 const { postUserBudget } = require('./api/postUserBudget');
+const { sendFriendRequest } = require('./api/sendFriendRequest');
+const { signOutUser } = require('./api/signOutUser');
 const { signUpUser } = require('./api/signUp');
 const { verifyUser } = require('./api/verifyUser');
 
@@ -53,6 +57,11 @@ app.post('/api/user/confirm', confirmUser);
 app.post('/api/user/authenticate', authenticateUser);
 app.post('/api/user/create', createUser);
 app.post('/api/user/verify', verifyUser);
+app.post('/api/user/signOut', signOutUser);
+
+app.post('/api/user/friend', sendFriendRequest);
+app.post('/api/user/friend/accept', acceptFriendRequest);
+app.post('/api/user/friend/decline', declineFriendRequest);
 
 app.post('/api/user/transaction/create', createUserTransaction);
 

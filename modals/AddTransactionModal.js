@@ -1,12 +1,11 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
 import numbro from 'numbro';
 import { useCallback, useRef, useState } from 'react';
 import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
 
-import { StageTextInput } from './StageTextInput';
-import { StageWrapper } from './stages/StageWrapper';
-import { CategoriesList } from '../../components/CategoriesList';
-import { DatePicker } from '../../components/DatePicker';
+import { CategoriesList } from '../components/CategoriesList';
+import { DatePicker } from '../components/DatePicker';
+import { StageWrapper } from '../components/ModalStageWrapper';
+import { StageTextInput } from '../components/TextInput';
 
 const deviceWidth = Dimensions.get('window').width;
 

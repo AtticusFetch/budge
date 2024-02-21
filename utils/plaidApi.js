@@ -1,8 +1,6 @@
 const fetchFromApi = (endpoint, params) => {
   const url = `${process.env.EXPO_PUBLIC_SERVER_BASE}/api/${endpoint}`;
-  return fetch(url, params).then((response) => {
-    return response.json();
-  });
+  return fetch(url, params).then((response) => response.json());
 };
 
 const postToApi = (url, body = {}) => {
@@ -43,10 +41,38 @@ export const getCategories = () => {
   return fetchFromApi('categories');
 };
 
+export const signOutUser = (username) => {
+  return postToApi('user/signOut', {
+    username,
+  });
+};
+
 export const createTransactionForUser = (transaction, id) => {
   return postToApi('user/transaction/create', {
     transaction,
     userId: id,
+  });
+};
+
+export const acceptRequest = (requestId, userId) => {
+  return postToApi('user/friend/accept', {
+    requestId,
+    userId,
+  });
+};
+
+export const declineRequest = (requestId, userId) => {
+  return postToApi('user/friend/decline', {
+    requestId,
+    userId,
+  });
+};
+
+export const addFriend = (friendUsername, user) => {
+  return postToApi('user/friend', {
+    friendUsername,
+    userId: user.id,
+    username: user.username,
   });
 };
 

@@ -32,7 +32,7 @@ export default function SignInModal(props) {
       saveUserSession(userInfo);
       await Keychain.setGenericPassword(username, password);
       dispatch(userActions.set(user));
-      onClose();
+      onClose({ success: true });
     } catch (e) {
       console.error(e);
     }

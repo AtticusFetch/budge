@@ -13,6 +13,7 @@ export const ColorButton = (props) => {
     style,
     transparent = false,
     childrenWrapperStyle,
+    pressable = true,
   } = props;
   const color = colors[colorName];
   const colorSeeThrough = colors.seeThrough[colorName];
@@ -34,6 +35,7 @@ export const ColorButton = (props) => {
         containerStyle,
         style,
       ]}
+      disabled={!pressable}
       onPress={onPress}
       onPressIn={() => {
         Animated.sequence([

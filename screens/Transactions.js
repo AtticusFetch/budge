@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   list: {
-    width: '100%',
+    width: '70%',
     paddingHorizontal: 20,
   },
   addButton: {

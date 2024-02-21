@@ -56,11 +56,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     padding: 0,
     alignItems: 'center',
-    width: '100%',
   },
   button: {
     marginVertical: 5,
-    width: '50%',
   },
   mainContent: {
     flex: 1,

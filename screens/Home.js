@@ -3,35 +3,25 @@ import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { PlaidLink } from './../components/PlaidLink';
-import { useUserContext } from './../context/User';
-import { createLinkToken, getCategories } from './../utils/plaidApi';
+import { useUserContext, userActions } from './../context/User';
+import { signOutUser, getCategories } from './../utils/plaidApi';
 import { ColorButton } from '../components/ColorButton';
 import { categoriesActions, useCategoriesContext } from '../context/Categories';
+import { clearUserSession } from '../utils/asyncStorage';
 import { colors } from '../utils/colors';
 
 export default function Home(props) {
   const {
     state: { user },
+    dispatch: dispatchUserAction,
   } = useUserContext();
-  const { dispatch } = useCategoriesContext();
+  const { dispatch: dispatchCategoriesAction } = useCategoriesContext();
   const [linkToken, setLinkToken] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  // useEffect(() => {
-  //   createLinkToken()
-  //     .then((data) => {
-  //       setLinkToken(data.link_token);
-  //       setIsLoading(false);
-  //     })
-  //     .catch(() => {
-  //       setIsLoading(false);
-  //     });
-  // }, []);
-
   const showTransactions = useCallback(async () => {
     setIsLoading(true);
     const categories = await getCategories();
-    dispatch(categoriesActions.set(categories));
+    dispatchCategoriesAction(categoriesActions.set(categories));
     props.navigation.navigate('Transactions');
     setIsLoading(false);
   }, [user, linkToken]);
@@ -44,6 +34,17 @@ export default function Home(props) {
     props.navigation.navigate('Overview');
   }, [user, linkToken]);
 
+  const showFriends = useCallback(() => {
+    props.navigation.navigate('Friends');
+  }, [user]);
+
+  const signOut = useCallback(async () => {
+    dispatchUserAction(userActions.set(null));
+    clearUserSession();
+    await signOutUser(user.username);
+    props.navigation.navigate('Sign In', { signedOut: true });
+  }, [user]);
+
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -53,6 +54,8 @@ export default function Home(props) {
           <ColorButton onPress={showBudget} text="Budget" />
           <ColorButton onPress={showTransactions} text="Transactions" />
           <ColorButton onPress={showOverview} text="Overview" />
+          <ColorButton onPress={showFriends} text="Friends" />
+          <ColorButton onPress={signOut} text="Sign Out" />
           <PlaidLink user={user} linkToken={linkToken} />
         </View>
       )}

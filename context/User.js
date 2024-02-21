@@ -8,6 +8,7 @@ const initialState = {
 
 export const ACTIONS = {
   SET: 'SET_USER',
+  UPDATE: 'UPDATE_USER',
 };
 
 const userReducer = (state, action) => {
@@ -16,6 +17,14 @@ const userReducer = (state, action) => {
       return {
         ...state,
         user: action.payload,
+      };
+    case ACTIONS.UPDATE:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          ...action.payload.user,
+        },
       };
     default:
       return state;
