@@ -1,33 +1,25 @@
-const { UpdateCommand } = require('@aws-sdk/lib-dynamodb');
 const { v4: uuidv4 } = require('uuid');
 
-const { ddbClient } = require('../db/client');
-const { TABLE_NAMES } = require('../db/constants');
+const { addListItem } = require('../db/commands');
 
 const createUserTransaction = async (request, response) => {
   const { transaction, userId } = request.body;
+  let transactionAmount = transaction.amount;
+  if (transaction.splitWith?.length) {
+    transactionAmount = transactionAmount / (transaction.splitWith?.length + 1);
+  }
   const uniqueTransaction = {
     ...transaction,
+    amount: transactionAmount,
     id: uuidv4(),
   };
   let result;
-  const putCommand = new UpdateCommand({
-    TableName: TABLE_NAMES.USERS,
-    Key: { id: userId },
-    ReturnValues: 'ALL_NEW',
-    UpdateExpression:
-      'set #transactions = list_append(if_not_exists(#transactions, :empty_list), :transaction)',
-    ExpressionAttributeNames: {
-      '#transactions': 'transactions',
-    },
-    ExpressionAttributeValues: {
-      ':transaction': [uniqueTransaction],
-      ':empty_list': [],
-    },
-  });
 
   try {
-    result = await ddbClient.send(putCommand);
+    result = await addListItem(userId, 'transactions', uniqueTransaction);
+    await transaction.splitWith?.forEach(async (userToSplitId) => {
+      await addListItem(userToSplitId, 'transactions', uniqueTransaction);
+    });
   } catch (e) {
     console.error(e);
   }

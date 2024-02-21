@@ -9,7 +9,7 @@ import { ColorButton } from '../ColorButton';
 
 export const TransactionListItem = (props) => {
   const [expanded, setExpanded] = useState(false);
-  const { note, amount, category, date } = props;
+  const { note, amount, category, date, splitWith } = props;
   const isPositiveFlow = amount <= 0;
   const formattedAmount = numbro(0 - amount).formatCurrency({ mantissa: 2 });
 
@@ -41,8 +41,15 @@ export const TransactionListItem = (props) => {
         <View style={styles.extraContent}>
           {note && <Text>{note}</Text>}
           {date && <Text>{moment(date).format('MMM D, YYYY')}</Text>}
-          <View style={styles.categoryNameContainer}>
-            <Text style={styles.categoryName}>{category.name}</Text>
+          <View style={styles.labelsContainer}>
+            {!!splitWith?.length && (
+              <View style={styles.splitLabelContainer}>
+                <Text style={styles.labelText}>Split</Text>
+              </View>
+            )}
+            <View style={styles.categoryNameContainer}>
+              <Text style={styles.categoryName}>{category.name}</Text>
+            </View>
           </View>
         </View>
       )}
@@ -79,6 +86,25 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     maxHeight: 18,
     marginTop: 8,
+  },
+  labelsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  splitLabelContainer: {
+    backgroundColor: colors.yellow,
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    maxHeight: 18,
+    marginTop: 8,
+  },
+  labelText: {
+    fontSize: 10,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: colors.grey,
   },
   categoryName: {
     color: 'white',

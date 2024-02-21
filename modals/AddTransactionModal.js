@@ -1,8 +1,18 @@
 import numbro from 'numbro';
 import { useCallback, useRef, useState } from 'react';
-import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  Easing,
+  Modal,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
+import FriendsSplitModal from './FriendsSplitModal';
 import { CategoriesList } from '../components/CategoriesList';
+import { ColorButton } from '../components/ColorButton';
 import { DatePicker } from '../components/DatePicker';
 import { StageWrapper } from '../components/ModalStageWrapper';
 import { StageTextInput } from '../components/TextInput';
@@ -20,6 +30,8 @@ export default function AddTransactionModal(props) {
   const [amount, setamount] = useState('');
   const [note, setnote] = useState('');
   const [date, setdate] = useState(new Date());
+  const [isSplitModalVisible, setisSplitModalVisible] = useState(false);
+  const [splitWith, setSplitWith] = useState([]);
   const [category, setcategory] = useState(null);
   const [stage, setstage] = useState(STAGES.amount);
 
@@ -63,7 +75,7 @@ export default function AddTransactionModal(props) {
   const onSubmitInput = useCallback(() => {
     const isLastStage = stage === STAGES.note;
     if (isLastStage) {
-      props.onSubmit({ amount, category, note, date });
+      props.onSubmit({ amount, category, note, date, splitWith });
     }
     setstage(stage + 1);
     animateSlide();
@@ -71,6 +83,19 @@ export default function AddTransactionModal(props) {
 
   const onCancel = useCallback(() => {
     props.onClose();
+  }, []);
+
+  const onSplitModalClose = useCallback(() => {
+    setisSplitModalVisible(false);
+  }, []);
+
+  const onSplitModalShow = useCallback(() => {
+    setisSplitModalVisible(true);
+  }, []);
+
+  const onSplitModalDone = useCallback((selectedFriends) => {
+    setSplitWith(selectedFriends);
+    onSplitModalClose();
   }, []);
 
   const stageProps = {
@@ -91,6 +116,23 @@ export default function AddTransactionModal(props) {
           enterKeyHint="next"
           returnKeyType="next"
         />
+        {!!splitWith.length && (
+          <Text>
+            Split amount:{' '}
+            {numbro(amount / (splitWith.length + 1)).formatCurrency({
+              mantissa: 2,
+            })}
+          </Text>
+        )}
+        {!!props.friends?.length && (
+          <ColorButton
+            colorName="blue"
+            childrenWrapperStyle={styles.splitBtnContent}
+            onPress={onSplitModalShow}
+            style={styles.splitBtn}
+            text="Split"
+          />
+        )}
       </StageWrapper>
       <StageWrapper {...stageProps}>
         <CategoriesList
@@ -111,6 +153,15 @@ export default function AddTransactionModal(props) {
           returnKeyType="next"
         />
       </StageWrapper>
+      <Modal
+        animationType="slide"
+        visible={isSplitModalVisible}
+        style={styles.modal}
+        transparent
+        onRequestClose={onSplitModalClose}
+      >
+        <FriendsSplitModal friends={props.friends} onDone={onSplitModalDone} />
+      </Modal>
     </View>
   );
 }
@@ -123,6 +174,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     borderColor: 'green',
     width: `${Object.keys(STAGES).length * 100}%`,
+  },
+  splitBtn: {
+    height: 40,
+    width: '50%',
+  },
+  splitBtnContent: {
+    padding: 0,
   },
   overlay: {
     position: 'absolute',

@@ -103,6 +103,13 @@ export default function Home(props) {
           <View style={styles.requestsButton}>
             <ColorButton colorName="grey" onPress={onViewRequestsPress}>
               <Icon color={colors.red} name="user-plus" size={30} />
+              {!!user.friendRequests?.length && (
+                <View style={styles.requestsNotification}>
+                  <Text style={styles.notificationText}>
+                    {user.friendRequests.length}
+                  </Text>
+                </View>
+              )}
             </ColorButton>
           </View>
         </>
@@ -156,5 +163,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: '7%',
     left: '10%',
+  },
+  requestsNotification: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.red,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

@@ -53,7 +53,7 @@ const acceptFriendRequest = async (request, response) => {
       username: acceptingUser.username,
     });
 
-    response.json(result);
+    response.json(result?.Attributes);
   } catch (e) {
     console.error(e);
     response.status(500);

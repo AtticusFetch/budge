@@ -11,7 +11,5 @@ export const Outgoing = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    borderWidth: 2,
-  },
+  container: {},
 });

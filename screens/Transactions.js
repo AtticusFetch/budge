@@ -67,6 +67,7 @@ export default function Transactions() {
           categories={categories}
           onClose={onAddTransactionClose}
           onSubmit={onSubmitTransaction}
+          friends={user.friends}
         />
       </Modal>
     </View>

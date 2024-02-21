@@ -29,7 +29,6 @@ export const StageTextInput = (props) => {
 const styles = StyleSheet.create({
   inputWrapper: {
     width: '100%',
-    marginBottom: 80,
   },
   input: {
     height: 60,

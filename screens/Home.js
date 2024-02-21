@@ -39,9 +39,9 @@ export default function Home(props) {
   }, [user]);
 
   const signOut = useCallback(async () => {
+    await signOutUser(user.username);
     dispatchUserAction(userActions.set(null));
     clearUserSession();
-    await signOutUser(user.username);
     props.navigation.navigate('Sign In', { signedOut: true });
   }, [user]);
 
