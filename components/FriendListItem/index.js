@@ -1,18 +1,14 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
-import { colors } from '../../utils/colors';
-import { ColorButton } from '../ColorButton';
+import { ExpandableButton } from '../ExpandableButton';
 
 export const FriendListItem = (props) => {
   const { username } = props;
 
   return (
-    <ColorButton colorName="blue" style={styles.button}>
-      <View style={styles.mainContent}>
-        <Text style={[styles.text]}>{username}</Text>
-      </View>
-    </ColorButton>
+    <ExpandableButton
+      mainContent={<Text style={[styles.text]}>{username}</Text>}
+    />
   );
 };
 
