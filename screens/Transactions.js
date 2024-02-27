@@ -1,6 +1,14 @@
+import _ from 'lodash';
 import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
-import { FlatList, Modal, SafeAreaView, StyleSheet, View } from 'react-native';
+import {
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  View,
+  SectionList,
+  Text,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
 import { ColorButton } from '../components/ColorButton';
@@ -22,6 +30,7 @@ export default function Transactions() {
   } = useCategoriesContext();
   const { transactions = [] } = user;
   const [refreshing, setRefreshing] = useState(false);
+  const [transactionSections, setTransactionSections] = useState([]);
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
     useState(false);
 
@@ -47,27 +56,49 @@ export default function Transactions() {
     dispatch(userActions.update(updatedUser));
   }, []);
 
+  useEffect(() => {
+    const sortedTransactions = _.sortBy(transactions, (t) =>
+      new Date(t.date).getTime(),
+    ).reverse();
+    const groupedTransactions = _.groupBy(sortedTransactions, (t) => {
+      const tDate = moment(t.date);
+      if (tDate.week() === moment().week()) {
+        return 'This week';
+      }
+      return tDate.format('MMM YYYY');
+    });
+    const sections = Object.keys(groupedTransactions).map((key) => ({
+      title: key,
+      data: groupedTransactions[key],
+    }));
+    setTransactionSections(sections);
+  }, [transactions]);
+
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={transactions.sort((a, b) =>
-          moment(a.date).isBefore(moment(b.date)) ? 1 : -1,
-        )}
+      <SectionList
+        sections={transactionSections}
         style={styles.list}
         onRefresh={onRefresh}
         refreshing={refreshing}
-        renderItem={(transaction, index) => {
-          return <TransactionListItem {...transaction.item} />;
+        renderItem={({ item }) => {
+          return <TransactionListItem {...item} />;
         }}
+        renderSectionHeader={({ section: { title } }) => (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>{title}</Text>
+          </View>
+        )}
         keyExtractor={(transaction) => transaction?.id || transaction?.amount}
       />
       <View style={styles.addButtonWrapper}>
         <ColorButton
           childrenWrapperStyle={styles.addButton}
           colorName="blue"
+          type="fill"
           onPress={onAddTransactionPress}
         >
-          <Icon color={colors.blue} name="plus" size={30} />
+          <Icon color="white" name="plus" size={30} />
         </ColorButton>
       </View>
       <Modal
@@ -110,5 +141,19 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderTopLeftRadius: 35,
     borderBottomLeftRadius: 35,
+  },
+  section: {
+    backgroundColor: colors.blue,
+    width: '50%',
+    paddingVertical: 5,
+    borderRadius: 15,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+  },
+  sectionLabel: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 15,
+    color: 'white',
   },
 });

@@ -102,7 +102,7 @@ export default function AddTransactionModal(props) {
       const amountNum = parseFloat(amount);
       if (tips?.includes('%')) {
         tipAmount = numbro.unformat(tips) * amountNum;
-      } else {
+      } else if (tips) {
         tipAmount = parseFloat(tips);
       }
       const finalAmount = `${amountNum + tipAmount}`;

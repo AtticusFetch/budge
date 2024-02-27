@@ -25,22 +25,32 @@ export const TransactionListItem = (props) => {
       }
       extraContent={
         <>
-          {note && <Text>{note}</Text>}
-          {date && <Text>{moment(date).format('MMM D, YYYY')}</Text>}
+          {note && (
+            <View style={[styles.labelContainer, styles.noteContainer]}>
+              <Text style={[styles.labelText, styles.noteText]}>{note}</Text>
+            </View>
+          )}
+          {date && (
+            <View style={[styles.labelContainer, styles.dateContainer]}>
+              <Text style={[styles.labelText, styles.dateText]}>
+                {moment(date).format('MMM D, YYYY')}
+              </Text>
+            </View>
+          )}
           <View style={styles.labelsContainer}>
             {!!splitWith?.length && (
-              <View style={[styles.label, styles.splitLabelContainer]}>
-                <Text style={styles.labelText}>Split</Text>
+              <View style={[styles.subLabel, styles.splitLabelContainer]}>
+                <Text style={styles.subLabelText}>Split</Text>
               </View>
             )}
             {!!tips && (
-              <View style={[styles.label, styles.tipsLabelContainer]}>
-                <Text style={[styles.labelText, styles.tipsLabelText]}>
+              <View style={[styles.subLabel, styles.tipsLabelContainer]}>
+                <Text style={[styles.subLabelText, styles.tipsLabelText]}>
                   Tip: {tips}
                 </Text>
               </View>
             )}
-            <View style={[styles.label, styles.categoryNameContainer]}>
+            <View style={[styles.subLabel, styles.categoryNameContainer]}>
               <Text style={styles.categoryName}>{category?.name}</Text>
             </View>
           </View>
@@ -51,7 +61,7 @@ export const TransactionListItem = (props) => {
 };
 
 const styles = StyleSheet.create({
-  label: {
+  subLabel: {
     borderRadius: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,
@@ -76,7 +86,7 @@ const styles = StyleSheet.create({
   tipsLabelText: {
     color: 'white',
   },
-  labelText: {
+  subLabelText: {
     fontSize: 10,
     fontWeight: '600',
     textAlign: 'center',
@@ -97,4 +107,22 @@ const styles = StyleSheet.create({
   positiveAmount: {
     color: colors.green,
   },
+  labelContainer: {
+    borderColor: colors.blue,
+    borderWidth: 1.5,
+    padding: 5,
+    borderRadius: 100,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    marginVertical: 1,
+  },
+  labelText: {
+    color: colors.grey,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  dateContainer: {},
+  dateText: {},
+  noteContainer: {},
+  noteText: {},
 });

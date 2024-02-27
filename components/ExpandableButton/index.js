@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     padding: 0,
+    paddingBottom: 5,
     alignItems: 'center',
   },
   button: {
@@ -49,7 +50,5 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 20,
   },
-  extraContent: {
-    flex: 1,
-  },
+  extraContent: {},
 });

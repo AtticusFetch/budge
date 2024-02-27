@@ -11,6 +11,7 @@ export const ColorButton = (props) => {
     colorName = 'orange',
     size = '',
     style,
+    type = 'hollow',
     transparent = false,
     childrenWrapperStyle,
     pressable = true,
@@ -25,6 +26,9 @@ export const ColorButton = (props) => {
     opacity: buttonOpacity,
     borderColor: color,
   };
+  if (type !== 'hollow') {
+    buttonStyle.backgroundColor = color;
+  }
   const textColor = { color: colors.grey };
 
   return (
