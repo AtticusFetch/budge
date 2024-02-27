@@ -9,7 +9,7 @@ import { updateUserBudget } from '../utils/plaidApi';
 
 export default function Budget({ navigation }) {
   const {
-    state: { user },
+    state: { user = {} },
   } = useUserContext();
   const [modalVisible, setModalVisible] = useState(false);
   const [budgetInputValue, setBudgetInputValue] = useState(user.budget || 0);

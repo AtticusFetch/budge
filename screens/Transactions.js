@@ -1,14 +1,14 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FlatList, Modal, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
 import { ColorButton } from '../components/ColorButton';
 import { TransactionListItem } from '../components/TransactionListItem';
-import { useCategoriesContext } from '../context/Categories';
+import { categoriesActions, useCategoriesContext } from '../context/Categories';
 import { useUserContext, userActions } from '../context/User';
 import AddTransactionModal from '../modals/AddTransactionModal';
 import { colors } from '../utils/colors';
-import { createTransactionForUser } from '../utils/plaidApi';
+import { createTransactionForUser, getCategories } from '../utils/plaidApi';
 
 export default function Transactions() {
   const {
@@ -17,11 +17,18 @@ export default function Transactions() {
   } = useUserContext();
   const {
     state: { categories },
+    dispatch: dispatchCategoriesAction,
   } = useCategoriesContext();
   const { transactions = [] } = user;
   const [refreshing, setRefreshing] = useState(false);
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
     useState(false);
+
+  useEffect(() => {
+    getCategories().then((categories) => {
+      dispatchCategoriesAction(categoriesActions.set(categories));
+    });
+  }, []);
 
   const onRefresh = useCallback(() => {}, []);
 

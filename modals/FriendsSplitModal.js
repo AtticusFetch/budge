@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { ColorButton } from '../components/ColorButton';
+import { colors } from '../utils/colors';
 
 export default function FriendsSplitModal(props) {
   const [selectedFriends, setSelectedFriends] = useState([]);
@@ -43,6 +44,9 @@ export default function FriendsSplitModal(props) {
         }}
         keyExtractor={(friend) => friend?.id || friend?.username}
       />
+      <Text style={styles.selectedLabel}>
+        Friends Selected: {selectedFriends.length}
+      </Text>
       <ColorButton text="Done" onPress={onDoneSelecting} />
     </View>
   );
@@ -58,4 +62,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   list: {},
+  selectedLabel: {
+    color: colors.grey,
+    fontWeight: 'bold',
+    fontSize: 15,
+    textAlign: 'center',
+  },
 });

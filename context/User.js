@@ -23,7 +23,7 @@ const userReducer = (state, action) => {
         ...state,
         user: {
           ...state.user,
-          ...action.payload.user,
+          ...action.payload,
         },
       };
     default:
