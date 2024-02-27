@@ -19,8 +19,13 @@ export const CategoriesList = (props) => {
   const splitCategories = splitIntoRows(2, categories);
   const onItemPress = useCallback(
     (category) => {
-      setselectedCategory(category);
-      onSelectedCategoryChange(category);
+      if (selectedCategory?.id === category.id) {
+        setselectedCategory(null);
+        onSelectedCategoryChange(null);
+      } else {
+        setselectedCategory(category);
+        onSelectedCategoryChange(category);
+      }
     },
     [onSelectedCategoryChange, selectedCategory],
   );

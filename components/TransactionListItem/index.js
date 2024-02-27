@@ -15,7 +15,7 @@ export const TransactionListItem = (props) => {
     <ExpandableButton
       mainContent={
         <>
-          {category.icon && (
+          {category?.icon && (
             <Icon color={colors.grey} name={category.icon} size={30} />
           )}
           <Text style={[styles.text, isPositiveFlow && styles.positiveAmount]}>
@@ -34,7 +34,7 @@ export const TransactionListItem = (props) => {
               </View>
             )}
             <View style={[styles.label, styles.categoryNameContainer]}>
-              <Text style={styles.categoryName}>{category.name}</Text>
+              <Text style={styles.categoryName}>{category?.name}</Text>
             </View>
           </View>
         </>

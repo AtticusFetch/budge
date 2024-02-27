@@ -14,13 +14,15 @@ export const CategoryListItem = (props) => {
   return (
     <View style={styles.container}>
       <ColorButton
-        colorName={selected ? 'orange' : 'blue'}
+        colorName={selected ? 'yellow' : 'blue'}
         size="slim"
         style={styles.button}
         onPress={onItemPress}
         childrenWrapperStyle={styles.contentWrapper}
       >
-        <Icon color={colors.grey} name={category.icon} size={20} />
+        {category.icon && (
+          <Icon color={colors.grey} name={category.icon} size={20} />
+        )}
         <Text style={styles.label}>{category.name}</Text>
       </ColorButton>
     </View>

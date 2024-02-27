@@ -4,11 +4,13 @@ import {
   Animated,
   Dimensions,
   Easing,
+  LayoutAnimation,
   Modal,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
 
 import FriendsSplitModal from './FriendsSplitModal';
 import { CategoriesList } from '../components/CategoriesList';
@@ -16,6 +18,7 @@ import { ColorButton } from '../components/ColorButton';
 import { DatePicker } from '../components/DatePicker';
 import { StageWrapper } from '../components/ModalStageWrapper';
 import { StageTextInput } from '../components/TextInput';
+import { colors } from '../utils/colors';
 
 const deviceWidth = Dimensions.get('window').width;
 
@@ -30,10 +33,12 @@ export default function AddTransactionModal(props) {
   const [amount, setamount] = useState('');
   const [note, setnote] = useState('');
   const [date, setdate] = useState(new Date());
+  const [rememberCheckboxVisible, setRememberCheckboxVisible] = useState(true);
   const [isSplitModalVisible, setisSplitModalVisible] = useState(false);
   const [splitWith, setSplitWith] = useState([]);
   const [category, setcategory] = useState(null);
   const [stage, setstage] = useState(STAGES.amount);
+  const [shouldRememberNote, setShouldRememberNote] = useState(false);
 
   const slideOutAnim = useRef(new Animated.Value(0)).current;
 
@@ -65,21 +70,41 @@ export default function AddTransactionModal(props) {
           setdate(e);
           break;
         case STAGES.note:
-          setnote(e);
+          if (!e && rememberCheckboxVisible) {
+            break;
+          }
+          LayoutAnimation.configureNext({
+            duration: 700,
+            create: { type: 'linear', property: 'opacity', duration: 350 },
+            update: { type: 'spring', springDamping: 0.4 },
+          });
+          if (e?.id) {
+            setRememberCheckboxVisible(false);
+          } else {
+            setRememberCheckboxVisible(true);
+          }
+          setnote(e?.name || e);
           break;
       }
     },
-    [stage],
+    [stage, rememberCheckboxVisible],
   );
 
   const onSubmitInput = useCallback(() => {
     const isLastStage = stage === STAGES.note;
     if (isLastStage) {
-      props.onSubmit({ amount, category, note, date, splitWith });
+      props.onSubmit({
+        amount,
+        category,
+        note,
+        date,
+        splitWith,
+        shouldRememberNote,
+      });
     }
     setstage(stage + 1);
     animateSlide();
-  }, [stage, amount, category, note]);
+  }, [stage, amount, category, note, shouldRememberNote]);
 
   const onCancel = useCallback(() => {
     props.onClose();
@@ -152,6 +177,24 @@ export default function AddTransactionModal(props) {
           enterKeyHint="next"
           returnKeyType="next"
         />
+        {rememberCheckboxVisible && (
+          <BouncyCheckbox
+            size={25}
+            fillColor={colors.blue}
+            unfillColor="white"
+            style={styles.noteCheckbox}
+            textComponent={
+              <Text style={styles.noteCheckboxLabel}>Remember</Text>
+            }
+            onPress={setShouldRememberNote}
+          />
+        )}
+        {props.notes?.length && (
+          <CategoriesList
+            categories={props.notes}
+            onSelectedCategoryChange={onInputChange}
+          />
+        )}
       </StageWrapper>
       <Modal
         animationType="slide"
@@ -174,6 +217,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     borderColor: 'green',
     width: `${Object.keys(STAGES).length * 100}%`,
+  },
+  noteCheckboxLabel: {
+    color: colors.grey,
+    marginLeft: 10,
+  },
+  noteCheckbox: {
+    marginTop: 20,
+    marginBottom: 40,
   },
   splitBtn: {
     height: 40,

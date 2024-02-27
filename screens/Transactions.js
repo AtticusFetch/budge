@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, Modal, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -43,13 +44,15 @@ export default function Transactions() {
   const onSubmitTransaction = useCallback(async (transaction) => {
     setisAddTransactionModalVisible(false);
     const updatedUser = await createTransactionForUser(transaction, user.id);
-    dispatch(userActions.set(updatedUser));
+    dispatch(userActions.update(updatedUser));
   }, []);
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={transactions}
+        data={transactions.sort((a, b) =>
+          moment(a.date).isBefore(moment(b.date)) ? 1 : -1,
+        )}
         style={styles.list}
         onRefresh={onRefresh}
         refreshing={refreshing}
@@ -75,6 +78,7 @@ export default function Transactions() {
           onClose={onAddTransactionClose}
           onSubmit={onSubmitTransaction}
           friends={user.friends}
+          notes={user.personalNotes}
         />
       </Modal>
     </View>
