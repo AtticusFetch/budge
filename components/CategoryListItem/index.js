@@ -23,7 +23,7 @@ export const CategoryListItem = (props) => {
         {category.icon && (
           <Icon color={colors.grey} name={category.icon} size={20} />
         )}
-        <Text style={styles.label}>{category.name}</Text>
+        <Text style={styles.label}>{category.name || category}</Text>
       </ColorButton>
     </View>
   );

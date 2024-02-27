@@ -30,6 +30,7 @@ const HomeStackTabs = () => (
   <Tab.Navigator
     screenOptions={{
       tabBarShowLabel: false,
+      headerShown: false,
     }}
   >
     <Tab.Screen
@@ -84,6 +85,7 @@ export default function App() {
               <Stack.Screen
                 options={{
                   headerBackVisible: false,
+                  headerShown: false,
                 }}
                 name="Home"
                 component={HomeStackTabs}

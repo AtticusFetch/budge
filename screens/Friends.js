@@ -1,9 +1,9 @@
-import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Modal,
+  SafeAreaView,
   StyleSheet,
   Text,
   View,
@@ -109,7 +109,7 @@ export default function Home(props) {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {isLoading ? (
         <ActivityIndicator size="large" color={colors.orange} />
       ) : (
@@ -129,13 +129,21 @@ export default function Home(props) {
             }}
             keyExtractor={(friend) => friend?.id || friend?.username}
           />
-          <View style={styles.addButton}>
-            <ColorButton colorName="blue" onPress={onAddFriendPress}>
+          <View style={styles.addButtonWrapper}>
+            <ColorButton
+              childrenWrapperStyle={styles.addButton}
+              colorName="blue"
+              onPress={onAddFriendPress}
+            >
               <Icon color={colors.blue} name="plus" size={30} />
             </ColorButton>
           </View>
-          <View style={styles.requestsButton}>
-            <ColorButton colorName="grey" onPress={onViewRequestsPress}>
+          <View style={styles.requestsButtonWrapper}>
+            <ColorButton
+              childrenWrapperStyle={styles.requestsButton}
+              colorName="grey"
+              onPress={onViewRequestsPress}
+            >
               <Icon color={colors.red} name="user-plus" size={30} />
               {!!user.friendRequests?.length && (
                 <View style={styles.requestsNotification}>
@@ -175,7 +183,7 @@ export default function Home(props) {
           onDeclineRequest={onDeclineRequest}
         />
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -189,14 +197,26 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
   },
   addButton: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    borderTopLeftRadius: 35,
+    borderBottomLeftRadius: 35,
+  },
+  requestsButtonWrapper: {
+    position: 'absolute',
+    bottom: '18%',
+    right: 0,
+  },
+  addButtonWrapper: {
     position: 'absolute',
     bottom: '7%',
-    right: '10%',
+    right: 0,
   },
   requestsButton: {
-    position: 'absolute',
-    bottom: '7%',
-    left: '10%',
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    borderTopLeftRadius: 35,
+    borderBottomLeftRadius: 35,
   },
   requestsNotification: {
     position: 'absolute',

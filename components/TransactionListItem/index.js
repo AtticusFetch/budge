@@ -7,7 +7,7 @@ import { colors } from '../../utils/colors';
 import { ExpandableButton } from '../ExpandableButton';
 
 export const TransactionListItem = (props) => {
-  const { note, amount, category, date, splitWith } = props;
+  const { note, amount, category, date, splitWith, tips } = props;
   const isPositiveFlow = amount <= 0;
   const formattedAmount = numbro(0 - amount).formatCurrency({ mantissa: 2 });
 
@@ -31,6 +31,13 @@ export const TransactionListItem = (props) => {
             {!!splitWith?.length && (
               <View style={[styles.label, styles.splitLabelContainer]}>
                 <Text style={styles.labelText}>Split</Text>
+              </View>
+            )}
+            {!!tips && (
+              <View style={[styles.label, styles.tipsLabelContainer]}>
+                <Text style={[styles.labelText, styles.tipsLabelText]}>
+                  Tip: {tips}
+                </Text>
               </View>
             )}
             <View style={[styles.label, styles.categoryNameContainer]}>
@@ -62,6 +69,12 @@ const styles = StyleSheet.create({
   },
   splitLabelContainer: {
     backgroundColor: colors.yellow,
+  },
+  tipsLabelContainer: {
+    backgroundColor: colors.lightBlue,
+  },
+  tipsLabelText: {
+    color: 'white',
   },
   labelText: {
     fontSize: 10,

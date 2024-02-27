@@ -13,13 +13,15 @@ const splitIntoRows = (countPerRow, arr = []) => {
   return rows;
 };
 
+const getCategoryId = (category) => category?.id || category?.name || category;
+
 export const CategoriesList = (props) => {
   const { categories, onSelectedCategoryChange } = props;
   const [selectedCategory, setselectedCategory] = useState(null);
   const splitCategories = splitIntoRows(2, categories);
   const onItemPress = useCallback(
     (category) => {
-      if (selectedCategory?.id === category.id) {
+      if (getCategoryId(selectedCategory) === getCategoryId(category)) {
         setselectedCategory(null);
         onSelectedCategoryChange(null);
       } else {
@@ -37,8 +39,10 @@ export const CategoriesList = (props) => {
             <CategoryListItem
               onPress={onItemPress}
               size="slim"
-              key={category.id}
-              selected={selectedCategory?.id === category.id}
+              key={getCategoryId(category)}
+              selected={
+                getCategoryId(selectedCategory) === getCategoryId(category)
+              }
               category={category}
             />
           ))}

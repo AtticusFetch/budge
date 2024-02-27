@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
-import { FlatList, Modal, StyleSheet, View } from 'react-native';
+import { FlatList, Modal, SafeAreaView, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
 import { ColorButton } from '../components/ColorButton';
@@ -48,7 +48,7 @@ export default function Transactions() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={transactions.sort((a, b) =>
           moment(a.date).isBefore(moment(b.date)) ? 1 : -1,
@@ -61,8 +61,12 @@ export default function Transactions() {
         }}
         keyExtractor={(transaction) => transaction?.id || transaction?.amount}
       />
-      <View style={styles.addButton}>
-        <ColorButton colorName="blue" onPress={onAddTransactionPress}>
+      <View style={styles.addButtonWrapper}>
+        <ColorButton
+          childrenWrapperStyle={styles.addButton}
+          colorName="blue"
+          onPress={onAddTransactionPress}
+        >
           <Icon color={colors.blue} name="plus" size={30} />
         </ColorButton>
       </View>
@@ -81,7 +85,7 @@ export default function Transactions() {
           notes={user.personalNotes}
         />
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -96,9 +100,15 @@ const styles = StyleSheet.create({
     width: '70%',
     paddingHorizontal: 20,
   },
-  addButton: {
+  addButtonWrapper: {
     position: 'absolute',
     bottom: '7%',
-    right: '10%',
+    right: 0,
+  },
+  addButton: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    borderTopLeftRadius: 35,
+    borderBottomLeftRadius: 35,
   },
 });
