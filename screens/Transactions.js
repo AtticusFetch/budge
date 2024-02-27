@@ -141,6 +141,10 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderTopLeftRadius: 35,
     borderBottomLeftRadius: 35,
+    shadowColor: colors.grey,
+    shadowOffset: { width: -2, height: -2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
   section: {
     backgroundColor: colors.blue,
@@ -149,6 +153,10 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
+    shadowColor: colors.grey,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
   sectionLabel: {
     textAlign: 'center',
