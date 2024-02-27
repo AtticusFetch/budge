@@ -16,7 +16,12 @@ import { useUserContext, userActions } from '../context/User';
 import AddFriendModal from '../modals/AddFriendModal';
 import FriendRequestsModal from '../modals/FriendRequestsModal';
 import { colors } from '../utils/colors';
-import { acceptRequest, addFriend, declineRequest } from '../utils/plaidApi';
+import {
+  acceptRequest,
+  addFriend,
+  declineRequest,
+  removeFriend,
+} from '../utils/plaidApi';
 
 export default function Home(props) {
   const {
@@ -48,36 +53,60 @@ export default function Home(props) {
     setIsRequestsModalVisible(false);
   }, [user]);
 
-  const onSubmitAddFriend = useCallback(async (username) => {
-    setaddFriendError(null);
-    const updatedUser = await addFriend(username, user);
+  const onSubmitAddFriend = useCallback(
+    async (username) => {
+      setaddFriendError(null);
+      const updatedUser = await addFriend(username, user);
 
-    if (updatedUser.error) {
-      setaddFriendError(updatedUser.error);
-    } else {
-      dispatch(userActions.set(updatedUser));
-      onAddFriendClose();
-    }
-  }, []);
+      if (updatedUser.error) {
+        setaddFriendError(updatedUser.error);
+      } else {
+        dispatch(userActions.update(updatedUser));
+        onAddFriendClose();
+      }
+    },
+    [user],
+  );
 
-  const onAcceptRequest = useCallback(async (requestId) => {
-    const updatedUser = await acceptRequest(requestId, user.id);
+  const onAcceptRequest = useCallback(
+    async (requestId) => {
+      const updatedUser = await acceptRequest(requestId, user.id);
 
-    if (updatedUser.error) {
-      setaddFriendError(updatedUser.error);
-    } else {
-      dispatch(userActions.set(updatedUser));
-    }
-  }, []);
-  const onDeclineRequest = useCallback(async (requestId) => {
-    const updatedUser = await declineRequest(requestId, user.id);
+      if (updatedUser.error) {
+        setaddFriendError(updatedUser.error);
+      } else {
+        dispatch(userActions.update(updatedUser));
+      }
+    },
+    [user],
+  );
+  const onDeclineRequest = useCallback(
+    async (requestId) => {
+      const updatedUser = await declineRequest(requestId, user.id);
 
-    if (updatedUser.error) {
-      setaddFriendError(updatedUser.error);
-    } else {
-      dispatch(userActions.set(updatedUser));
-    }
-  }, []);
+      if (updatedUser.error) {
+        setaddFriendError(updatedUser.error);
+      } else {
+        dispatch(userActions.update(updatedUser));
+      }
+    },
+    [user],
+  );
+
+  const onDeleteFriend = useCallback(
+    async (friendId) => {
+      setIsLoading(true);
+      const updatedUser = await removeFriend(friendId, user.id);
+      setIsLoading(false);
+
+      if (updatedUser.error) {
+        console.error(updatedUser.error);
+      } else {
+        dispatch(userActions.update(updatedUser));
+      }
+    },
+    [user],
+  );
 
   return (
     <View style={styles.container}>
@@ -91,7 +120,12 @@ export default function Home(props) {
             onRefresh={onRefresh}
             refreshing={refreshing}
             renderItem={(friend) => {
-              return <FriendListItem {...friend.item} />;
+              return (
+                <FriendListItem
+                  onDeleteFriend={onDeleteFriend}
+                  {...friend.item}
+                />
+              );
             }}
             keyExtractor={(friend) => friend?.id || friend?.username}
           />

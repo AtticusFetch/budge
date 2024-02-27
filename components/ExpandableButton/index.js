@@ -10,6 +10,7 @@ export const ExpandableButton = (props) => {
     LayoutAnimation.configureNext({
       duration: 700,
       update: { type: 'spring', springDamping: 0.4 },
+      create: { type: 'linear', property: 'opacity' },
     });
     setExpanded(!expanded);
   }, [expanded]);

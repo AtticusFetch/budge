@@ -43,6 +43,7 @@ export const UserProvider = ({ children }) => {
 
 export const userActions = {
   set: (payload) => ({ type: ACTIONS.SET, payload }),
+  update: (payload) => ({ type: ACTIONS.UPDATE, payload }),
 };
 
 export const useUserContext = () => useContext(UserContext);

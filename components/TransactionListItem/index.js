@@ -29,11 +29,11 @@ export const TransactionListItem = (props) => {
           {date && <Text>{moment(date).format('MMM D, YYYY')}</Text>}
           <View style={styles.labelsContainer}>
             {!!splitWith?.length && (
-              <View style={styles.splitLabelContainer}>
+              <View style={[styles.label, styles.splitLabelContainer]}>
                 <Text style={styles.labelText}>Split</Text>
               </View>
             )}
-            <View style={styles.categoryNameContainer}>
+            <View style={[styles.label, styles.categoryNameContainer]}>
               <Text style={styles.categoryName}>{category.name}</Text>
             </View>
           </View>
@@ -44,14 +44,16 @@ export const TransactionListItem = (props) => {
 };
 
 const styles = StyleSheet.create({
-  categoryNameContainer: {
-    opacity: 0.5,
-    backgroundColor: colors.grey,
+  label: {
     borderRadius: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,
     maxHeight: 18,
     marginTop: 8,
+  },
+  categoryNameContainer: {
+    opacity: 0.5,
+    backgroundColor: colors.grey,
   },
   labelsContainer: {
     flexDirection: 'row',
@@ -60,11 +62,6 @@ const styles = StyleSheet.create({
   },
   splitLabelContainer: {
     backgroundColor: colors.yellow,
-    borderRadius: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    maxHeight: 18,
-    marginTop: 8,
   },
   labelText: {
     fontSize: 10,

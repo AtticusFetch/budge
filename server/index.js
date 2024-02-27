@@ -21,6 +21,7 @@ const { getUserById } = require('./api/getUserById');
 const { postInfo } = require('./api/info');
 const { postUser } = require('./api/postUser');
 const { postUserBudget } = require('./api/postUserBudget');
+const { removeFriend } = require('./api/removeFriend');
 const { sendFriendRequest } = require('./api/sendFriendRequest');
 const { signOutUser } = require('./api/signOutUser');
 const { signUpUser } = require('./api/signUp');
@@ -62,6 +63,7 @@ app.post('/api/user/signOut', signOutUser);
 app.post('/api/user/friend', sendFriendRequest);
 app.post('/api/user/friend/accept', acceptFriendRequest);
 app.post('/api/user/friend/decline', declineFriendRequest);
+app.post('/api/user/friend/remove', removeFriend);
 
 app.post('/api/user/transaction/create', createUserTransaction);
 

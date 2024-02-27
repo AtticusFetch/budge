@@ -2,15 +2,15 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { PlaidLink } from './../components/PlaidLink';
-import { useUserContext, userActions } from './../context/User';
-import { signOutUser, getCategories } from './../utils/plaidApi';
 import { ColorButton } from '../components/ColorButton';
+import { PlaidLink } from '../components/PlaidLink';
 import { categoriesActions, useCategoriesContext } from '../context/Categories';
+import { useUserContext, userActions } from '../context/User';
 import { clearUserSession } from '../utils/asyncStorage';
 import { colors } from '../utils/colors';
+import { signOutUser, getCategories } from '../utils/plaidApi';
 
-export default function Home(props) {
+export default function Settings(props) {
   const {
     state: { user },
     dispatch: dispatchUserAction,
@@ -39,9 +39,8 @@ export default function Home(props) {
   }, [user]);
 
   const signOut = useCallback(async () => {
-    console.log('=== user.username', user.username);
     await signOutUser(user.username);
-    dispatchUserAction(userActions.set(null));
+    dispatchUserAction(userActions.set());
     clearUserSession();
     props.navigation.navigate('Sign In', { signedOut: true });
   }, [user]);

@@ -61,6 +61,13 @@ export const acceptRequest = (requestId, userId) => {
   });
 };
 
+export const removeFriend = (friendId, userId) => {
+  return postToApi('user/friend/remove', {
+    friendId,
+    userId,
+  });
+};
+
 export const declineRequest = (requestId, userId) => {
   return postToApi('user/friend/decline', {
     requestId,

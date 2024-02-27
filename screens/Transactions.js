@@ -12,13 +12,13 @@ import { createTransactionForUser } from '../utils/plaidApi';
 
 export default function Transactions() {
   const {
-    state: { user },
+    state: { user = {} },
     dispatch,
   } = useUserContext();
   const {
     state: { categories },
   } = useCategoriesContext();
-  const { transactions } = user;
+  const { transactions = [] } = user;
   const [refreshing, setRefreshing] = useState(false);
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
     useState(false);
