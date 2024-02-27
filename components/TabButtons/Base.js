@@ -1,16 +1,22 @@
+import { FontAwesome6, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
 
 import { colors } from '../../utils/colors';
+
+const IconSet = {
+  Feather,
+  FA6: FontAwesome6,
+};
 
 export const BaseBtn = (props) => {
   const [isFocused, setIsFocused] = useState(false);
   const jumpAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
   const { index, routeNames } = navigation.getState();
-  const { size, iconName, style } = props;
+  const { size, iconName, style, iconSet = 'Feather' } = props;
+  const IconComp = IconSet[iconSet];
   useEffect(() => {
     const toRoute = props.to.split('/').pop();
     const currentRoute = routeNames[index];
@@ -42,7 +48,7 @@ export const BaseBtn = (props) => {
           ],
         }}
       >
-        <Icon
+        <IconComp
           color={isFocused ? colors.red : colors.blue}
           name={iconName}
           size={size || 35}
