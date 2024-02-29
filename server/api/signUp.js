@@ -19,7 +19,7 @@ const signUpUser = async (request, response) => {
   USER_POOL.signUp(username, password, attributeList, null, (err, result) => {
     if (err) {
       response.json(err);
-      console.log(err);
+      console.error(err);
       return;
     }
     const cognitoUser = result.user;

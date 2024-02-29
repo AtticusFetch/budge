@@ -1,75 +1,56 @@
 import numbro from 'numbro';
 import { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { LabeledCheckbox } from '../../../components/LabeledCheckbox';
 import { StageWrapper } from '../../../components/ModalStageWrapper';
 import { StageTextInput } from '../../../components/TextInput';
-import { WEEKS_IN_MONTH, WEEKS_IN_YEAR } from '../../../utils/constants';
+import { colors } from '../../../utils/colors';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import { globalStyles } from '../../../utils/globalStyles';
 
-const SALARY_TYPES = {
-  annual: 'annual',
-  monthly: 'monthly',
-  semiMonthly: 'semiMonthly',
-  weekly: 'weekly',
+const SPLIT_AMOUNT = {
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 5,
 };
 
-export const IncomeStage = (props) => {
-  const { onChange, income } = props;
-  const [checkedSalaryType, setCheckedSalaryType] = useState(null);
+export const SportStage = (props) => {
+  const { onChange, sport } = props;
+  const [splitAmount, setSplitAmount] = useState(null);
 
   const onAnnualChecboxPress = useCallback(() => {
-    setCheckedSalaryType(SALARY_TYPES.annual);
+    setSplitAmount(SPLIT_AMOUNT['2']);
   }, []);
   const onMonthlyChecboxPress = useCallback(() => {
-    setCheckedSalaryType(SALARY_TYPES.monthly);
+    setSplitAmount(SPLIT_AMOUNT['3']);
   }, []);
   const onSemiMonthlyChecboxPress = useCallback(() => {
-    setCheckedSalaryType(SALARY_TYPES.semiMonthly);
+    setSplitAmount(SPLIT_AMOUNT['4']);
   }, []);
   const onWeeklyChecboxPress = useCallback(() => {
-    setCheckedSalaryType(SALARY_TYPES.weekly);
+    setSplitAmount(SPLIT_AMOUNT['5']);
   }, []);
 
   const onSubmitStage = useCallback(() => {
-    if (!income) {
-      props.stageProps.onSubmitStage();
-      return;
-    }
-    const incomeValue = parseFloat(income);
-    let weeklyMultiplier = 1;
-    switch (checkedSalaryType) {
-      case SALARY_TYPES.annual:
-        weeklyMultiplier = 1 / WEEKS_IN_YEAR;
-        break;
-      case SALARY_TYPES.monthly:
-        weeklyMultiplier = 1 / WEEKS_IN_MONTH;
-        break;
-      case SALARY_TYPES.semiMonthly:
-        weeklyMultiplier = 1 / (WEEKS_IN_MONTH / 2);
-        break;
-      case SALARY_TYPES.weekly:
-        weeklyMultiplier = 1;
-        break;
-    }
-    const weeklyIncome = incomeValue * weeklyMultiplier;
+    const sportValue = parseFloat(sport);
+    const splitValue = parseFloat(splitAmount);
     props.stageProps.onSubmitStage(
-      numbro(weeklyIncome).format({ mantissa: 2 }),
+      numbro(sportValue / splitValue).format({ mantissa: 2 }),
     );
-  }, [income, props.stageProps.onSubmitStage, checkedSalaryType]);
+  }, [splitAmount, sport, props.stageProps.onSubmitStage]);
 
   return (
     <StageWrapper
       {...props.stageProps}
       onSubmitStage={onSubmitStage}
       contentWrapperStyle={styles.contentWrapperStyle}
-      header="Your paycheck:"
+      header="Sport Bills:"
     >
       <StageTextInput
         onChange={onChange}
-        value={income}
+        value={sport}
         placeholder={formatCurrency(0)}
         autoFocus
         keyboardType="numeric"
@@ -77,28 +58,29 @@ export const IncomeStage = (props) => {
         returnKeyType="done"
       />
       <View style={styles.checkboxContainer}>
+        <Text style={styles.splitLabel}>Splitting with someone?</Text>
         <View style={globalStyles.row}>
           <LabeledCheckbox
-            isChecked={checkedSalaryType === SALARY_TYPES.annual}
+            isChecked={splitAmount === SPLIT_AMOUNT['2']}
             onPress={onAnnualChecboxPress}
-            label="Annual"
+            label="2-way"
           />
           <LabeledCheckbox
-            isChecked={checkedSalaryType === SALARY_TYPES.monthly}
+            isChecked={splitAmount === SPLIT_AMOUNT['3']}
             onPress={onMonthlyChecboxPress}
-            label="Monthly"
+            label="3-way"
           />
         </View>
         <View style={globalStyles.row}>
           <LabeledCheckbox
-            isChecked={checkedSalaryType === SALARY_TYPES.semiMonthly}
+            isChecked={splitAmount === SPLIT_AMOUNT['4']}
             onPress={onSemiMonthlyChecboxPress}
-            label="Semi Monthly"
+            label="4-way"
           />
           <LabeledCheckbox
-            isChecked={checkedSalaryType === SALARY_TYPES.weekly}
+            isChecked={splitAmount === SPLIT_AMOUNT['5']}
             onPress={onWeeklyChecboxPress}
-            label="Weekly"
+            label="5-way"
           />
         </View>
       </View>
@@ -112,10 +94,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: '100%',
   },
-  contentWrapperStyle: {},
+  contentWrapperStyle: {
+    flex: 0.6,
+  },
   checkboxContainer: {
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  splitLabel: {
+    color: colors.grey,
+    marginBottom: 10,
+    marginTop: 30,
   },
 });

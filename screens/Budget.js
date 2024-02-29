@@ -1,14 +1,5 @@
-import numbro from 'numbro';
 import { useCallback, useState } from 'react';
-import {
-  Keyboard,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BudgetInfo } from '../components/BudgetInfo';
@@ -22,6 +13,7 @@ import { updateUserBudget } from '../utils/plaidApi';
 export default function Budget(props) {
   const {
     state: { user = {} },
+    dispatch,
   } = useUserContext();
   const [isSetupBudgetModalVisible, setIsSetupBudgetModalVisible] =
     useState(false);
@@ -34,8 +26,12 @@ export default function Budget(props) {
     setIsSetupBudgetModalVisible(true);
   }, []);
 
-  const onSubmitBudget = useCallback((budgetData) => {
-    console.log('budgetData', budgetData);
+  const onSubmitBudget = useCallback(async (budgetData) => {
+    const updatedUser = await updateUserBudget({
+      userId: user.id,
+      budget: budgetData,
+    });
+    dispatch(userActions.update(updatedUser));
   }, []);
 
   return (

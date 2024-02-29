@@ -18,7 +18,7 @@ const verifyUser = async (request, response) => {
     await verifier.verify(token);
     response.json({ isValid: true });
   } catch (e) {
-    console.log('Token not valid!', e);
+    console.error('Token not valid!', e);
     response.json({ isValid: false });
   }
 };

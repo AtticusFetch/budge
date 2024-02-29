@@ -19,23 +19,18 @@ const SPLIT_AMOUNT = {
 export const RentStage = (props) => {
   const { onChange, rent } = props;
   const [splitAmount, setSplitAmount] = useState(null);
-  const [error, setError] = useState(null);
 
   const onAnnualChecboxPress = useCallback(() => {
     setSplitAmount(SPLIT_AMOUNT['2']);
-    console.log('setSplitAmount', 2);
   }, []);
   const onMonthlyChecboxPress = useCallback(() => {
     setSplitAmount(SPLIT_AMOUNT['3']);
-    console.log('setSplitAmount', 3);
   }, []);
   const onSemiMonthlyChecboxPress = useCallback(() => {
     setSplitAmount(SPLIT_AMOUNT['4']);
-    console.log('setSplitAmount', 4);
   }, []);
   const onWeeklyChecboxPress = useCallback(() => {
     setSplitAmount(SPLIT_AMOUNT['5']);
-    console.log('setSplitAmount', 5);
   }, []);
 
   const onSubmitStage = useCallback(() => {
@@ -60,7 +55,6 @@ export const RentStage = (props) => {
       <StageTextInput
         onChange={onChange}
         value={rent}
-        hasError={error}
         placeholder={formatCurrency(0)}
         autoFocus
         keyboardType="numeric"

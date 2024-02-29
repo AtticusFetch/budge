@@ -1,18 +1,12 @@
-import numbro from 'numbro';
 import { useCallback, useRef, useState } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Easing,
-  LayoutAnimation,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
 
 import { CarInsuranceStage } from './Stages/CarInsurance';
 import { CarPaymentStage } from './Stages/CarPayment';
 import { IncomeStage } from './Stages/Income';
 import { RentStage } from './Stages/Rent';
+import { SportStage } from './Stages/Sport';
+import { UtilitiesStage } from './Stages/Utilities';
 
 const deviceWidth = Dimensions.get('window').width;
 
@@ -21,13 +15,15 @@ const STAGES = {
   rent: 2,
   carPayment: 3,
   carInsurance: 4,
-  //   utilities: 5,
-  //   sport: 6,
+  utilities: 5,
+  sport: 6,
 };
 
 export const SetupBudgetModal = (props) => {
   const [income, setIncome] = useState('');
   const [rent, setRent] = useState('');
+  const [sport, setSport] = useState('');
+  const [utilities, setUtilities] = useState('');
   const [carPayment, setCarPayment] = useState('');
   const [carInsurance, setCarInsurance] = useState('');
   const [stage, setstage] = useState(STAGES.income);
@@ -64,6 +60,12 @@ export const SetupBudgetModal = (props) => {
         case STAGES.carInsurance:
           setCarInsurance(e);
           break;
+        case STAGES.utilities:
+          setUtilities(e);
+          break;
+        case STAGES.sport:
+          setSport(e);
+          break;
       }
     },
     [stage],
@@ -73,17 +75,22 @@ export const SetupBudgetModal = (props) => {
     (finalValue) => {
       const isLastStage = stage === STAGES.sport;
       if (isLastStage) {
-        props.onSubmit({});
+        props.onSubmit({
+          income,
+          rent,
+          carPayment,
+          carInsurance,
+          utilities,
+          sport,
+        });
       }
-      console.log(typeof finalValue);
       if (typeof finalValue !== 'undefined') {
         onInputChange(finalValue);
       }
-      console.log('increase stage', stage);
       setstage(stage + 1);
       animateSlide();
     },
-    [stage, income, rent, carPayment, carInsurance],
+    [stage, income, rent, carPayment, carInsurance, utilities, sport],
   );
 
   const onCancel = useCallback(() => {
@@ -113,6 +120,16 @@ export const SetupBudgetModal = (props) => {
         onChange={onInputChange}
         stageProps={stageProps}
         carInsurance={carInsurance}
+      />
+      <UtilitiesStage
+        onChange={onInputChange}
+        stageProps={stageProps}
+        utilities={utilities}
+      />
+      <SportStage
+        onChange={onInputChange}
+        stageProps={stageProps}
+        sport={sport}
       />
     </View>
   );
