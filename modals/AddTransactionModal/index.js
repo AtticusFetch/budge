@@ -161,15 +161,4 @@ const styles = StyleSheet.create({
     borderColor: 'green',
     width: `${Object.keys(STAGES).length * 100}%`,
   },
-  overlay: {
-    position: 'absolute',
-    flex: 1,
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'grey',
-    opacity: 0.5,
-    zIndex: 99999,
-  },
 });

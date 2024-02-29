@@ -1,109 +1,89 @@
 import numbro from 'numbro';
 import { useCallback, useState } from 'react';
-import { Modal, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Keyboard,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BudgetInfo } from '../components/BudgetInfo';
 import { ColorButton } from '../components/ColorButton';
+import { DismissKeyboard } from '../components/DismissKeyboard';
 import { useUserContext, userActions } from '../context/User';
+import { SetupBudgetModal } from '../modals/SetupBudgetModal';
 import { colors } from '../utils/colors';
 import { updateUserBudget } from '../utils/plaidApi';
 
-export default function Budget({ navigation }) {
+export default function Budget(props) {
   const {
     state: { user = {} },
   } = useUserContext();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [budgetInputValue, setBudgetInputValue] = useState(user.budget || 0);
-  const setBudget = useCallback(() => {
-    setModalVisible(true);
+  const [isSetupBudgetModalVisible, setIsSetupBudgetModalVisible] =
+    useState(false);
+
+  const closeSetupBudgetModal = useCallback(() => {
+    setIsSetupBudgetModalVisible(false);
   }, []);
-  const onChangeText = useCallback((e) => {
-    setBudgetInputValue(e);
+
+  const showSetupBudgetModal = useCallback(() => {
+    setIsSetupBudgetModalVisible(true);
   }, []);
-  const onSaveBudget = useCallback(() => {
-    updateUserBudget({ budget: budgetInputValue, userId: user.id }).then(
-      (u) => {
-        setBudgetInputValue(u.budget);
-        userActions.set(u);
-      },
-    );
-    setModalVisible(false);
-  }, [budgetInputValue]);
+
+  const onSubmitBudget = useCallback((budgetData) => {
+    console.log('budgetData', budgetData);
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Text>
-        Current Budget:{' '}
-        {numbro(budgetInputValue).formatCurrency({ mantissa: 2 })}
-      </Text>
-      <ColorButton text="Set Budget" onPress={setBudget} />
+    <SafeAreaView style={styles.container}>
+      {user.budget ? (
+        <BudgetInfo budget={user.budget} />
+      ) : (
+        <View style={styles.noBudgetContainer}>
+          <Text style={styles.noBudgetText}>No budget setup yet</Text>
+          <ColorButton onPress={showSetupBudgetModal} text="Setup Budget" />
+        </View>
+      )}
       <Modal
         animationType="slide"
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}
+        visible={isSetupBudgetModalVisible}
+        style={styles.modal}
+        transparent
+        onRequestClose={closeSetupBudgetModal}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.inputWrapper}>
-              <Text style={styles.modalText}>Set Monthly Budget</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                onChangeText={onChangeText}
-                autoFocus
-                enablesReturnKeyAutomatically
-                maxLength={9}
-                textAlign="center"
-                selectionColor={colors.orange}
-              />
-            </View>
-            <ColorButton onPress={onSaveBudget} text="Save" size="slim" />
-          </View>
-        </View>
+        <DismissKeyboard>
+          <SetupBudgetModal
+            onClose={closeSetupBudgetModal}
+            onSubmit={onSubmitBudget}
+          />
+        </DismissKeyboard>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
     paddingHorizontal: 20,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
-  inputWrapper: {
-    width: '100%',
-  },
-  input: {
-    height: 60,
-    marginBottom: 180,
-    borderBottomWidth: 1,
-    padding: 10,
-    width: '100%',
-    fontSize: 20,
-    borderColor: colors.grey,
-    color: colors.grey,
-    fontWeight: 'bold',
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalView: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 20,
+  noBudgetContainer: {
     flex: 1,
     width: '100%',
-    padding: 40,
+    justifyContent: 'space-between',
+    paddingTop: '50%',
   },
-  modalText: {
-    fontSize: 20,
-    marginBottom: 15,
+  noBudgetText: {
     textAlign: 'center',
     color: colors.grey,
+    fontSize: 30,
+    opacity: 0.5,
   },
 });

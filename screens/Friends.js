@@ -133,15 +133,17 @@ export default function Home(props) {
             <ColorButton
               childrenWrapperStyle={styles.addButton}
               colorName="blue"
+              type="fill"
               onPress={onAddFriendPress}
             >
-              <Icon color={colors.blue} name="plus" size={30} />
+              <Icon color="white" name="plus" size={30} />
             </ColorButton>
           </View>
           <View style={styles.requestsButtonWrapper}>
             <ColorButton
               childrenWrapperStyle={styles.requestsButton}
               colorName="grey"
+              type="fill"
               onPress={onViewRequestsPress}
             >
               <Icon color={colors.red} name="user-plus" size={30} />
@@ -201,6 +203,10 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderTopLeftRadius: 35,
     borderBottomLeftRadius: 35,
+    shadowColor: colors.grey,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
   requestsButtonWrapper: {
     position: 'absolute',
@@ -217,6 +223,10 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderTopLeftRadius: 35,
     borderBottomLeftRadius: 35,
+    shadowColor: colors.grey,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
   requestsNotification: {
     position: 'absolute',

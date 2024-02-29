@@ -1,11 +1,37 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { colors } from '../../utils/colors';
 
 export const StageTextInput = (props) => {
   const { value, onChange, hasError, ...rest } = props;
+  const jumpAnim = useRef(new Animated.Value(0)).current;
+
+  const animateContainerError = {
+    transform: [
+      {
+        translateX: jumpAnim.interpolate({
+          inputRange: [0, 0.5, 1],
+          outputRange: [0, 10, 0],
+        }),
+      },
+    ],
+  };
+
+  useEffect(() => {
+    if (hasError) {
+      Animated.spring(jumpAnim, {
+        toValue: 1,
+        duration: 250,
+        delay: 0,
+        useNativeDriver: true,
+      }).start(() => jumpAnim.setValue(0));
+    }
+  }, [hasError]);
   return (
-    <View style={styles.inputWrapper}>
+    <Animated.View
+      style={[styles.inputWrapper, hasError && animateContainerError]}
+    >
       <TextInput
         style={[styles.input, hasError && styles.error]}
         onChangeText={onChange}
@@ -17,12 +43,12 @@ export const StageTextInput = (props) => {
         selectionColor={colors.orange}
         {...rest}
       />
-      {hasError && (
+      {hasError?.message && (
         <Text style={styles.errorMessage}>
           {hasError.message || 'Something went wrong'}
         </Text>
       )}
-    </View>
+    </Animated.View>
   );
 };
 

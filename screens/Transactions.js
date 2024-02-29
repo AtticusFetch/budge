@@ -12,6 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 
 import { ColorButton } from '../components/ColorButton';
+import { DismissKeyboard } from '../components/DismissKeyboard';
 import { TransactionListItem } from '../components/TransactionListItem';
 import { categoriesActions, useCategoriesContext } from '../context/Categories';
 import { useUserContext, userActions } from '../context/User';
@@ -65,6 +66,9 @@ export default function Transactions() {
       if (tDate.week() === moment().week()) {
         return 'This week';
       }
+      if (tDate.week() + 1 === moment().week()) {
+        return 'Last week';
+      }
       return tDate.format('MMM YYYY');
     });
     const sections = Object.keys(groupedTransactions).map((key) => ({
@@ -81,6 +85,7 @@ export default function Transactions() {
         style={styles.list}
         onRefresh={onRefresh}
         refreshing={refreshing}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => {
           return <TransactionListItem {...item} />;
         }}
@@ -104,17 +109,18 @@ export default function Transactions() {
       <Modal
         animationType="slide"
         visible={isAddTransactionModalVisible}
-        style={styles.modal}
         transparent
         onRequestClose={onAddTransactionClose}
       >
-        <AddTransactionModal
-          categories={categories}
-          onClose={onAddTransactionClose}
-          onSubmit={onSubmitTransaction}
-          friends={user.friends}
-          notes={user.personalNotes}
-        />
+        <DismissKeyboard>
+          <AddTransactionModal
+            categories={categories}
+            onClose={onAddTransactionClose}
+            onSubmit={onSubmitTransaction}
+            friends={user.friends}
+            notes={user.personalNotes}
+          />
+        </DismissKeyboard>
       </Modal>
     </SafeAreaView>
   );
