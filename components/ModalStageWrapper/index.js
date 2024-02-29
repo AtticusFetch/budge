@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.grey,
     shadowOffset: { width: 2, height: -2 },
     shadowOpacity: 0.5,
-    shadowRadius: 4,
+    shadowRadius: 2,
     justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',

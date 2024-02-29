@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import { LayoutAnimation, Modal, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BudgetInfo } from '../components/BudgetInfo';
@@ -27,6 +27,11 @@ export default function Budget(props) {
   }, []);
 
   const onSubmitBudget = useCallback(async (budgetData) => {
+    LayoutAnimation.configureNext({
+      duration: 200,
+      update: { type: 'spring', springDamping: 0.4 },
+      create: { type: 'easeInEaseOut', property: 'opacity' },
+    });
     const updatedUser = await updateUserBudget({
       userId: user.id,
       budget: budgetData,
@@ -41,7 +46,10 @@ export default function Budget(props) {
       ) : (
         <View style={styles.noBudgetContainer}>
           <Text style={styles.noBudgetText}>No budget setup yet</Text>
-          <ColorButton onPress={showSetupBudgetModal} text="Setup Budget" />
+          <ColorButton
+            onPress={showSetupBudgetModal}
+            text="Setup Monthly Budget"
+          />
         </View>
       )}
       <Modal

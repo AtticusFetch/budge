@@ -150,9 +150,10 @@ const styles = StyleSheet.create({
     shadowColor: colors.grey,
     shadowOffset: { width: -2, height: -2 },
     shadowOpacity: 0.5,
-    shadowRadius: 4,
+    shadowRadius: 2,
   },
   section: {
+    opacity: 0.5,
     backgroundColor: colors.blue,
     width: '50%',
     paddingVertical: 5,
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.grey,
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
-    shadowRadius: 4,
+    shadowRadius: 2,
   },
   sectionLabel: {
     textAlign: 'center',

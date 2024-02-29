@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.grey,
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
-    shadowRadius: 4,
+    shadowRadius: 2,
   },
   requestsButtonWrapper: {
     position: 'absolute',
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.grey,
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
-    shadowRadius: 4,
+    shadowRadius: 2,
   },
   requestsNotification: {
     position: 'absolute',

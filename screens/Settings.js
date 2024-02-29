@@ -51,7 +51,7 @@ export default function Settings(props) {
         <ActivityIndicator size="large" color={colors.orange} />
       ) : (
         <View style={styles.buttonsWrapper}>
-          <ColorButton onPress={showBudget} text="Budget" />
+          <ColorButton colorName="green" onPress={showBudget} text="Budget" />
           <ColorButton
             colorName="green"
             onPress={showTransactions}

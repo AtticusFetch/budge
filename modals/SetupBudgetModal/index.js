@@ -20,12 +20,13 @@ const STAGES = {
 };
 
 export const SetupBudgetModal = (props) => {
-  const [income, setIncome] = useState('');
-  const [rent, setRent] = useState('');
-  const [sport, setSport] = useState('');
-  const [utilities, setUtilities] = useState('');
-  const [carPayment, setCarPayment] = useState('');
-  const [carInsurance, setCarInsurance] = useState('');
+  const [income, setIncome] = useState('3500');
+  const [rent, setRent] = useState('2445');
+  const [utilities, setUtilities] = useState('200');
+  const [carPayment, setCarPayment] = useState('519');
+  const [carInsurance, setCarInsurance] = useState('250');
+  const [sport, setSport] = useState('290');
+  const [savedSplitAmount, setSavedSplitAmount] = useState(null);
   const [stage, setstage] = useState(STAGES.income);
 
   const slideOutAnim = useRef(new Animated.Value(0)).current;
@@ -72,8 +73,9 @@ export const SetupBudgetModal = (props) => {
   );
 
   const onSubmitInput = useCallback(
-    (finalValue) => {
+    (finalValue, splitAmount) => {
       const isLastStage = stage === STAGES.sport;
+      setSavedSplitAmount(splitAmount);
       if (isLastStage) {
         props.onSubmit({
           income,
@@ -110,24 +112,33 @@ export const SetupBudgetModal = (props) => {
         stageProps={stageProps}
         income={income}
       />
-      <RentStage onChange={onInputChange} stageProps={stageProps} rent={rent} />
+      <RentStage
+        savedSplitAmount={savedSplitAmount}
+        onChange={onInputChange}
+        stageProps={stageProps}
+        rent={rent}
+      />
       <CarPaymentStage
         onChange={onInputChange}
+        savedSplitAmount={savedSplitAmount}
         stageProps={stageProps}
         carPayment={carPayment}
       />
       <CarInsuranceStage
         onChange={onInputChange}
+        savedSplitAmount={savedSplitAmount}
         stageProps={stageProps}
         carInsurance={carInsurance}
       />
       <UtilitiesStage
         onChange={onInputChange}
+        savedSplitAmount={savedSplitAmount}
         stageProps={stageProps}
         utilities={utilities}
       />
       <SportStage
         onChange={onInputChange}
+        savedSplitAmount={savedSplitAmount}
         stageProps={stageProps}
         sport={sport}
       />

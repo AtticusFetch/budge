@@ -15,4 +15,13 @@ export const colors = {
     red: 'rgba(255, 111, 105, 0.1)',
     green: 'rgba(136, 216, 176, 0.1)',
   },
+  dimmed: {
+    orange: 'rgba(254, 138, 113, 0.5)',
+    grey: 'rgba(74, 78, 77, 0.5)',
+    blue: 'rgba(14, 154, 167, 0.5)',
+    lightBlue: 'rgba(61, 164, 171, 0.5)',
+    yellow: 'rgba(246, 205, 97, 0.5)',
+    red: 'rgba(255, 111, 105, 0.5)',
+    green: 'rgba(136, 216, 176, 0.5)',
+  },
 };

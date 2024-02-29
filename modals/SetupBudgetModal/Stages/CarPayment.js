@@ -1,5 +1,5 @@
 import numbro from 'numbro';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { LabeledCheckbox } from '../../../components/LabeledCheckbox';
@@ -17,29 +17,34 @@ const SPLIT_AMOUNT = {
 };
 
 export const CarPaymentStage = (props) => {
-  const { onChange, carPayment } = props;
+  const { onChange, carPayment, savedSplitAmount } = props;
   const [splitAmount, setSplitAmount] = useState(null);
+  const [split, setSplit] = useState(null);
 
-  const onAnnualChecboxPress = useCallback(() => {
+  const onTwoWayCheckboxPress = useCallback(() => {
     setSplitAmount(SPLIT_AMOUNT['2']);
   }, []);
-  const onMonthlyChecboxPress = useCallback(() => {
+  const onThreeWayCheckboxPress = useCallback(() => {
     setSplitAmount(SPLIT_AMOUNT['3']);
   }, []);
-  const onSemiMonthlyChecboxPress = useCallback(() => {
+  const onFourWayCheckboxPress = useCallback(() => {
     setSplitAmount(SPLIT_AMOUNT['4']);
   }, []);
-  const onWeeklyChecboxPress = useCallback(() => {
+  const onFiveWayCheckboxPress = useCallback(() => {
     setSplitAmount(SPLIT_AMOUNT['5']);
   }, []);
 
   const onSubmitStage = useCallback(() => {
     const carPaymentValue = parseFloat(carPayment);
-    const splitValue = parseFloat(splitAmount);
     props.stageProps.onSubmitStage(
-      numbro(carPaymentValue / splitValue).format({ mantissa: 2 }),
+      numbro(carPaymentValue / split).format({ mantissa: 2 }),
+      split,
     );
-  }, [splitAmount, carPayment, props.stageProps.onSubmitStage]);
+  }, [split, carPayment, props.stageProps.onSubmitStage, savedSplitAmount]);
+
+  useEffect(() => {
+    setSplit(splitAmount || savedSplitAmount);
+  }, [splitAmount, savedSplitAmount]);
 
   return (
     <StageWrapper
@@ -61,25 +66,25 @@ export const CarPaymentStage = (props) => {
         <Text style={styles.splitLabel}>Splitting with someone?</Text>
         <View style={globalStyles.row}>
           <LabeledCheckbox
-            isChecked={splitAmount === SPLIT_AMOUNT['2']}
-            onPress={onAnnualChecboxPress}
+            isChecked={split === SPLIT_AMOUNT['2']}
+            onPress={onTwoWayCheckboxPress}
             label="2-way"
           />
           <LabeledCheckbox
-            isChecked={splitAmount === SPLIT_AMOUNT['3']}
-            onPress={onMonthlyChecboxPress}
+            isChecked={split === SPLIT_AMOUNT['3']}
+            onPress={onThreeWayCheckboxPress}
             label="3-way"
           />
         </View>
         <View style={globalStyles.row}>
           <LabeledCheckbox
-            isChecked={splitAmount === SPLIT_AMOUNT['4']}
-            onPress={onSemiMonthlyChecboxPress}
+            isChecked={split === SPLIT_AMOUNT['4']}
+            onPress={onFourWayCheckboxPress}
             label="4-way"
           />
           <LabeledCheckbox
-            isChecked={splitAmount === SPLIT_AMOUNT['5']}
-            onPress={onWeeklyChecboxPress}
+            isChecked={split === SPLIT_AMOUNT['5']}
+            onPress={onFiveWayCheckboxPress}
             label="5-way"
           />
         </View>

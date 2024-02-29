@@ -18,7 +18,9 @@ const SALARY_TYPES = {
 
 export const IncomeStage = (props) => {
   const { onChange, income } = props;
-  const [checkedSalaryType, setCheckedSalaryType] = useState(null);
+  const [checkedSalaryType, setCheckedSalaryType] = useState(
+    SALARY_TYPES.semiMonthly,
+  );
 
   const onAnnualChecboxPress = useCallback(() => {
     setCheckedSalaryType(SALARY_TYPES.annual);

@@ -1,0 +1,11 @@
+const DAYS_IN_YEAR = 365;
+const DAYS_IN_WEEK = 7;
+const MONTHS_IN_YEAR = 12;
+const WEEKS_IN_YEAR = DAYS_IN_YEAR / DAYS_IN_WEEK;
+const WEEKS_IN_MONTH = WEEKS_IN_YEAR / MONTHS_IN_YEAR;
+
+module.exports.DAYS_IN_YEAR = DAYS_IN_YEAR;
+module.exports.DAYS_IN_WEEK = DAYS_IN_WEEK;
+module.exports.MONTHS_IN_YEAR = MONTHS_IN_YEAR;
+module.exports.WEEKS_IN_YEAR = WEEKS_IN_YEAR;
+module.exports.WEEKS_IN_MONTH = WEEKS_IN_MONTH;
