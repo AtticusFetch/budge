@@ -29,15 +29,10 @@ export default function Home(props) {
     dispatch,
   } = useUserContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [refreshing, setrefreshing] = useState(false);
   const [addFriendError, setaddFriendError] = useState(null);
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
     useState(false);
   const [isRequestsModalVisible, setIsRequestsModalVisible] = useState(false);
-
-  const onRefresh = useCallback(() => {
-    // setrefreshing(true);
-  }, [user]);
 
   const onAddFriendPress = useCallback(() => {
     setisAddTransactionModalVisible(true);
@@ -70,7 +65,7 @@ export default function Home(props) {
 
   const onAcceptRequest = useCallback(
     async (requestId) => {
-      const updatedUser = await acceptRequest(requestId, user.id);
+      const updatedUser = await acceptRequest(requestId, user?.id);
 
       if (updatedUser.error) {
         setaddFriendError(updatedUser.error);
@@ -82,7 +77,7 @@ export default function Home(props) {
   );
   const onDeclineRequest = useCallback(
     async (requestId) => {
-      const updatedUser = await declineRequest(requestId, user.id);
+      const updatedUser = await declineRequest(requestId, user?.id);
 
       if (updatedUser.error) {
         setaddFriendError(updatedUser.error);
@@ -96,7 +91,7 @@ export default function Home(props) {
   const onDeleteFriend = useCallback(
     async (friendId) => {
       setIsLoading(true);
-      const updatedUser = await removeFriend(friendId, user.id);
+      const updatedUser = await removeFriend(friendId, user?.id);
       setIsLoading(false);
 
       if (updatedUser.error) {
@@ -115,10 +110,8 @@ export default function Home(props) {
       ) : (
         <>
           <FlatList
-            data={user.friends}
+            data={user?.friends}
             style={styles.list}
-            onRefresh={onRefresh}
-            refreshing={refreshing}
             renderItem={(friend) => {
               return (
                 <FriendListItem
@@ -147,10 +140,10 @@ export default function Home(props) {
               onPress={onViewRequestsPress}
             >
               <Icon color={colors.red} name="user-plus" size={30} />
-              {!!user.friendRequests?.length && (
+              {!!user?.friendRequests?.length && (
                 <View style={styles.requestsNotification}>
                   <Text style={styles.notificationText}>
-                    {user.friendRequests.length}
+                    {user?.friendRequests.length}
                   </Text>
                 </View>
               )}
@@ -179,7 +172,7 @@ export default function Home(props) {
         onRequestClose={onViewRequestsClose}
       >
         <FriendRequestsModal
-          requests={user.friendRequests}
+          requests={user?.friendRequests}
           onClose={onViewRequestsClose}
           onAcceptRequest={onAcceptRequest}
           onDeclineRequest={onDeclineRequest}

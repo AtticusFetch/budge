@@ -10,7 +10,7 @@ const tipsPercentages = ['10%', '15%', '18%', '20%'];
 
 export default function TipsModal(props) {
   const { onDone, onClose } = props;
-  const [tipsAmount, setTipsAmount] = useState(null);
+  const [tipsAmount, setTipsAmount] = useState(props.tips || null);
 
   const onInputChange = useCallback((e) => {
     setTipsAmount(e);

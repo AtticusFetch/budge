@@ -7,6 +7,7 @@ export const CategoryStage = (props) => {
       <CategoriesList
         categories={props.categories}
         onSelectedCategoryChange={props.onChange}
+        category={props.category}
       />
     </StageWrapper>
   );

@@ -54,6 +54,13 @@ export const createTransactionForUser = (transaction, id) => {
   });
 };
 
+export const updateTransactionForUser = (transaction, id) => {
+  return postToApi('user/transaction/update', {
+    transaction,
+    userId: id,
+  });
+};
+
 export const deleteTransaction = (transactionId, userId) => {
   return postToApi('user/transaction/delete', {
     transactionId,

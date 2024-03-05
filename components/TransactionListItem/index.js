@@ -16,7 +16,9 @@ const TRANSACTION_ACTIONS = {
 const actionSheetOptions = Object.values(TRANSACTION_ACTIONS);
 
 export const TransactionListItem = (props) => {
-  const { note, amount, category, date, splitWith, tips, onDelete, id } = props;
+  const { onDelete, onEdit, ...transactionData } = props;
+  const { note, amount, category, date, splitWith, tips, id } = transactionData;
+
   const isPositiveFlow = amount <= 0;
   const isUpcoming = moment(date).isAfter(moment());
   const formattedAmount = numbro(0 - amount).formatCurrency({ mantissa: 2 });
@@ -28,7 +30,7 @@ export const TransactionListItem = (props) => {
         await onDelete(id);
         break;
       case TRANSACTION_ACTIONS.EDIT:
-        console.log(actionSheetOptions[actionIndex]);
+        await onEdit(transactionData);
         break;
     }
   }, []);

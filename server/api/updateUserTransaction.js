@@ -1,10 +1,11 @@
-const { addTransaction } = require('../db/utils');
+const { deleteTransaction, addTransaction } = require('../db/utils');
 
-const createUserTransaction = async (request, response) => {
+const updateUserTransaction = async (request, response) => {
   const { transaction, userId } = request.body;
   let result;
 
   try {
+    await deleteTransaction(transaction.id, userId);
     result = await addTransaction(transaction, userId);
   } catch (e) {
     console.error(e);
@@ -20,4 +21,4 @@ const createUserTransaction = async (request, response) => {
   response.json(result);
 };
 
-exports.createUserTransaction = createUserTransaction;
+exports.updateUserTransaction = updateUserTransaction;

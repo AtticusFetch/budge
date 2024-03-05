@@ -20,6 +20,7 @@ import AddTransactionModal from '../modals/AddTransactionModal';
 import { colors } from '../utils/colors';
 import {
   createTransactionForUser,
+  updateTransactionForUser,
   deleteTransaction,
   getCategories,
 } from '../utils/plaidApi';
@@ -35,6 +36,7 @@ export default function Transactions() {
   } = useCategoriesContext();
   const { transactions = [] } = user;
   const [refreshing] = useState(false);
+  const [transaction, setTransaction] = useState();
   const [transactionSections, setTransactionSections] = useState([]);
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
     useState(false);
@@ -56,14 +58,24 @@ export default function Transactions() {
   }, []);
 
   const onSubmitTransaction = useCallback(async (transaction) => {
+    let updatedUser;
     setisAddTransactionModalVisible(false);
-    const updatedUser = await createTransactionForUser(transaction, user.id);
+    if (transaction.id) {
+      updatedUser = await updateTransactionForUser(transaction, user.id);
+    } else {
+      updatedUser = await createTransactionForUser(transaction, user.id);
+    }
     dispatch(userActions.update(updatedUser));
   }, []);
 
   const onDeleteTransaction = useCallback(async (transactionId) => {
     const updatedUser = await deleteTransaction(transactionId, user.id);
     dispatch(userActions.update(updatedUser));
+  }, []);
+
+  const onEditTransaction = useCallback(async (transactionData) => {
+    setTransaction(transactionData);
+    onAddTransactionPress();
   }, []);
 
   useEffect(() => {
@@ -101,7 +113,11 @@ export default function Transactions() {
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => {
           return (
-            <TransactionListItem {...item} onDelete={onDeleteTransaction} />
+            <TransactionListItem
+              {...item}
+              onDelete={onDeleteTransaction}
+              onEdit={onEditTransaction}
+            />
           );
         }}
         renderSectionHeader={({ section: { title } }) => (
@@ -132,6 +148,7 @@ export default function Transactions() {
             categories={categories}
             onClose={onAddTransactionClose}
             onSubmit={onSubmitTransaction}
+            transaction={transaction}
             friends={user.friends}
             notes={user.personalNotes}
           />

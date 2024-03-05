@@ -67,15 +67,17 @@ export default function Budget(props) {
           />
         </DismissKeyboard>
       </Modal>
-      <View style={styles.addButtonWrapper}>
-        <ColorButton
-          childrenWrapperStyle={styles.addButton}
-          colorName="blue"
-          type="fill"
-        >
-          <Feather color="white" name="plus" size={30} />
-        </ColorButton>
-      </View>
+      {!!user.budget && (
+        <View style={styles.addButtonWrapper}>
+          <ColorButton
+            childrenWrapperStyle={styles.addButton}
+            colorName="blue"
+            type="fill"
+          >
+            <Feather color="white" name="plus" size={30} />
+          </ColorButton>
+        </View>
+      )}
     </SafeAreaView>
   );
 }

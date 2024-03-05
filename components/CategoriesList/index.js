@@ -18,7 +18,9 @@ const getCategoryId = (category) => category?.id || category?.name || category;
 
 export const CategoriesList = (props) => {
   const { categories, onSelectedCategoryChange } = props;
-  const [selectedCategory, setselectedCategory] = useState(null);
+  const [selectedCategory, setselectedCategory] = useState(
+    props.category || null,
+  );
   const splitCategories = splitIntoRows(
     3,
     _.sortBy(categories, (c) => parseInt(c.id, 10)),

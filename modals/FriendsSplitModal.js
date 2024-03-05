@@ -5,7 +5,9 @@ import { ColorButton } from '../components/ColorButton';
 import { colors } from '../utils/colors';
 
 export default function FriendsSplitModal(props) {
-  const [selectedFriends, setSelectedFriends] = useState([]);
+  const [selectedFriends, setSelectedFriends] = useState(
+    props.selectedFriends || [],
+  );
   const { friends = [], onDone } = props;
 
   const onDoneSelecting = useCallback(() => {
