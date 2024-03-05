@@ -1,23 +1,22 @@
 import moment from 'moment';
 import numbro from 'numbro';
 import { StyleSheet, Text, View } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
 
 import { colors } from '../../utils/colors';
 import { ExpandableButton } from '../ExpandableButton';
+import { Icon } from '../Icon';
 
 export const TransactionListItem = (props) => {
   const { note, amount, category, date, splitWith, tips } = props;
   const isPositiveFlow = amount <= 0;
   const formattedAmount = numbro(0 - amount).formatCurrency({ mantissa: 2 });
+  console.log('splitWith', splitWith);
 
   return (
     <ExpandableButton
       mainContent={
         <>
-          {category?.icon && (
-            <Icon color={colors.grey} name={category.icon} size={30} />
-          )}
+          <Icon color={colors.grey} name={category?.icon} size={30} />
           <Text style={[styles.text, isPositiveFlow && styles.positiveAmount]}>
             {formattedAmount}
           </Text>

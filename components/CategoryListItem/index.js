@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
 
 import { colors } from '../../utils/colors';
 import { ColorButton } from '../ColorButton';
+import { Icon } from '../Icon';
 
 export const CategoryListItem = (props) => {
   const { category, selected, onPress } = props;
@@ -20,9 +20,7 @@ export const CategoryListItem = (props) => {
         onPress={onItemPress}
         childrenWrapperStyle={styles.contentWrapper}
       >
-        {category.icon && (
-          <Icon color={colors.grey} name={category.icon} size={20} />
-        )}
+        <Icon color={colors.grey} name={category?.icon} size={20} />
         <Text style={styles.label}>{category.name || category}</Text>
       </ColorButton>
     </View>
@@ -31,13 +29,13 @@ export const CategoryListItem = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 150,
+    width: 110,
     flexDirection: 'column',
     alignItems: 'center',
   },
   label: {
-    fontSize: 15,
-    marginLeft: 10,
+    fontSize: 10,
+    marginLeft: 5,
   },
   button: {
     marginVertical: 0,
@@ -45,5 +43,7 @@ const styles = StyleSheet.create({
 
   contentWrapper: {
     justifyContent: 'flex-start',
+    padding: 0,
+    paddingLeft: 5,
   },
 });

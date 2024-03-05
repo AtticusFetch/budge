@@ -1,4 +1,8 @@
-const { GetCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+const {
+  GetCommand,
+  UpdateCommand,
+  ScanCommand,
+} = require('@aws-sdk/lib-dynamodb');
 
 const { ddbClient } = require('./client');
 const { TABLE_NAMES } = require('./constants');
@@ -9,6 +13,14 @@ const getDBUserById = (id) => {
     Key: {
       id,
     },
+  });
+
+  return ddbClient.send(command);
+};
+
+const getAllItems = (tableName) => {
+  const command = new ScanCommand({
+    TableName: tableName,
   });
 
   return ddbClient.send(command);
@@ -63,3 +75,4 @@ module.exports.addListItem = addListItem;
 module.exports.removeListItemByIdx = removeListItemByIdx;
 module.exports.getDBUserById = getDBUserById;
 module.exports.addUserAttribute = addUserAttribute;
+module.exports.getAllItems = getAllItems;

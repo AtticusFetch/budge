@@ -15,6 +15,7 @@ export const ColorButton = (props) => {
     transparent = false,
     childrenWrapperStyle,
     pressable = true,
+    ...rest
   } = props;
   const color = colors[colorName];
   const colorSeeThrough = colors.seeThrough[colorName];
@@ -42,19 +43,20 @@ export const ColorButton = (props) => {
       disabled={!pressable}
       onPress={onPress}
       onPressIn={() => {
-        Animated.sequence([
-          Animated.timing(buttonOpacity, {
-            toValue: 0.5,
-            duration: 100,
-            useNativeDriver: true,
-          }),
-          Animated.timing(buttonOpacity, {
-            toValue: 1,
-            duration: 100,
-            useNativeDriver: true,
-          }),
-        ]).start();
+        Animated.timing(buttonOpacity, {
+          toValue: 0.5,
+          duration: 100,
+          useNativeDriver: true,
+        }).start();
       }}
+      onPressOut={() => {
+        Animated.timing(buttonOpacity, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }).start();
+      }}
+      {...rest}
     >
       <Animated.View
         style={[

@@ -1,14 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import _ from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
-import {
-  FlatList,
-  LayoutAnimation,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../../utils/colors';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -18,6 +11,7 @@ import { TransactionListItem } from '../TransactionListItem';
 export const BudgetInfo = (props) => {
   const { budget } = props;
   const [totalIncome, setTotalIncome] = useState('');
+  const listHeight = useRef(new Animated.Value(0)).current;
   const [totalOutcome, setTotalOutcome] = useState('');
   const [expanded, setExpanded] = useState(false);
 
@@ -30,29 +24,33 @@ export const BudgetInfo = (props) => {
   }, [budget.outcome]);
 
   const expand = useCallback(() => {
-    LayoutAnimation.configureNext({
-      duration: 350,
-      update: { type: 'linear' },
-      create: { type: 'easeInEaseOut', property: 'opacity' },
-    });
+    Animated.timing(listHeight, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
     setExpanded(true);
   }, []);
   const collapse = useCallback(() => {
+    Animated.timing(listHeight, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
     setExpanded(false);
   }, []);
+
+  const lisetHeightPercent = listHeight.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+  });
 
   return (
     <View
       style={[styles.overviewHeader, expanded && styles.overviewHeaderExpanded]}
     >
       <Text style={styles.titleText}>Weekly Breakdown</Text>
-      <View
-        style={[
-          globalStyles.row,
-          styles.headerContainer,
-          expanded && styles.headerContainerExpanded,
-        ]}
-      >
+      <View style={[globalStyles.row, styles.headerContainer]}>
         <View style={[styles.headerSection, styles.incomeSection]}>
           <Feather color={colors.green} name="plus" size={30} />
           <Text style={[styles.headerText, styles.incomeText]}>
@@ -66,17 +64,15 @@ export const BudgetInfo = (props) => {
           </Text>
         </View>
       </View>
-      {expanded && (
-        <FlatList
-          data={[...budget.income, ...budget.outcome]}
-          style={styles.list}
-          showsVerticalScrollIndicator={false}
-          renderItem={(transaction, index) => {
-            return <TransactionListItem {...transaction.item} />;
-          }}
-          keyExtractor={(transaction) => transaction?.id || transaction?.amount}
-        />
-      )}
+      <Animated.FlatList
+        data={[...budget.income, ...budget.outcome]}
+        style={[styles.list, { height: lisetHeightPercent }]}
+        showsVerticalScrollIndicator={false}
+        renderItem={(transaction, index) => {
+          return <TransactionListItem {...transaction.item} />;
+        }}
+        keyExtractor={(transaction) => transaction?.id || transaction?.amount}
+      />
       <Pressable
         onPress={expanded ? collapse : expand}
         style={styles.expandBtn}
@@ -99,7 +95,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     borderColor: colors.dimmed.grey,
     borderRadius: 10,
-    flex: 0.2,
+    flex: 1,
     width: '100%',
     backgroundColor: 'white',
   },
@@ -107,7 +103,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    flex: 1,
+    flex: 0,
+    flexGrow: 0,
     paddingHorizontal: 20,
   },
   titleText: {
@@ -119,8 +116,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   expandBtn: {
-    position: 'absolute',
-    bottom: 0,
     width: '100%',
   },
   chevronIcon: {
@@ -130,11 +125,8 @@ const styles = StyleSheet.create({
     transform: [{ rotateX: '180deg' }],
   },
   headerContainer: {
-    flex: 1,
-    width: '100%',
-  },
-  headerContainerExpanded: {
     flex: 0.2,
+    width: '100%',
   },
   headerSection: {
     flex: 1,

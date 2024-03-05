@@ -1,11 +1,22 @@
 const { v4: uuidv4 } = require('uuid');
 
 const { WEEKS_IN_MONTH } = require('../constants');
-const { addUserAttribute } = require('../db/commands');
+const { addUserAttribute, getAllItems } = require('../db/commands');
+const { TABLE_NAMES } = require('../db/constants');
 
-const transformBudgetData = (data) => {
+const budgetToCategoryIdMap = {
+  income: '9',
+  rent: '7',
+  sport: '8',
+  carPayment: '10',
+  carInsurance: '11',
+  utilities: '6',
+};
+
+const transformBudgetData = (data, categories) => {
   const allData = Object.keys(data).map((k) => ({
     name: k,
+    category: categories.find((c) => c.id === budgetToCategoryIdMap[k]),
     amount:
       k === 'income'
         ? -parseFloat(data[k])
@@ -27,9 +38,10 @@ const transformBudgetData = (data) => {
 const postUserBudget = async (request, response) => {
   const { budget, userId } = request.body;
 
-  const transformedBudget = transformBudgetData(budget);
-
   try {
+    const categories = await getAllItems(TABLE_NAMES.CATEGORIES);
+
+    const transformedBudget = transformBudgetData(budget, categories.Items);
     const result = await addUserAttribute(userId, 'budget', transformedBudget);
 
     response.json(result.Attributes);

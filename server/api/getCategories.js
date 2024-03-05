@@ -1,16 +1,11 @@
-const { ScanCommand } = require('@aws-sdk/lib-dynamodb');
-
-const { ddbClient } = require('../db/client');
+const { getAllItems } = require('../db/commands');
 const { TABLE_NAMES } = require('../db/constants');
 
 const getCategories = async (request, response) => {
   let categories;
-  const command = new ScanCommand({
-    TableName: TABLE_NAMES.CATEGORIES,
-  });
 
   try {
-    categories = await ddbClient.send(command);
+    categories = await getAllItems(TABLE_NAMES.CATEGORIES);
   } catch (e) {
     console.error(e);
   }

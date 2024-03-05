@@ -78,12 +78,12 @@ export const SetupBudgetModal = (props) => {
       setSavedSplitAmount(splitAmount);
       if (isLastStage) {
         props.onSubmit({
-          income,
           rent,
+          sport,
+          income,
           carPayment,
           carInsurance,
           utilities,
-          sport,
         });
       }
       if (typeof finalValue !== 'undefined') {

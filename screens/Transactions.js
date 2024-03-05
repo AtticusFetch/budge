@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   addButtonWrapper: {
     position: 'absolute',
-    bottom: '7%',
+    bottom: 40,
     right: 0,
   },
   addButton: {
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 35,
     borderBottomLeftRadius: 35,
     shadowColor: colors.grey,
-    shadowOffset: { width: -2, height: -2 },
+    shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 2,
   },

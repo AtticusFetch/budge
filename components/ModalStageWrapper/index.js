@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
-    padding: 40,
+    padding: 30,
     borderWidth: 1,
     borderColor: colors.blue,
     borderRadius: 55,

@@ -197,6 +197,8 @@ const styles = StyleSheet.create({
   },
   list: {
     maxHeight: '80%',
+    width: '80%',
+    paddingHorizontal: 20,
   },
   addButton: {
     borderTopRightRadius: 0,
@@ -210,12 +212,12 @@ const styles = StyleSheet.create({
   },
   requestsButtonWrapper: {
     position: 'absolute',
-    bottom: '18%',
+    bottom: 120,
     right: 0,
   },
   addButtonWrapper: {
     position: 'absolute',
-    bottom: '7%',
+    bottom: 40,
     right: 0,
   },
   requestsButton: {

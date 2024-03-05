@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
 import { LayoutAnimation, Modal, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -66,6 +67,15 @@ export default function Budget(props) {
           />
         </DismissKeyboard>
       </Modal>
+      <View style={styles.addButtonWrapper}>
+        <ColorButton
+          childrenWrapperStyle={styles.addButton}
+          colorName="blue"
+          type="fill"
+        >
+          <Feather color="white" name="plus" size={30} />
+        </ColorButton>
+      </View>
     </SafeAreaView>
   );
 }
@@ -89,5 +99,20 @@ const styles = StyleSheet.create({
     color: colors.grey,
     fontSize: 30,
     opacity: 0.5,
+  },
+  addButtonWrapper: {
+    position: 'absolute',
+    bottom: 40,
+    right: 0,
+  },
+  addButton: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    borderTopLeftRadius: 35,
+    borderBottomLeftRadius: 35,
+    shadowColor: colors.grey,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
   },
 });

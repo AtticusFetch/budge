@@ -22,7 +22,7 @@ export const FriendListItem = (props) => {
             onPress={onPress}
             childrenWrapperStyle={styles.deleteBtn}
           >
-            <Icon color={colors.red} name="trash-2" size={30} />
+            <Icon color={colors.red} name="trash-2" size={20} />
           </ColorButton>
         </View>
       }
@@ -35,20 +35,22 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   buttonContainer: {
-    flex: 1,
-    width: '100%',
-    flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingRight: 20,
   },
   deleteBtnContainer: {
     marginVertical: 0,
-    width: '15%',
-    height: '80%',
     padding: 0,
+    width: 50,
+    height: 50,
   },
   deleteBtn: {
     padding: 0,
     margin: 0,
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: '500',
+    color: colors.grey,
   },
 });
