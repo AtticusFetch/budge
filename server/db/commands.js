@@ -29,7 +29,7 @@ const getAllItems = (tableName) => {
 const removeListItemByIdx = (id, listName, idx) => {
   const command = new UpdateCommand({
     TableName: TABLE_NAMES.USERS,
-    ReturnValues: 'UPDATED_NEW',
+    ReturnValues: 'ALL_NEW',
     Key: {
       id,
     },

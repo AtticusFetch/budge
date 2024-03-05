@@ -5,7 +5,7 @@ import { ColorButton } from '../ColorButton';
 
 export const ExpandableButton = (props) => {
   const [expanded, setExpanded] = useState(false);
-  const { mainContent, extraContent, ...restProps } = props;
+  const { mainContent, extraContent, style, ...restProps } = props;
 
   const onPress = useCallback(() => {
     LayoutAnimation.configureNext({
@@ -21,7 +21,7 @@ export const ExpandableButton = (props) => {
       onPress={onPress}
       colorName="blue"
       size={expanded ? 'thick' : ''}
-      style={styles.button}
+      style={[styles.button, style]}
       childrenWrapperStyle={styles.itemContainer}
       {...restProps}
     >

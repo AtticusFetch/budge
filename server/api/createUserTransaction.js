@@ -26,7 +26,13 @@ const createUserTransaction = async (request, response) => {
   try {
     result = await addListItem(userId, 'transactions', uniqueTransaction);
     await transaction.splitWith?.forEach(async (userToSplitId) => {
-      await addListItem(userToSplitId, 'transactions', uniqueTransaction);
+      await addListItem(userToSplitId, 'transactions', {
+        ...uniqueTransaction,
+        splitWith: [
+          ...uniqueTransaction.splitWith?.filter((id) => id !== userToSplitId),
+          userId,
+        ],
+      });
     });
   } catch (e) {
     console.error(e);

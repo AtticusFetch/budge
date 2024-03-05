@@ -1,19 +1,53 @@
 import moment from 'moment';
 import numbro from 'numbro';
-import { StyleSheet, Text, View } from 'react-native';
+import { useCallback } from 'react';
+import { ActionSheetIOS, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../../utils/colors';
 import { ExpandableButton } from '../ExpandableButton';
 import { Icon } from '../Icon';
 
+const TRANSACTION_ACTIONS = {
+  CANCEL: 'Cancel',
+  DELETE: 'Delete',
+  EDIT: 'Edit',
+};
+
+const actionSheetOptions = Object.values(TRANSACTION_ACTIONS);
+
 export const TransactionListItem = (props) => {
-  const { note, amount, category, date, splitWith, tips } = props;
+  const { note, amount, category, date, splitWith, tips, onDelete, id } = props;
   const isPositiveFlow = amount <= 0;
+  const isUpcoming = moment(date).isAfter(moment());
   const formattedAmount = numbro(0 - amount).formatCurrency({ mantissa: 2 });
-  console.log('splitWith', splitWith);
+  const onActionSelected = useCallback(async (actionIndex) => {
+    switch (actionSheetOptions[actionIndex]) {
+      case TRANSACTION_ACTIONS.CANCEL:
+        break;
+      case TRANSACTION_ACTIONS.DELETE:
+        await onDelete(id);
+        break;
+      case TRANSACTION_ACTIONS.EDIT:
+        console.log(actionSheetOptions[actionIndex]);
+        break;
+    }
+  }, []);
+  const onTransactionLongPress = useCallback(() => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: actionSheetOptions,
+        destructiveButtonIndex: 1,
+        cancelButtonIndex: 0,
+      },
+      onActionSelected,
+    );
+  }, []);
 
   return (
     <ExpandableButton
+      onLongPress={onTransactionLongPress}
+      colorName={isUpcoming ? 'grey' : 'blue'}
+      style={isUpcoming && { opacity: 0.5 }}
       mainContent={
         <>
           <Icon color={colors.grey} name={category?.icon} size={30} />

@@ -18,7 +18,11 @@ import { categoriesActions, useCategoriesContext } from '../context/Categories';
 import { useUserContext, userActions } from '../context/User';
 import AddTransactionModal from '../modals/AddTransactionModal';
 import { colors } from '../utils/colors';
-import { createTransactionForUser, getCategories } from '../utils/plaidApi';
+import {
+  createTransactionForUser,
+  deleteTransaction,
+  getCategories,
+} from '../utils/plaidApi';
 
 export default function Transactions() {
   const {
@@ -30,7 +34,7 @@ export default function Transactions() {
     dispatch: dispatchCategoriesAction,
   } = useCategoriesContext();
   const { transactions = [] } = user;
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing] = useState(false);
   const [transactionSections, setTransactionSections] = useState([]);
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
     useState(false);
@@ -57,16 +61,25 @@ export default function Transactions() {
     dispatch(userActions.update(updatedUser));
   }, []);
 
+  const onDeleteTransaction = useCallback(async (transactionId) => {
+    const updatedUser = await deleteTransaction(transactionId, user.id);
+    dispatch(userActions.update(updatedUser));
+  }, []);
+
   useEffect(() => {
     const sortedTransactions = _.sortBy(transactions, (t) =>
       new Date(t.date).getTime(),
     ).reverse();
     const groupedTransactions = _.groupBy(sortedTransactions, (t) => {
       const tDate = moment(t.date);
-      if (tDate.week() === moment().week()) {
+      const now = moment();
+      if (tDate.isAfter(now)) {
+        return 'Upcoming';
+      }
+      if (tDate.isSame(now, 'week')) {
         return 'This week';
       }
-      if (tDate.week() + 1 === moment().week()) {
+      if (tDate.week() + 1 === now.week()) {
         return 'Last week';
       }
       return tDate.format('MMM YYYY');
@@ -87,7 +100,9 @@ export default function Transactions() {
         refreshing={refreshing}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => {
-          return <TransactionListItem {...item} />;
+          return (
+            <TransactionListItem {...item} onDelete={onDeleteTransaction} />
+          );
         }}
         renderSectionHeader={({ section: { title } }) => (
           <View style={styles.section}>
@@ -153,12 +168,13 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   section: {
-    opacity: 0.5,
-    backgroundColor: colors.blue,
+    backgroundColor: colors.dimmed.blue,
     width: '50%',
     paddingVertical: 5,
     borderRadius: 15,
     borderTopLeftRadius: 0,
+    borderColor: colors.blue,
+    borderWidth: 1.5,
     borderBottomLeftRadius: 0,
     shadowColor: colors.grey,
     shadowOffset: { width: 1, height: 1 },

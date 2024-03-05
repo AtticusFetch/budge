@@ -13,6 +13,7 @@ const { createLinkToken } = require('./api/createLinkToken');
 const { createUser } = require('./api/createUser');
 const { createUserTransaction } = require('./api/createUserTransaction');
 const { declineFriendRequest } = require('./api/declineFriendRequest');
+const { deleteUserTransaction } = require('./api/deleteUserTransaction');
 const { exchangeToken } = require('./api/exchangeToken');
 const { getCategories } = require('./api/getCategories');
 const { getTransactions } = require('./api/getTransactions');
@@ -66,6 +67,7 @@ app.post('/api/user/friend/decline', declineFriendRequest);
 app.post('/api/user/friend/remove', removeFriend);
 
 app.post('/api/user/transaction/create', createUserTransaction);
+app.post('/api/user/transaction/delete', deleteUserTransaction);
 
 app.post('/api/budget', postUserBudget);
 
