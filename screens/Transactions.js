@@ -50,6 +50,7 @@ export default function Transactions() {
   const onRefresh = useCallback(() => {}, []);
 
   const onAddTransactionPress = useCallback(() => {
+    setTransaction();
     setisAddTransactionModalVisible(true);
   }, []);
 

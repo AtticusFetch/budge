@@ -45,18 +45,24 @@ export const TransactionListItem = (props) => {
     );
   }, []);
 
+  const hasSplit = !!splitWith?.length;
+
   return (
     <ExpandableButton
       onLongPress={onTransactionLongPress}
       colorName={isUpcoming ? 'grey' : 'blue'}
-      style={isUpcoming && { opacity: 0.5 }}
+      style={[isUpcoming && { opacity: 0.5 }]}
+      childrenWrapperStyle={styles.btnStyle}
+      mainContentStyle={styles.mainContentStyle}
       mainContent={
-        <>
+        <View
+          style={[styles.transactionWrapper, hasSplit && styles.splitBorder]}
+        >
           <Icon color={colors.grey} name={category?.icon} size={30} />
           <Text style={[styles.text, isPositiveFlow && styles.positiveAmount]}>
             {formattedAmount}
           </Text>
-        </>
+        </View>
       }
       extraContent={
         <>
@@ -73,7 +79,7 @@ export const TransactionListItem = (props) => {
             </View>
           )}
           <View style={styles.labelsContainer}>
-            {!!splitWith?.length && (
+            {hasSplit && (
               <View style={[styles.subLabel, styles.splitLabelContainer]}>
                 <Text style={styles.subLabelText}>Split</Text>
               </View>
@@ -102,6 +108,29 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     maxHeight: 18,
     marginTop: 8,
+  },
+  mainContentStyle: {
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+  btnStyle: {
+    paddingBottom: 0,
+  },
+  splitBorder: {
+    borderStartColor: colors.yellow,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderEndColor: 'transparent',
+    borderWidth: 6,
+    borderTopRightRadius: 100,
+    borderBottomRightRadius: 100,
+  },
+  transactionWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    height: '100%',
   },
   categoryNameContainer: {
     opacity: 0.5,
