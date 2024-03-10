@@ -24,7 +24,7 @@ const addCategory = async (category, userId) => {
   return result.Attributes;
 };
 
-const addTransaction = async (transaction, userId) => {
+const addTransaction = async (transaction, userId, key = 'transactions') => {
   let transactionAmount = transaction.amount;
   let personalNotes;
   if (transaction.splitWith?.length) {
@@ -45,9 +45,9 @@ const addTransaction = async (transaction, userId) => {
   let result;
 
   try {
-    result = await addListItem(userId, 'transactions', uniqueTransaction);
+    result = await addListItem(userId, key, uniqueTransaction);
     await transaction.splitWith?.forEach(async (userToSplitId) => {
-      await addListItem(userToSplitId, 'transactions', {
+      await addListItem(userToSplitId, key, {
         ...uniqueTransaction,
         splitWith: [
           ...uniqueTransaction.splitWith?.filter((id) => id !== userToSplitId),
@@ -65,8 +65,12 @@ const addTransaction = async (transaction, userId) => {
   };
 };
 
-const deleteUserTransactionById = async (user, transactionId) => {
-  const transactionToRemoveIdx = user?.transactions?.findIndex(
+const deleteUserTransactionById = async (
+  user,
+  transactionId,
+  key = 'transactions',
+) => {
+  const transactionToRemoveIdx = user?.[key]?.findIndex(
     (r) => r.id === transactionId,
   );
 
@@ -76,25 +80,33 @@ const deleteUserTransactionById = async (user, transactionId) => {
 
   const result = await removeListItemByIdx(
     user.id,
-    'transactions',
+    key,
     transactionToRemoveIdx,
   );
 
   return result;
 };
 
-const deleteTransaction = async (transactionId, userId) => {
+const deleteTransaction = async (
+  transactionId,
+  userId,
+  key = 'transactions',
+) => {
   const removingUserDb = await getDBUserById(userId);
   const removingUser = removingUserDb?.Item;
-  const transactionToRemove = removingUser?.transactions?.find(
+  const transactionToRemove = removingUser?.[key]?.find(
     (r) => r.id === transactionId,
   );
   transactionToRemove.splitWith?.forEach(async (splitterId) => {
     const splitter = await getDBUserById(splitterId);
-    await deleteUserTransactionById(splitter?.Item, transactionId);
+    await deleteUserTransactionById(splitter?.Item, transactionId, key);
   });
 
-  const result = await deleteUserTransactionById(removingUser, transactionId);
+  const result = await deleteUserTransactionById(
+    removingUser,
+    transactionId,
+    key,
+  );
 
   return result.Attributes;
 };

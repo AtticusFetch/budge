@@ -146,8 +146,12 @@ export const exchangeToken = (publicToken, userId) => {
   });
 };
 
-export const updateUserBudget = (data) => {
+export const setUserBudget = (data) => {
   return postToApi('budget', data);
+};
+
+export const updateUserBudget = (data) => {
+  return postToApi('budget/update', data);
 };
 
 export const updateUser = (data) => {

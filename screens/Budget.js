@@ -1,15 +1,14 @@
 import { Feather } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
-import { LayoutAnimation, Modal, StyleSheet, Text, View } from 'react-native';
+import { LayoutAnimation, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BudgetInfo } from '../components/BudgetInfo';
 import { ColorButton } from '../components/ColorButton';
-import { DismissKeyboard } from '../components/DismissKeyboard';
 import { useUserContext, userActions } from '../context/User';
 import { SetupBudgetModal } from '../modals/SetupBudgetModal';
 import { colors } from '../utils/colors';
-import { updateUserBudget } from '../utils/plaidApi';
+import { setUserBudget, updateUserBudget } from '../utils/plaidApi';
 
 export default function Budget(props) {
   const {
@@ -33,17 +32,27 @@ export default function Budget(props) {
       update: { type: 'spring', springDamping: 0.4 },
       create: { type: 'easeInEaseOut', property: 'opacity' },
     });
-    const updatedUser = await updateUserBudget({
+    const updatedUser = await setUserBudget({
       userId: user.id,
       budget: budgetData,
     });
     dispatch(userActions.update(updatedUser));
   }, []);
 
+  const onSubmitEdit = useCallback(async (transaction) => {
+    console.log('onSubmitEdit', transaction);
+    const updatedUser = await updateUserBudget({
+      userId: user.id,
+      transaction,
+    });
+    console.log('updatedUser', updatedUser);
+    dispatch(userActions.update(updatedUser));
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       {user?.budget ? (
-        <BudgetInfo budget={user.budget} />
+        <BudgetInfo budget={user.budget} onSubmitEdit={onSubmitEdit} />
       ) : (
         <View style={styles.noBudgetContainer}>
           <Text style={styles.noBudgetText}>No budget setup yet</Text>
@@ -53,20 +62,12 @@ export default function Budget(props) {
           />
         </View>
       )}
-      <Modal
-        animationType="slide"
-        visible={isSetupBudgetModalVisible}
-        style={styles.modal}
-        transparent
+      <SetupBudgetModal
+        onClose={closeSetupBudgetModal}
         onRequestClose={closeSetupBudgetModal}
-      >
-        <DismissKeyboard>
-          <SetupBudgetModal
-            onClose={closeSetupBudgetModal}
-            onSubmit={onSubmitBudget}
-          />
-        </DismissKeyboard>
-      </Modal>
+        visible={isSetupBudgetModalVisible}
+        onSubmit={onSubmitBudget}
+      />
       {!!user.budget && (
         <View style={styles.addButtonWrapper}>
           <ColorButton

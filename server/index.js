@@ -27,6 +27,7 @@ const { removeFriend } = require('./api/removeFriend');
 const { sendFriendRequest } = require('./api/sendFriendRequest');
 const { signOutUser } = require('./api/signOutUser');
 const { signUpUser } = require('./api/signUp');
+const { updateBudgetTransaction } = require('./api/updateBudgetTransaction');
 const { updateUserTransaction } = require('./api/updateUserTransaction');
 const { verifyUser } = require('./api/verifyUser');
 
@@ -74,6 +75,7 @@ app.post('/api/user/transaction/delete', deleteUserTransaction);
 app.post('/api/user/transaction/update', updateUserTransaction);
 
 app.post('/api/budget', postUserBudget);
+app.post('/api/budget/update', updateBudgetTransaction);
 
 app.post('/api/exchange', exchangeToken);
 

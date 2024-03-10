@@ -1,5 +1,12 @@
-import { useCallback, useRef, useState } from 'react';
-import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Animated,
+  Dimensions,
+  Easing,
+  Modal,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import { CarInsuranceStage } from './Stages/CarInsurance';
 import { CarPaymentStage } from './Stages/CarPayment';
@@ -7,10 +14,11 @@ import { IncomeStage } from './Stages/Income';
 import { RentStage } from './Stages/Rent';
 import { SportStage } from './Stages/Sport';
 import { UtilitiesStage } from './Stages/Utilities';
+import { DismissKeyboard } from '../../components/DismissKeyboard';
 
 const deviceWidth = Dimensions.get('window').width;
 
-const STAGES = {
+export const BUDGET_STAGES = {
   income: 1,
   rent: 2,
   carPayment: 3,
@@ -27,7 +35,7 @@ export const SetupBudgetModal = (props) => {
   const [carInsurance, setCarInsurance] = useState('250');
   const [sport, setSport] = useState('290');
   const [savedSplitAmount, setSavedSplitAmount] = useState(null);
-  const [stage, setstage] = useState(STAGES.income);
+  const [stage, setStage] = useState(props.stage || BUDGET_STAGES.income);
 
   const slideOutAnim = useRef(new Animated.Value(0)).current;
 
@@ -35,47 +43,58 @@ export const SetupBudgetModal = (props) => {
     transform: [{ translateX: slideOutAnim }],
   };
 
-  const animateSlide = useCallback(() => {
+  useEffect(() => {
+    if (props.stage) {
+      setStage(props.stage);
+    }
+  }, [props.stage]);
+
+  useEffect(() => {
+    const targetStageShift = stage - 1;
     Animated.parallel([
       Animated.timing(slideOutAnim, {
-        toValue: -(stage * deviceWidth),
+        toValue: -(targetStageShift * deviceWidth),
         duration: 150,
         easing: Easing.linear,
         useNativeDriver: true,
       }),
     ]).start();
-  }, [stage]);
+  }, [stage, props.stage]);
 
   const onInputChange = useCallback(
     (e) => {
       switch (stage) {
-        case STAGES.income:
+        case BUDGET_STAGES.income:
           setIncome(e);
           break;
-        case STAGES.rent:
+        case BUDGET_STAGES.rent:
           setRent(e);
           break;
-        case STAGES.carPayment:
+        case BUDGET_STAGES.carPayment:
           setCarPayment(e);
           break;
-        case STAGES.carInsurance:
+        case BUDGET_STAGES.carInsurance:
           setCarInsurance(e);
           break;
-        case STAGES.utilities:
+        case BUDGET_STAGES.utilities:
           setUtilities(e);
           break;
-        case STAGES.sport:
+        case BUDGET_STAGES.sport:
           setSport(e);
           break;
       }
     },
-    [stage],
+    [stage, props.stage],
   );
 
   const onSubmitInput = useCallback(
     (finalValue, splitAmount) => {
-      const isLastStage = stage === STAGES.sport;
+      const isLastStage = stage === BUDGET_STAGES.sport;
       setSavedSplitAmount(splitAmount);
+      if (props.singleStage) {
+        props.onSubmit(finalValue);
+        return;
+      }
       if (isLastStage) {
         props.onSubmit({
           rent,
@@ -85,14 +104,24 @@ export const SetupBudgetModal = (props) => {
           carInsurance,
           utilities,
         });
+        return;
       }
       if (typeof finalValue !== 'undefined') {
         onInputChange(finalValue);
       }
-      setstage(stage + 1);
-      animateSlide();
+      setStage(stage + 1);
     },
-    [stage, income, rent, carPayment, carInsurance, utilities, sport],
+    [
+      stage,
+      props.stage,
+      income,
+      rent,
+      carPayment,
+      carInsurance,
+      utilities,
+      sport,
+      props.singleStage,
+    ],
   );
 
   const onCancel = useCallback(() => {
@@ -102,47 +131,58 @@ export const SetupBudgetModal = (props) => {
   const stageProps = {
     style: slideOutStyle,
     onSubmitStage: onSubmitInput,
+    submitLabel: 'Done',
     onCancel,
   };
 
   return (
-    <View style={styles.wrapper}>
-      <IncomeStage
-        onChange={onInputChange}
-        stageProps={stageProps}
-        income={income}
-      />
-      <RentStage
-        savedSplitAmount={savedSplitAmount}
-        onChange={onInputChange}
-        stageProps={stageProps}
-        rent={rent}
-      />
-      <CarPaymentStage
-        onChange={onInputChange}
-        savedSplitAmount={savedSplitAmount}
-        stageProps={stageProps}
-        carPayment={carPayment}
-      />
-      <CarInsuranceStage
-        onChange={onInputChange}
-        savedSplitAmount={savedSplitAmount}
-        stageProps={stageProps}
-        carInsurance={carInsurance}
-      />
-      <UtilitiesStage
-        onChange={onInputChange}
-        savedSplitAmount={savedSplitAmount}
-        stageProps={stageProps}
-        utilities={utilities}
-      />
-      <SportStage
-        onChange={onInputChange}
-        savedSplitAmount={savedSplitAmount}
-        stageProps={stageProps}
-        sport={sport}
-      />
-    </View>
+    <Modal
+      animationType="slide"
+      visible={props.visible}
+      style={styles.modal}
+      transparent
+      onRequestClose={props.onRequestClose}
+    >
+      <DismissKeyboard>
+        <View style={styles.wrapper}>
+          <IncomeStage
+            onChange={onInputChange}
+            stageProps={stageProps}
+            income={income}
+          />
+          <RentStage
+            savedSplitAmount={savedSplitAmount}
+            onChange={onInputChange}
+            stageProps={stageProps}
+            rent={rent}
+          />
+          <CarPaymentStage
+            onChange={onInputChange}
+            savedSplitAmount={savedSplitAmount}
+            stageProps={stageProps}
+            carPayment={carPayment}
+          />
+          <CarInsuranceStage
+            onChange={onInputChange}
+            savedSplitAmount={savedSplitAmount}
+            stageProps={stageProps}
+            carInsurance={carInsurance}
+          />
+          <UtilitiesStage
+            onChange={onInputChange}
+            savedSplitAmount={savedSplitAmount}
+            stageProps={stageProps}
+            utilities={utilities}
+          />
+          <SportStage
+            onChange={onInputChange}
+            savedSplitAmount={savedSplitAmount}
+            stageProps={stageProps}
+            sport={sport}
+          />
+        </View>
+      </DismissKeyboard>
+    </Modal>
   );
 };
 
@@ -153,6 +193,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
     borderColor: 'green',
-    width: `${Object.keys(STAGES).length * 100}%`,
+    width: `${Object.keys(BUDGET_STAGES).length * 100}%`,
   },
 });

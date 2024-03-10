@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { BUDGET_STAGES, SetupBudgetModal } from '../../modals/SetupBudgetModal';
 import { colors } from '../../utils/colors';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { globalStyles } from '../../utils/globalStyles';
@@ -14,14 +15,49 @@ export const BudgetInfo = (props) => {
   const listHeight = useRef(new Animated.Value(0)).current;
   const [totalOutcome, setTotalOutcome] = useState('');
   const [expanded, setExpanded] = useState(false);
+  const [budgetStage, setBudgetStage] = useState();
+  const [transactionToEdit, setTransactionToEdit] = useState(null);
+  const [isEditBudgetModalVisible, setIsEditBudgetModalVisible] =
+    useState(false);
+  const [sortedBudget, setSortedBudget] = useState([]);
 
   useEffect(() => {
-    setTotalIncome(_.sumBy(budget.income, (t) => -parseFloat(t.amount)));
-  }, [budget.income]);
+    setSortedBudget(
+      _.sortBy(budget, (t) => {
+        const amount = parseFloat(t.amount);
+        if (amount > 0) {
+          return -amount;
+        }
+        return amount * 1000;
+      }),
+    );
+    setTotalIncome(
+      _.sumBy(budget, (t) => {
+        const amount = parseFloat(t.amount);
+        if (amount < 0) {
+          return -amount;
+        }
+        return 0;
+      }),
+    );
+    setTotalOutcome(
+      _.sumBy(budget, (t) => {
+        const amount = parseFloat(t.amount);
+        if (amount > 0) {
+          return amount;
+        }
+        return 0;
+      }),
+    );
+  }, [budget]);
 
-  useEffect(() => {
-    setTotalOutcome(_.sumBy(budget.outcome, (t) => parseFloat(t.amount)));
-  }, [budget.outcome]);
+  const closeSetupBudgetModal = useCallback(() => {
+    setIsEditBudgetModalVisible(false);
+  }, []);
+
+  const showSetupBudgetModal = useCallback(() => {
+    setIsEditBudgetModalVisible(true);
+  }, []);
 
   const expand = useCallback(() => {
     Animated.timing(listHeight, {
@@ -45,6 +81,27 @@ export const BudgetInfo = (props) => {
     outputRange: ['0%', '100%'],
   });
 
+  const onDelete = useCallback(() => {}, []);
+  const onEdit = useCallback((transaction) => {
+    setTransactionToEdit(transaction);
+    const budgetStage = BUDGET_STAGES[transaction.name];
+    if (budgetStage) {
+      setBudgetStage(budgetStage);
+      showSetupBudgetModal();
+    }
+  }, []);
+  const onSubmitEdit = useCallback(
+    async (value) => {
+      const updatedTransaction = {
+        ...transactionToEdit,
+        amount: value,
+      };
+      await props.onSubmitEdit(updatedTransaction);
+      closeSetupBudgetModal();
+    },
+    [transactionToEdit],
+  );
+
   return (
     <View
       style={[styles.overviewHeader, expanded && styles.overviewHeaderExpanded]}
@@ -65,11 +122,17 @@ export const BudgetInfo = (props) => {
         </View>
       </View>
       <Animated.FlatList
-        data={[...budget.income, ...budget.outcome]}
+        data={sortedBudget}
         style={[styles.list, { height: lisetHeightPercent }]}
         showsVerticalScrollIndicator={false}
-        renderItem={(transaction, index) => {
-          return <TransactionListItem {...transaction.item} />;
+        renderItem={(transaction) => {
+          return (
+            <TransactionListItem
+              onDelete={onDelete}
+              onEdit={onEdit}
+              {...transaction.item}
+            />
+          );
         }}
         keyExtractor={(transaction) => transaction?.id || transaction?.amount}
       />
@@ -84,6 +147,14 @@ export const BudgetInfo = (props) => {
           size={40}
         />
       </Pressable>
+      <SetupBudgetModal
+        onClose={closeSetupBudgetModal}
+        onRequestClose={closeSetupBudgetModal}
+        visible={isEditBudgetModalVisible}
+        onSubmit={onSubmitEdit}
+        singleStage
+        stage={budgetStage}
+      />
     </View>
   );
 };

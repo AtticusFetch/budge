@@ -24,15 +24,7 @@ const transformBudgetData = (data, categories) => {
     id: uuidv4(),
   }));
 
-  const incomeData = allData.find((d) => d.name === 'income');
-  const incomeDataIndex = allData.findIndex((d) => d.name === 'income');
-
-  const splitData = {
-    income: [incomeData],
-    outcome: [...allData.toSpliced(incomeDataIndex, 1)],
-  };
-
-  return splitData;
+  return allData;
 };
 
 const postUserBudget = async (request, response) => {
