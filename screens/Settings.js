@@ -51,6 +51,7 @@ export default function Settings(props) {
         <ActivityIndicator size="large" color={colors.orange} />
       ) : (
         <View style={styles.buttonsWrapper}>
+          <Text style={styles.name}>{user?.username}</Text>
           <ColorButton colorName="green" onPress={showBudget} text="Budget" />
           <ColorButton
             colorName="green"
@@ -79,5 +80,9 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  name: {
+    fontSize: 40,
+    fontWeight: '600',
   },
 });

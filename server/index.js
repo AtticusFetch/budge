@@ -11,6 +11,7 @@ const { authenticateUser } = require('./api/authenticateUser');
 const { confirmUser } = require('./api/confirmUser');
 const { createLinkToken } = require('./api/createLinkToken');
 const { createUser } = require('./api/createUser');
+const { createUserCategory } = require('./api/createUserCategory');
 const { createUserTransaction } = require('./api/createUserTransaction');
 const { declineFriendRequest } = require('./api/declineFriendRequest');
 const { deleteUserTransaction } = require('./api/deleteUserTransaction');
@@ -59,6 +60,7 @@ app.post('/api/user/signup', signUpUser);
 app.post('/api/user/confirm', confirmUser);
 app.post('/api/user/authenticate', authenticateUser);
 app.post('/api/user/create', createUser);
+app.post('/api/user/category/create', createUserCategory);
 app.post('/api/user/verify', verifyUser);
 app.post('/api/user/signOut', signOutUser);
 

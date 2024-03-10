@@ -13,8 +13,18 @@ import { getTipAmount } from '../../../utils/getTipAmount';
 import FriendsSplitModal from '../../FriendsSplitModal';
 import TipsModal from '../../TipsModal';
 
+/**
+ * ***************************************
+ * ***************************************
+ * ***************************************
+ * Refactor, this is no longer a "stage"
+ * ***************************************
+ * ***************************************
+ * ***************************************
+ * ***************************************
+ */
+
 export const AmountStage = (props) => {
-  const { onChange, friends } = props;
   const [isSplitModalVisible, setisSplitModalVisible] = useState(false);
   const [isTipsModalVisible, setisTipsModalVisible] = useState(false);
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
@@ -71,7 +81,7 @@ export const AmountStage = (props) => {
   return (
     <StageWrapper {...props.stageProps}>
       <StageTextInput
-        onChange={onChange}
+        onChange={props.onChange}
         value={props.amount}
         placeholder={numbro(0).formatCurrency({ mantissa: 2 })}
         autoFocus
@@ -84,7 +94,7 @@ export const AmountStage = (props) => {
           <Text style={styles.secondaryText}>
             Split amount:{' '}
             {numbro(
-              (numbro(props.amount) + numbro(tipsAmount)) /
+              (numbro(props.amount) + numbro(tipsAmount || 0)) /
                 (props.splitWith.length + 1),
             ).formatCurrency({
               mantissa: 2,
@@ -98,7 +108,7 @@ export const AmountStage = (props) => {
         )}
       </View>
       <View style={styles.modifierButtonsContainer}>
-        {!!friends?.length && (
+        {!!props.friends?.length && (
           <ColorButton
             colorName="blue"
             childrenWrapperStyle={styles.modifierBtnContent}
@@ -137,7 +147,7 @@ export const AmountStage = (props) => {
         onRequestClose={onSplitModalClose}
       >
         <FriendsSplitModal
-          friends={friends}
+          friends={props.friends}
           selectedFriends={props.splitWith}
           onDone={onSplitModalDone}
         />
@@ -162,11 +172,11 @@ export const AmountStage = (props) => {
       >
         <CategoryStage
           stageProps={{
-            onSubmit: onCategoryModalClose,
             onCancel: onCategoryModalClose,
             cancelLabel: 'Done',
           }}
           onChange={props.onCategoryChange}
+          userCategories={props.userCategories}
           categories={props.categories}
           category={props.category}
         />
@@ -179,7 +189,6 @@ export const AmountStage = (props) => {
       >
         <NoteStage
           stageProps={{
-            onSubmit: onNoteModalClose,
             onCancel: onNoteModalClose,
             cancelLabel: 'Done',
           }}

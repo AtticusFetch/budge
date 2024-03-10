@@ -147,6 +147,7 @@ export default function Transactions() {
         <DismissKeyboard>
           <AddTransactionModal
             categories={categories}
+            userCategories={user.categories}
             onClose={onAddTransactionClose}
             onSubmit={onSubmitTransaction}
             transaction={transaction}

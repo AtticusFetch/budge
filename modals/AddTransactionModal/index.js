@@ -6,7 +6,7 @@ import { AmountStage } from './Stages/Amount';
 import { getTipAmount } from '../../utils/getTipAmount';
 
 export default function AddTransactionModal(props) {
-  const { transaction = {} } = props;
+  const { transaction = {}, userCategories } = props;
   const {
     tips: tTip,
     amount: tAmount,
@@ -106,6 +106,7 @@ export default function AddTransactionModal(props) {
         rememberCheckboxVisible={rememberCheckboxVisible}
         setShouldRememberNote={setShouldRememberNote}
         onCategoryChange={onCategoryChange}
+        userCategories={userCategories}
         categories={props.categories}
         onDateChange={onDateChange}
         setSplitWith={setSplitWith}

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../../utils/colors';
@@ -6,22 +6,52 @@ import { ColorButton } from '../ColorButton';
 import { Icon } from '../Icon';
 
 export const CategoryListItem = (props) => {
-  const { category, selected, onPress } = props;
+  const {
+    category,
+    selected,
+    onPress,
+    btnStyle,
+    btnContainerStyle,
+    btnContentStyle,
+  } = props;
+
+  const [categoryColor, setCategoryColor] = useState('blue');
+  const [categoryName, setCategoryName] = useState('');
+
   const onItemPress = useCallback(() => {
     props.onPress(category);
   }, [category, onPress]);
 
+  useEffect(() => {
+    if (category.color) {
+      setCategoryColor(category.color);
+    } else if (selected) {
+      setCategoryColor('yellow');
+    } else {
+      setCategoryColor('blue');
+    }
+  }, [selected, category.color]);
+  useEffect(() => {
+    if (typeof category === 'string') {
+      setCategoryName(category);
+    } else if (category.name) {
+      setCategoryName(category.name);
+    }
+  }, [category]);
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, btnContainerStyle]}>
       <ColorButton
-        colorName={selected ? 'yellow' : 'blue'}
+        colorName={categoryColor}
         size="slim"
-        style={styles.button}
+        style={[styles.button, btnStyle]}
         onPress={onItemPress}
-        childrenWrapperStyle={styles.contentWrapper}
+        childrenWrapperStyle={[styles.contentWrapper, btnContentStyle]}
       >
-        <Icon color={colors.grey} name={category?.icon} size={20} />
-        <Text style={styles.label}>{category.name || category}</Text>
+        {!!category?.icon && (
+          <Icon color={colors.grey} name={category?.icon} size={20} />
+        )}
+        {!!categoryName && <Text style={styles.label}>{categoryName}</Text>}
       </ColorButton>
     </View>
   );

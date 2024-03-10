@@ -89,7 +89,7 @@ export default function SignIn({ navigation, route }) {
           setisSignUpVisible(false);
         }}
       >
-        <SignUpModal onClose={closeSignUpModal} />
+        <SignUpModal onClose={closeSignUpModal} navigation={navigation} />
       </Modal>
       <Modal
         animationType="slide"

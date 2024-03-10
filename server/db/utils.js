@@ -8,6 +8,22 @@ const {
 
 const uid = () => uuidv4();
 
+const addCategory = async (category, userId) => {
+  const uniqueCategory = {
+    ...category,
+    id: uid(),
+  };
+  let result;
+
+  try {
+    result = await addListItem(userId, 'categories', uniqueCategory);
+  } catch (e) {
+    console.error(e);
+  }
+
+  return result.Attributes;
+};
+
 const addTransaction = async (transaction, userId) => {
   let transactionAmount = transaction.amount;
   let personalNotes;
@@ -84,6 +100,7 @@ const deleteTransaction = async (transactionId, userId) => {
 };
 
 module.exports.addTransaction = addTransaction;
+module.exports.addCategory = addCategory;
 module.exports.deleteTransaction = deleteTransaction;
 module.exports.deleteUserTransactionById = deleteUserTransactionById;
 module.exports.uid = uid;

@@ -68,6 +68,13 @@ export const deleteTransaction = (transactionId, userId) => {
   });
 };
 
+export const createCategory = (category, userId) => {
+  return postToApi('user/category/create', {
+    category,
+    userId,
+  });
+};
+
 export const acceptRequest = (requestId, userId) => {
   return postToApi('user/friend/accept', {
     requestId,

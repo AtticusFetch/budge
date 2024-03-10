@@ -31,7 +31,7 @@ const acceptFriendRequest = async (request, response) => {
       throw new Error('Sender Request Not Found');
     }
 
-    await removeListItemByIdx(
+    const newRequestsList = await removeListItemByIdx(
       acceptingUser.id,
       'friendRequests',
       acceptingRequestIdx,
@@ -53,7 +53,10 @@ const acceptFriendRequest = async (request, response) => {
       username: acceptingUser.username,
     });
 
-    response.json(result?.Attributes);
+    response.json({
+      ...result?.Attributes,
+      friendRequests: newRequestsList.Attributes?.friendRequests,
+    });
   } catch (e) {
     console.error(e);
     response.status(500);

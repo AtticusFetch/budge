@@ -14,7 +14,7 @@ import {
 } from '../utils/plaidApi';
 
 export default function SignUpModal(props) {
-  const { onClose } = props;
+  const { onClose, navigation } = props;
   const { dispatch } = useUserContext();
 
   const [email, setemail] = useState('ivaniankovskyi@gmail.com');
@@ -68,6 +68,7 @@ export default function SignUpModal(props) {
       dispatch(userActions.set(userInfo));
       setisLoading(false);
       onClose();
+      navigation.navigate('Home');
     } catch (e) {
       console.error(e);
       setisLoading(false);

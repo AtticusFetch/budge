@@ -30,7 +30,7 @@ const removeFriend = async (request, response) => {
 
     await removeFriendById(friendToRemove, userId);
 
-    response.json(result);
+    response.json(result.Attributes);
   } catch (e) {
     console.error(e);
     response.status(500);

@@ -42,7 +42,7 @@ export default function Budget(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {user.budget ? (
+      {user?.budget ? (
         <BudgetInfo budget={user.budget} />
       ) : (
         <View style={styles.noBudgetContainer}>
