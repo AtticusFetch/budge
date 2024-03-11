@@ -8,7 +8,11 @@ import { ColorButton } from '../components/ColorButton';
 import { useUserContext, userActions } from '../context/User';
 import { SetupBudgetModal } from '../modals/SetupBudgetModal';
 import { colors } from '../utils/colors';
-import { setUserBudget, updateUserBudget } from '../utils/plaidApi';
+import {
+  deleteBudgetTransaction,
+  setUserBudget,
+  updateBudgetTransaction,
+} from '../utils/plaidApi';
 
 export default function Budget(props) {
   const {
@@ -40,19 +44,29 @@ export default function Budget(props) {
   }, []);
 
   const onSubmitEdit = useCallback(async (transaction) => {
-    console.log('onSubmitEdit', transaction);
-    const updatedUser = await updateUserBudget({
+    const updatedUser = await updateBudgetTransaction({
       userId: user.id,
       transaction,
     });
-    console.log('updatedUser', updatedUser);
+    dispatch(userActions.update(updatedUser));
+  }, []);
+
+  const onDeleteTransaction = useCallback(async (transactionId) => {
+    const updatedUser = await deleteBudgetTransaction({
+      userId: user.id,
+      transactionId,
+    });
     dispatch(userActions.update(updatedUser));
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       {user?.budget ? (
-        <BudgetInfo budget={user.budget} onSubmitEdit={onSubmitEdit} />
+        <BudgetInfo
+          budget={user.budget}
+          onSubmitEdit={onSubmitEdit}
+          onDeleteTransaction={onDeleteTransaction}
+        />
       ) : (
         <View style={styles.noBudgetContainer}>
           <Text style={styles.noBudgetText}>No budget setup yet</Text>

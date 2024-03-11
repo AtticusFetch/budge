@@ -150,8 +150,12 @@ export const setUserBudget = (data) => {
   return postToApi('budget', data);
 };
 
-export const updateUserBudget = (data) => {
-  return postToApi('budget/update', data);
+export const updateBudgetTransaction = (data) => {
+  return postToApi('budget/transaction/update', data);
+};
+
+export const deleteBudgetTransaction = (data) => {
+  return postToApi('budget/transaction/delete', data);
 };
 
 export const updateUser = (data) => {

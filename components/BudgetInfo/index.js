@@ -81,7 +81,9 @@ export const BudgetInfo = (props) => {
     outputRange: ['0%', '100%'],
   });
 
-  const onDelete = useCallback(() => {}, []);
+  const onDelete = useCallback(async (transactionId) => {
+    await props.onDeleteTransaction(transactionId);
+  }, []);
   const onEdit = useCallback((transaction) => {
     setTransactionToEdit(transaction);
     const budgetStage = BUDGET_STAGES[transaction.name];
@@ -91,10 +93,10 @@ export const BudgetInfo = (props) => {
     }
   }, []);
   const onSubmitEdit = useCallback(
-    async (value) => {
+    async (amount) => {
       const updatedTransaction = {
         ...transactionToEdit,
-        amount: value,
+        amount,
       };
       await props.onSubmitEdit(updatedTransaction);
       closeSetupBudgetModal();

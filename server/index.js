@@ -14,6 +14,7 @@ const { createUser } = require('./api/createUser');
 const { createUserCategory } = require('./api/createUserCategory');
 const { createUserTransaction } = require('./api/createUserTransaction');
 const { declineFriendRequest } = require('./api/declineFriendRequest');
+const { deleteBudgetTransaction } = require('./api/deleteBudgetTransaction');
 const { deleteUserTransaction } = require('./api/deleteUserTransaction');
 const { exchangeToken } = require('./api/exchangeToken');
 const { getCategories } = require('./api/getCategories');
@@ -75,7 +76,8 @@ app.post('/api/user/transaction/delete', deleteUserTransaction);
 app.post('/api/user/transaction/update', updateUserTransaction);
 
 app.post('/api/budget', postUserBudget);
-app.post('/api/budget/update', updateBudgetTransaction);
+app.post('/api/budget/transaction/update', updateBudgetTransaction);
+app.post('/api/budget/transaction/delete', deleteBudgetTransaction);
 
 app.post('/api/exchange', exchangeToken);
 
