@@ -150,6 +150,10 @@ export const setUserBudget = (data) => {
   return postToApi('budget', data);
 };
 
+export const createBudgetTransaction = (data) => {
+  return postToApi('budget/transaction/create', data);
+};
+
 export const updateBudgetTransaction = (data) => {
   return postToApi('budget/transaction/update', data);
 };

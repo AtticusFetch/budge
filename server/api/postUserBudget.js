@@ -22,6 +22,7 @@ const transformBudgetData = (data, categories) => {
         ? -parseFloat(data[k])
         : parseFloat(data[k]) / WEEKS_IN_MONTH,
     id: uuidv4(),
+    isStageTransaction: true,
   }));
 
   return allData;

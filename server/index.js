@@ -9,6 +9,7 @@ const express = require('express');
 const { acceptFriendRequest } = require('./api/acceptFriendRequest');
 const { authenticateUser } = require('./api/authenticateUser');
 const { confirmUser } = require('./api/confirmUser');
+const { createBudgetTransaction } = require('./api/createBudgetTransaction');
 const { createLinkToken } = require('./api/createLinkToken');
 const { createUser } = require('./api/createUser');
 const { createUserCategory } = require('./api/createUserCategory');
@@ -76,6 +77,7 @@ app.post('/api/user/transaction/delete', deleteUserTransaction);
 app.post('/api/user/transaction/update', updateUserTransaction);
 
 app.post('/api/budget', postUserBudget);
+app.post('/api/budget/transaction/create', createBudgetTransaction);
 app.post('/api/budget/transaction/update', updateBudgetTransaction);
 app.post('/api/budget/transaction/delete', deleteBudgetTransaction);
 

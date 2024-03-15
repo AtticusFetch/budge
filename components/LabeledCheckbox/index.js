@@ -6,7 +6,7 @@ import { colors } from '../../utils/colors';
 export const LabeledCheckbox = (props) => (
   <BouncyCheckbox
     size={25}
-    fillColor={colors.blue}
+    fillColor={props.color || colors.blue}
     unfillColor="white"
     style={[styles.checkbox, props.style]}
     isChecked={props.isChecked}
@@ -27,6 +27,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: colors.blue,
     borderRadius: 8,
-    marginLeft: 10,
+    marginHorizontal: 5,
   },
 });

@@ -30,10 +30,14 @@ export const StageTextInput = (props) => {
   }, [hasError]);
   return (
     <Animated.View
-      style={[styles.inputWrapper, hasError && animateContainerError]}
+      style={[
+        styles.inputWrapper,
+        hasError && animateContainerError,
+        props.containerStyle,
+      ]}
     >
       <TextInput
-        style={[styles.input, hasError && styles.error]}
+        style={[styles.input, hasError && styles.error, props.inputStyle]}
         onChangeText={onChange}
         value={value}
         enablesReturnKeyAutomatically

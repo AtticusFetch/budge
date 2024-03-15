@@ -5,10 +5,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BudgetInfo } from '../components/BudgetInfo';
 import { ColorButton } from '../components/ColorButton';
+import { useCategoriesContext } from '../context/Categories';
 import { useUserContext, userActions } from '../context/User';
+import { AddBudgetTransactionModal } from '../modals/AddBudgetTransactionModal';
 import { SetupBudgetModal } from '../modals/SetupBudgetModal';
 import { colors } from '../utils/colors';
 import {
+  createBudgetTransaction,
   deleteBudgetTransaction,
   setUserBudget,
   updateBudgetTransaction,
@@ -19,7 +22,14 @@ export default function Budget(props) {
     state: { user = {} },
     dispatch,
   } = useUserContext();
+  const {
+    state: { categories },
+  } = useCategoriesContext();
   const [isSetupBudgetModalVisible, setIsSetupBudgetModalVisible] =
+    useState(false);
+  const [transactionToEdit, setTransactionToEdit] = useState();
+
+  const [addBudgetTransactionVisible, setAddBudgetTransactionVisible] =
     useState(false);
 
   const closeSetupBudgetModal = useCallback(() => {
@@ -28,6 +38,15 @@ export default function Budget(props) {
 
   const showSetupBudgetModal = useCallback(() => {
     setIsSetupBudgetModalVisible(true);
+  }, []);
+
+  const closeAddBudgetTransactionModal = useCallback(() => {
+    setTransactionToEdit();
+    setAddBudgetTransactionVisible(false);
+  }, []);
+
+  const showAddBudgetTransactionModal = useCallback(() => {
+    setAddBudgetTransactionVisible(true);
   }, []);
 
   const onSubmitBudget = useCallback(async (budgetData) => {
@@ -41,6 +60,25 @@ export default function Budget(props) {
       budget: budgetData,
     });
     dispatch(userActions.update(updatedUser));
+    closeSetupBudgetModal();
+  }, []);
+
+  const onCreateTransaction = useCallback(async (transaction) => {
+    LayoutAnimation.configureNext({
+      duration: 200,
+      update: { type: 'spring', springDamping: 0.4 },
+      create: { type: 'easeInEaseOut', property: 'opacity' },
+    });
+    const updatedUser = await createBudgetTransaction({
+      userId: user.id,
+      transaction,
+    });
+    dispatch(userActions.update(updatedUser));
+  }, []);
+
+  const onEditCustomTransaction = useCallback((transaction) => {
+    setTransactionToEdit(transaction);
+    showAddBudgetTransactionModal();
   }, []);
 
   const onSubmitEdit = useCallback(async (transaction) => {
@@ -66,6 +104,7 @@ export default function Budget(props) {
           budget={user.budget}
           onSubmitEdit={onSubmitEdit}
           onDeleteTransaction={onDeleteTransaction}
+          onEditCustomTransaction={onEditCustomTransaction}
         />
       ) : (
         <View style={styles.noBudgetContainer}>
@@ -86,6 +125,7 @@ export default function Budget(props) {
         <View style={styles.addButtonWrapper}>
           <ColorButton
             childrenWrapperStyle={styles.addButton}
+            onPress={showAddBudgetTransactionModal}
             colorName="blue"
             type="fill"
           >
@@ -93,6 +133,14 @@ export default function Budget(props) {
           </ColorButton>
         </View>
       )}
+      <AddBudgetTransactionModal
+        visible={addBudgetTransactionVisible}
+        onClose={closeAddBudgetTransactionModal}
+        transactionToEdit={transactionToEdit}
+        userCategories={user.categories}
+        onSubmit={onCreateTransaction}
+        categories={categories}
+      />
     </SafeAreaView>
   );
 }

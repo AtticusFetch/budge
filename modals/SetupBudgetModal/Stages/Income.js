@@ -1,39 +1,21 @@
 import numbro from 'numbro';
 import { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { LabeledCheckbox } from '../../../components/LabeledCheckbox';
+import { FrequencyCheckboxes } from '../../../components/FrequencyCheckboxes';
 import { StageWrapper } from '../../../components/ModalStageWrapper';
 import { StageTextInput } from '../../../components/TextInput';
-import { WEEKS_IN_MONTH, WEEKS_IN_YEAR } from '../../../utils/constants';
 import { formatCurrency } from '../../../utils/formatCurrency';
-import { globalStyles } from '../../../utils/globalStyles';
-
-const SALARY_TYPES = {
-  annual: 'annual',
-  monthly: 'monthly',
-  semiMonthly: 'semiMonthly',
-  weekly: 'weekly',
-};
+import {
+  FREQUENCY_TYPES,
+  getFrequencyMultiplier,
+} from '../../../utils/getFrequencyMultiplier';
 
 export const IncomeStage = (props) => {
   const { onChange, income } = props;
   const [checkedSalaryType, setCheckedSalaryType] = useState(
-    SALARY_TYPES.semiMonthly,
+    FREQUENCY_TYPES.semiMonthly,
   );
-
-  const onAnnualChecboxPress = useCallback(() => {
-    setCheckedSalaryType(SALARY_TYPES.annual);
-  }, []);
-  const onMonthlyChecboxPress = useCallback(() => {
-    setCheckedSalaryType(SALARY_TYPES.monthly);
-  }, []);
-  const onSemiMonthlyChecboxPress = useCallback(() => {
-    setCheckedSalaryType(SALARY_TYPES.semiMonthly);
-  }, []);
-  const onWeeklyChecboxPress = useCallback(() => {
-    setCheckedSalaryType(SALARY_TYPES.weekly);
-  }, []);
 
   const onSubmitStage = useCallback(() => {
     if (!income) {
@@ -41,21 +23,7 @@ export const IncomeStage = (props) => {
       return;
     }
     const incomeValue = parseFloat(income);
-    let weeklyMultiplier = 1;
-    switch (checkedSalaryType) {
-      case SALARY_TYPES.annual:
-        weeklyMultiplier = 1 / WEEKS_IN_YEAR;
-        break;
-      case SALARY_TYPES.monthly:
-        weeklyMultiplier = 1 / WEEKS_IN_MONTH;
-        break;
-      case SALARY_TYPES.semiMonthly:
-        weeklyMultiplier = 1 / (WEEKS_IN_MONTH / 2);
-        break;
-      case SALARY_TYPES.weekly:
-        weeklyMultiplier = 1;
-        break;
-    }
+    const weeklyMultiplier = getFrequencyMultiplier(checkedSalaryType);
     const weeklyIncome = incomeValue * weeklyMultiplier;
     props.stageProps.onSubmitStage(
       numbro(weeklyIncome).format({ mantissa: 2 }),
@@ -78,32 +46,7 @@ export const IncomeStage = (props) => {
         enterKeyHint="next"
         returnKeyType="done"
       />
-      <View style={styles.checkboxContainer}>
-        <View style={globalStyles.row}>
-          <LabeledCheckbox
-            isChecked={checkedSalaryType === SALARY_TYPES.annual}
-            onPress={onAnnualChecboxPress}
-            label="Annual"
-          />
-          <LabeledCheckbox
-            isChecked={checkedSalaryType === SALARY_TYPES.monthly}
-            onPress={onMonthlyChecboxPress}
-            label="Monthly"
-          />
-        </View>
-        <View style={globalStyles.row}>
-          <LabeledCheckbox
-            isChecked={checkedSalaryType === SALARY_TYPES.semiMonthly}
-            onPress={onSemiMonthlyChecboxPress}
-            label="Semi Monthly"
-          />
-          <LabeledCheckbox
-            isChecked={checkedSalaryType === SALARY_TYPES.weekly}
-            onPress={onWeeklyChecboxPress}
-            label="Weekly"
-          />
-        </View>
-      </View>
+      <FrequencyCheckboxes onChange={setCheckedSalaryType} />
     </StageWrapper>
   );
 };

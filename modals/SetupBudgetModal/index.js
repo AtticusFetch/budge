@@ -192,7 +192,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
-    borderColor: 'green',
     width: `${Object.keys(BUDGET_STAGES).length * 100}%`,
   },
 });

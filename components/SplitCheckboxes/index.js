@@ -16,25 +16,49 @@ export const SplitCheckboxes = (props) => {
   const { savedSplitAmount, onChange } = props;
   const [splitAmount, setSplitAmount] = useState(null);
   const [split, setSplit] = useState(null);
+  const [pristine, setPristine] = useState(true);
 
   const onTwoWayCheckboxPress = useCallback(() => {
-    setSplitAmount(SPLIT_AMOUNT['2']);
-  }, []);
+    setPristine(false);
+    if (split === SPLIT_AMOUNT['2']) {
+      setSplitAmount(null);
+    } else {
+      setSplitAmount(SPLIT_AMOUNT['2']);
+    }
+  }, [split]);
   const onThreeWayCheckboxPress = useCallback(() => {
-    setSplitAmount(SPLIT_AMOUNT['3']);
-  }, []);
+    setPristine(false);
+    if (split === SPLIT_AMOUNT['3']) {
+      setSplitAmount(null);
+    } else {
+      setSplitAmount(SPLIT_AMOUNT['3']);
+    }
+  }, [split]);
   const onFourWayCheckboxPress = useCallback(() => {
-    setSplitAmount(SPLIT_AMOUNT['4']);
-  }, []);
+    setPristine(false);
+    if (split === SPLIT_AMOUNT['4']) {
+      setSplitAmount(null);
+    } else {
+      setSplitAmount(SPLIT_AMOUNT['4']);
+    }
+  }, [split]);
   const onFiveWayCheckboxPress = useCallback(() => {
-    setSplitAmount(SPLIT_AMOUNT['5']);
-  }, []);
+    setPristine(false);
+    if (split === SPLIT_AMOUNT['5']) {
+      setSplitAmount(null);
+    } else {
+      setSplitAmount(SPLIT_AMOUNT['5']);
+    }
+  }, [split]);
 
   useEffect(() => {
-    const amount = splitAmount || savedSplitAmount;
+    let amount = splitAmount || savedSplitAmount;
+    if (!pristine) {
+      amount = splitAmount;
+    }
     setSplit(amount);
     onChange(amount);
-  }, [splitAmount, savedSplitAmount]);
+  }, [splitAmount, savedSplitAmount, pristine]);
 
   return (
     <View style={styles.checkboxContainer}>

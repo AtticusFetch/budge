@@ -12,9 +12,9 @@ import { TransactionListItem } from '../TransactionListItem';
 export const BudgetInfo = (props) => {
   const { budget } = props;
   const [totalIncome, setTotalIncome] = useState('');
-  const listHeight = useRef(new Animated.Value(0)).current;
+  const listHeight = useRef(new Animated.Value(1)).current;
   const [totalOutcome, setTotalOutcome] = useState('');
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const [budgetStage, setBudgetStage] = useState();
   const [transactionToEdit, setTransactionToEdit] = useState(null);
   const [isEditBudgetModalVisible, setIsEditBudgetModalVisible] =
@@ -85,11 +85,15 @@ export const BudgetInfo = (props) => {
     await props.onDeleteTransaction(transactionId);
   }, []);
   const onEdit = useCallback((transaction) => {
-    setTransactionToEdit(transaction);
-    const budgetStage = BUDGET_STAGES[transaction.name];
-    if (budgetStage) {
-      setBudgetStage(budgetStage);
-      showSetupBudgetModal();
+    if (transaction.isStageTransaction) {
+      setTransactionToEdit(transaction);
+      const budgetStage = BUDGET_STAGES[transaction.name];
+      if (budgetStage) {
+        setBudgetStage(budgetStage);
+        showSetupBudgetModal();
+      }
+    } else {
+      props.onEditCustomTransaction(transaction);
     }
   }, []);
   const onSubmitEdit = useCallback(
@@ -179,6 +183,9 @@ const styles = StyleSheet.create({
     flex: 0,
     flexGrow: 0,
     paddingHorizontal: 20,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: colors.dimmed.blue,
   },
   titleText: {
     fontSize: 20,
@@ -200,6 +207,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     flex: 0.2,
     width: '100%',
+    minHeight: '10%',
   },
   headerSection: {
     flex: 1,
