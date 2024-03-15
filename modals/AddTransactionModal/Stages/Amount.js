@@ -60,6 +60,11 @@ export const AmountStage = (props) => {
     setIsCategoryModalVisible(true);
   }, []);
 
+  const onCategoryChange = useCallback((e) => {
+    props.onCategoryChange(e);
+    onCategoryModalClose();
+  }, []);
+
   const onNoteModalClose = useCallback(() => {
     setIsNoteModalVisible(false);
   }, []);
@@ -171,11 +176,7 @@ export const AmountStage = (props) => {
         onRequestClose={onCategoryModalClose}
       >
         <CategoryStage
-          stageProps={{
-            onCancel: onCategoryModalClose,
-            cancelLabel: 'Done',
-          }}
-          onChange={props.onCategoryChange}
+          onChange={onCategoryChange}
           userCategories={props.userCategories}
           categories={props.categories}
           category={props.category}

@@ -37,11 +37,13 @@ export const StageWrapper = ({
           {!!submitLabel && (
             <ColorButton onPress={onSubmit} text={submitLabel} size="slim" />
           )}
-          <ColorButton
-            onPress={onCancel}
-            text={cancelLabel || 'Cancel'}
-            size="slim"
-          />
+          {!!onCancel && (
+            <ColorButton
+              onPress={onCancel}
+              text={cancelLabel || 'Cancel'}
+              size="slim"
+            />
+          )}
         </View>
       </KeyboardAvoidingView>
     </Animated.View>

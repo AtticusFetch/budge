@@ -25,3 +25,6 @@ export const colors = {
     green: 'rgba(136, 216, 176, 0.5)',
   },
 };
+
+export const addOpacityToColor = (colorName, opacity) =>
+  colors[colorName].replace(')', `, ${opacity})`).replace('rgb', 'rgba');

@@ -1,95 +1,133 @@
+import _ from 'lodash';
 import moment from 'moment';
-import numbro from 'numbro';
-import { useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { PieChart, ProgressChart } from 'react-native-chart-kit';
 
-import FillBar from '../components/FillBar';
-import { useTransactionsContext } from '../context/Transactions';
+import { colorRoulette } from '../components/UserListItem';
 import { useUserContext } from '../context/User';
-import { colors } from '../utils/colors';
-import { getMonthlyTransactions, getTransactions } from '../utils/plaidApi';
-
-const today = '2023-12-02';
-
-const getPercentageSpent = (total, spent) => {
-  const percentageSpent = spent / total;
-  if (percentageSpent > 1) {
-    return 1;
-  }
-
-  return percentageSpent;
-};
+import { addOpacityToColor, colors } from '../utils/colors';
+import { DAYS_IN_WEEK, WEEKS_IN_MONTH } from '../utils/constants';
 
 export default function Overview({ navigation }) {
   const {
     state: { user },
   } = useUserContext();
-  const {
-    state: { transactions },
-  } = useTransactionsContext();
-  const [monthlySpentPercent, setMonthlySpentPercent] = useState(0);
-  const [monthlySpending, setMonthlySpending] = useState(0);
-  const [weeklySpending, setWeeklySpending] = useState(0);
-  const [dailySpending, setDailySpending] = useState(0);
-  const [monthlyTransactions, setMonthlyTransactions] = useState([]);
-  const { budget: monthlyBudget } = user;
-  useEffect(() => {
-    if (transactions.length) {
-      return;
-    }
-    getMonthlyTransactions(user.id, today)
-      .then((data) => {
-        if (data) {
-          setMonthlyTransactions(
-            data.filter(({ amount }) => parseFloat(amount) > 0),
-          );
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  }, [user.id]);
+  const { budget, transactions } = user;
+  const [categorySpending, setCategorySpending] = useState([]);
+  const [progressSpending, setProgressSpending] = useState([]);
 
   useEffect(() => {
-    setMonthlySpending(
-      monthlyTransactions.reduce((sum, curr) => sum + curr.amount, 0),
+    const groupedTransactions = _.groupBy(transactions, 'category.name');
+    const spending = Object.keys(groupedTransactions).map(
+      (categoryName, index) => {
+        const colorIndex = index % colorRoulette.length;
+        return {
+          name: categoryName !== 'undefined' ? categoryName : 'Unknown',
+          color: colors[colorRoulette[colorIndex]],
+          legendFontColor: '#7F7F7F',
+          legendFontSize: 15,
+          total: _.sumBy(groupedTransactions[categoryName], (t) =>
+            parseFloat(t.amount),
+          ),
+        };
+      },
     );
-  }, [monthlyTransactions]);
+    setCategorySpending(spending);
+  }, [transactions]);
 
   useEffect(() => {
-    const monthlyBudgetSpent = getPercentageSpent(
-      monthlyBudget,
-      monthlySpending,
+    const maxWeeklySpending =
+      -1 * _.sumBy(budget, (t) => (t.amount > 0 ? 0 : t.amount));
+    const maxMonthlySpending = maxWeeklySpending * WEEKS_IN_MONTH;
+    const maxDailySpending = maxWeeklySpending / DAYS_IN_WEEK;
+    const today = moment();
+    const transactionsThisMonth = transactions.filter((t) =>
+      moment(t.date).isSame(today, 'month'),
     );
-    const dailyBudget = monthlySpending / moment().daysInMonth();
-    const dailySpending = monthlyTransactions
-      .filter((t) => moment(t.date).isSame(moment(today), 'day'))
-      .reduce((sum, curr) => sum + curr.amount, 0);
-    const weeklyBudget = dailyBudget * 7;
-    const dailyBudgetSpent = getPercentageSpent(dailyBudget, dailySpending);
+    const transactionsThisWeek = transactions.filter((t) =>
+      moment(t.date).isSame(today, 'week'),
+    );
+    const transactionsToday = transactions.filter((t) =>
+      moment(t.date).isSame(today, 'day'),
+    );
+    const spentThisMonth = _.sumBy(transactionsThisMonth, (t) =>
+      parseFloat(t.amount),
+    );
+    const spentThisWeek = _.sumBy(transactionsThisWeek, (t) =>
+      parseFloat(t.amount),
+    );
+    const spentToday = _.sumBy(transactionsToday, (t) => parseFloat(t.amount));
+    const todayPercent = spentToday / maxDailySpending;
+    const weekPercent = spentThisWeek / maxWeeklySpending;
+    const monthPercent = spentThisMonth / maxMonthlySpending;
+    setProgressSpending([
+      todayPercent <= 1 ? todayPercent : 1,
+      weekPercent <= 1 ? weekPercent : 1,
+      monthPercent <= 1 ? monthPercent : 1,
+    ]);
+  }, [budget, transactions]);
 
-    setMonthlySpentPercent(monthlyBudgetSpent);
-    setDailySpending(dailyBudgetSpent);
-  }, [monthlyBudget, monthlySpending]);
+  const getChartColor = useCallback(
+    (opacity = 1, index) => {
+      if (typeof index === 'undefined') {
+        return `rgba(255, 255, 255, ${opacity})`;
+      }
+      let progreseColor = 'green';
+      if (progressSpending[index] >= 0.5) {
+        progreseColor = 'yellow';
+      }
+      if (progressSpending[index] === 1) {
+        progreseColor = 'red';
+      }
+      return addOpacityToColor(progreseColor, opacity * 1.5);
+    },
+    [progressSpending],
+  );
+
+  const chartConfig = {
+    backgroundColor: colors.yellow,
+    backgroundGradientFrom: colors.grey,
+    backgroundGradientTo: colors.seeThrough.grey,
+    decimalPlaces: 2, // optional, defaults to 2dp
+    color: getChartColor,
+    labelColor: (opacity = 1) => 'white',
+  };
 
   return (
     <View style={styles.container}>
-      <Text>
-        {numbro(dailySpending).format({ output: 'percent', mantissa: 0 })}
-      </Text>
-      <FillBar
-        fillValue={monthlySpentPercent}
-        highlightSection={1}
-        separatorCount={4}
+      <Text>Transactions by category:</Text>
+      <PieChart
+        data={categorySpending}
+        width={Dimensions.get('screen').width * 0.95}
+        height={200}
+        chartConfig={chartConfig}
+        bezier
+        style={{
+          marginVertical: 8,
+          borderRadius: 16,
+          borderWidth: 2,
+          borderColor: colors.dimmed.blue,
+        }}
+        accessor="total"
+        backgroundColor="transparent"
       />
-      <FillBar
-        fillValue={0.3}
-        highlightSection={moment(today).day() - 1}
-        separatorCount={7}
-        labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
-      />
-      <FillBar
-        fillValue={dailySpending ? parseFloat(dailySpending).toFixed(2) : 0}
+      <Text>Progress:</Text>
+      <ProgressChart
+        data={{
+          labels: ['Day', 'Week', 'Month'],
+          data: progressSpending,
+        }}
+        width={Dimensions.get('screen').width * 0.95}
+        height={200}
+        strokeWidth={16}
+        radius={32}
+        chartConfig={chartConfig}
+        hideLegend={false}
+        style={{
+          borderRadius: 16,
+          marginVertical: 8,
+        }}
       />
     </View>
   );
@@ -103,32 +141,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 40,
   },
-  separatorContainer: {
-    width: '100%',
-    height: 40,
-    position: 'absolute',
-    flexDirection: 'row',
-  },
-  separator: {
-    flex: 1,
-    borderColor: colors.grey,
-    borderRightWidth: 1,
-    height: 40,
-    borderRadius: 20,
-  },
-  separatorLast: {
-    borderRightWidth: 0,
-  },
-  bar: {
-    width: '100%',
-    borderWidth: 1,
-    height: 40,
-    borderRadius: 20,
-    borderColor: colors.grey,
-    flexDirection: 'row',
-  },
-  barInner: {
-    borderRadius: 20,
-  },
-  full: {},
 });
