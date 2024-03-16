@@ -1,12 +1,15 @@
 import { ColorButton } from '../ColorButton';
 
+// TODO need more colors
 export const colorRoulette = [
   'orange',
   'grey',
   'yellow',
   'blue',
-  'red',
   'green',
+  'purple',
+  'pink',
+  'beige',
 ];
 
 export const UserListItem = (props) => {

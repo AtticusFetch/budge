@@ -89,6 +89,9 @@ export default function Transactions() {
       if (tDate.isAfter(now)) {
         return 'Upcoming';
       }
+      if (tDate.isSame(now, 'day')) {
+        return 'Today';
+      }
       if (tDate.isSame(now, 'week')) {
         return 'This week';
       }
