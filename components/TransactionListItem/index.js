@@ -97,7 +97,7 @@ export const TransactionListItem = (props) => {
 
   return (
     <ExpandableButton
-      onLongPress={onTransactionLongPress}
+      onLongPress={isPlaidTransaction ? () => {} : onTransactionLongPress}
       colorName={isUpcoming || isPlaidTransaction ? 'grey' : 'blue'}
       style={[isUpcoming && { opacity: 0.5 }]}
       childrenWrapperStyle={styles.btnStyle}
