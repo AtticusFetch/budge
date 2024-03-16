@@ -11,6 +11,7 @@ export const ExpandableButton = (props) => {
     mainContentStyle,
     childrenWrapperStyle,
     style,
+    roundDirection = 'right',
     ...restProps
   } = props;
 
@@ -29,7 +30,11 @@ export const ExpandableButton = (props) => {
       colorName="blue"
       size={expanded ? 'thick' : ''}
       style={[styles.button, style]}
-      childrenWrapperStyle={[styles.itemContainer, childrenWrapperStyle]}
+      childrenWrapperStyle={[
+        styles.itemContainer,
+        childrenWrapperStyle,
+        styles.round[roundDirection],
+      ]}
       {...restProps}
     >
       <View style={[styles.mainContent, mainContentStyle]}>{mainContent}</View>
@@ -49,6 +54,20 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderTopRightRadius: 50,
     borderBottomRightRadius: 50,
+  },
+  round: {
+    right: {
+      borderTopLeftRadius: 0,
+      borderBottomLeftRadius: 0,
+      borderTopRightRadius: 50,
+      borderBottomRightRadius: 50,
+    },
+    left: {
+      borderTopRightRadius: 0,
+      borderBottomRightRadius: 0,
+      borderTopLeftRadius: 50,
+      borderBottomLeftRadius: 50,
+    },
   },
   button: {
     marginVertical: 5,

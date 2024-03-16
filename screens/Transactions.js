@@ -34,7 +34,7 @@ export default function Transactions() {
     state: { categories },
     dispatch: dispatchCategoriesAction,
   } = useCategoriesContext();
-  const { transactions = [] } = user;
+  const { transactions = [], plaidTransactions = [] } = user;
   const [refreshing] = useState(false);
   const [transaction, setTransaction] = useState();
   const [transactionSections, setTransactionSections] = useState([]);
@@ -80,7 +80,8 @@ export default function Transactions() {
   }, []);
 
   useEffect(() => {
-    const sortedTransactions = _.sortBy(transactions, (t) =>
+    const allTransactions = [...transactions, ...plaidTransactions];
+    const sortedTransactions = _.sortBy(allTransactions, (t) =>
       new Date(t.date).getTime(),
     ).reverse();
     const groupedTransactions = _.groupBy(sortedTransactions, (t) => {
@@ -105,7 +106,7 @@ export default function Transactions() {
       data: groupedTransactions[key],
     }));
     setTransactionSections(sections);
-  }, [transactions]);
+  }, [transactions, plaidTransactions]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -129,7 +130,7 @@ export default function Transactions() {
             <Text style={styles.sectionLabel}>{title}</Text>
           </View>
         )}
-        keyExtractor={(transaction) => transaction?.id || transaction?.amount}
+        keyExtractor={(t) => t?.id || t?.transaction_id || t?.amount}
       />
       <View style={styles.addButtonWrapper}>
         <ColorButton

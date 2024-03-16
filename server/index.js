@@ -19,7 +19,7 @@ const { deleteBudgetTransaction } = require('./api/deleteBudgetTransaction');
 const { deleteUserTransaction } = require('./api/deleteUserTransaction');
 const { exchangeToken } = require('./api/exchangeToken');
 const { getCategories } = require('./api/getCategories');
-const { getTransactions } = require('./api/getTransactions');
+const { getPlaidTransactions } = require('./api/getPlaidTransactions');
 const { getTransactionsForMonth } = require('./api/getTransactionsForMonth');
 const { getUserById } = require('./api/getUserById');
 const { postInfo } = require('./api/info');
@@ -51,9 +51,12 @@ app.post('/api/info', postInfo);
 
 app.post('/api/create_link_token', createLinkToken);
 
-app.get('/api/transactions/:userId/:sync?', getTransactions);
+app.get('/api/plaid/transactions/:userId/:sync?', getPlaidTransactions);
 
-app.get('/api/transactions/filter/:userId/:forMonth', getTransactionsForMonth);
+app.get(
+  '/api/plaid/transactions/filter/:userId/:forMonth',
+  getTransactionsForMonth,
+);
 
 app.get('/api/user/:id', getUserById);
 app.get('/api/categories', getCategories);

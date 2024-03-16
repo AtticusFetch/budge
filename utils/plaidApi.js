@@ -17,16 +17,16 @@ export const createLinkToken = () => {
   return postToApi('create_link_token');
 };
 
-export const getTransactions = (userId) => {
-  return fetchFromApi(`transactions/${userId}`);
+export const getPlaidTransactions = (userId) => {
+  return fetchFromApi(`plaid/transactions/${userId}`);
 };
 
 export const getMonthlyTransactions = (userId, date) => {
-  return fetchFromApi(`transactions/filter/${userId}/${date}`);
+  return fetchFromApi(`plaid/transactions/filter/${userId}/${date}`);
 };
 
-export const getTransactionUpdates = (userId) => {
-  return fetchFromApi(`transactions/${userId}/sync`);
+export const getPlaidTransactionUpdates = (userId) => {
+  return fetchFromApi(`plaid/transactions/${userId}/sync`);
 };
 
 export const getAccaounts = () => {

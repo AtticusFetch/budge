@@ -3,6 +3,7 @@ import numbro from 'numbro';
 import { useCallback } from 'react';
 import { ActionSheetIOS, StyleSheet, Text, View } from 'react-native';
 
+import { useCategoriesContext } from '../../context/Categories';
 import { colors } from '../../utils/colors';
 import { ExpandableButton } from '../ExpandableButton';
 import { Icon } from '../Icon';
@@ -14,10 +15,55 @@ const TRANSACTION_ACTIONS = {
 };
 
 const actionSheetOptions = Object.values(TRANSACTION_ACTIONS);
+const CATEGORY_MAP = {
+  INCOME: 9,
+  TRANSFER_IN: 9,
+  TRANSFER_OUT: 9,
+  LOAN_PAYMENTS: 9,
+  BANK_FEES: 9,
+  ENTERTAINMENT: 5,
+  FOOD_AND_DRINK: 4,
+  GENERAL_MERCHANDISE: 3,
+  HOME_IMPROVEMENT: 6,
+  MEDICAL: 9,
+  PERSONAL_CARE: 9,
+  GENERAL_SERVICES: 1,
+  GOVERNMENT_AND_NON_PROFIT: 1,
+  TRANSPORTATION: 2,
+  TRAVEL: 5,
+  RENT_AND_UTILITIES: 6,
+};
+
+const mapPlaidCategory = (plaidCategory, categories) => {
+  const categoryId = CATEGORY_MAP[plaidCategory];
+  const category = categories.find((c) => c.id === `${categoryId}`);
+
+  return category;
+};
 
 export const TransactionListItem = (props) => {
   const { onDelete, onEdit, ...transactionData } = props;
-  const { note, amount, category, date, splitWith, tips, id } = transactionData;
+  const {
+    state: { categories },
+  } = useCategoriesContext();
+  const {
+    note,
+    amount,
+    category,
+    date,
+    splitWith,
+    tips,
+    id,
+    personal_finance_category,
+  } = transactionData;
+
+  let mappedCategory;
+  if (personal_finance_category) {
+    mappedCategory = mapPlaidCategory(
+      personal_finance_category.primary,
+      categories,
+    );
+  }
 
   const isPositiveFlow = amount <= 0;
   const isUpcoming = moment(date).isAfter(moment());
@@ -46,19 +92,22 @@ export const TransactionListItem = (props) => {
   }, []);
 
   const hasSplit = !!splitWith?.length;
+  const isPlaidTransaction = !!transactionData.transaction_id;
+  const categoryToUse = mappedCategory || category;
 
   return (
     <ExpandableButton
       onLongPress={onTransactionLongPress}
-      colorName={isUpcoming ? 'grey' : 'blue'}
+      colorName={isUpcoming || isPlaidTransaction ? 'grey' : 'blue'}
       style={[isUpcoming && { opacity: 0.5 }]}
       childrenWrapperStyle={styles.btnStyle}
       mainContentStyle={styles.mainContentStyle}
+      roundDirection={isPlaidTransaction ? 'left' : 'right'}
       mainContent={
         <View
           style={[styles.transactionWrapper, hasSplit && styles.splitBorder]}
         >
-          <Icon color={colors.grey} name={category?.icon} size={30} />
+          <Icon color={colors.grey} name={categoryToUse?.icon} size={30} />
           <Text style={[styles.text, isPositiveFlow && styles.positiveAmount]}>
             {formattedAmount}
           </Text>
@@ -92,7 +141,7 @@ export const TransactionListItem = (props) => {
               </View>
             )}
             <View style={[styles.subLabel, styles.categoryNameContainer]}>
-              <Text style={styles.categoryName}>{category?.name}</Text>
+              <Text style={styles.categoryName}>{categoryToUse?.name}</Text>
             </View>
           </View>
         </>

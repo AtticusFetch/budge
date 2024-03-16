@@ -7,14 +7,13 @@ import { PlaidLink } from '../components/PlaidLink';
 import { useUserContext, userActions } from '../context/User';
 import { clearUserSession } from '../utils/asyncStorage';
 import { colors } from '../utils/colors';
-import { signOutUser } from '../utils/plaidApi';
+import { getPlaidTransactionUpdates, signOutUser } from '../utils/plaidApi';
 
 export default function Settings(props) {
   const {
     state: { user },
     dispatch: dispatchUserAction,
   } = useUserContext();
-  const [linkToken] = useState(null);
   const [isLoading] = useState(false);
 
   const signOut = useCallback(async () => {
@@ -24,6 +23,15 @@ export default function Settings(props) {
     props.navigation.navigate('Sign In', { signedOut: true });
   }, [user]);
 
+  const onLinkSuccess = useCallback((updatedUser) => {
+    dispatchUserAction(userActions.update(updatedUser));
+  }, []);
+
+  const fetchTransactions = useCallback(async () => {
+    const result = await getPlaidTransactionUpdates(user.id);
+    console.log('result', result);
+  }, []);
+
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -32,7 +40,24 @@ export default function Settings(props) {
         <View style={styles.buttonsWrapper}>
           <Text style={styles.name}>{user?.username}</Text>
           <ColorButton colorName="green" onPress={signOut} text="Sign Out" />
-          <PlaidLink user={user} linkToken={linkToken} />
+          <ColorButton
+            colorName="green"
+            onPress={fetchTransactions}
+            text="Get Plaid Transactions"
+          />
+          <PlaidLink onLinkSuccess={onLinkSuccess} user={user} />
+          {!!user.plaidItems?.length && (
+            <View style={styles.items}>
+              <Text>Accounts:</Text>
+              {user.plaidItems.map((p) => (
+                <View style={styles.plaidItem} key={p.id}>
+                  {p.accounts?.map((a) => (
+                    <Text key={a.account_id}>{a.official_name}</Text>
+                  ))}
+                </View>
+              ))}
+            </View>
+          )}
         </View>
       )}
       <StatusBar style="auto" />
@@ -55,5 +80,9 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 40,
     fontWeight: '600',
+  },
+  plaidItem: {
+    borderWidth: 1,
+    margin: 10,
   },
 });

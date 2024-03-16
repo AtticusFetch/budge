@@ -29,10 +29,8 @@ const getAllItems = (tableName) => {
 const removeListItemByIdx = (id, listName, idx) => {
   const command = new UpdateCommand({
     TableName: TABLE_NAMES.USERS,
+    Key: { id },
     ReturnValues: 'ALL_NEW',
-    Key: {
-      id,
-    },
     UpdateExpression: `REMOVE ${listName}[${idx}]`,
   });
 
@@ -53,6 +51,17 @@ const addUserAttribute = (id, attrName, value) => {
   return ddbClient.send(command);
 };
 
+const deleteUserAttribute = (id, attrName) => {
+  const command = new UpdateCommand({
+    TableName: TABLE_NAMES.USERS,
+    Key: { id },
+    ReturnValues: 'ALL_NEW',
+    UpdateExpression: `REMOVE ${attrName}`,
+  });
+
+  return ddbClient.send(command);
+};
+
 const addListItem = (id, listName, item) => {
   const command = new UpdateCommand({
     TableName: TABLE_NAMES.USERS,
@@ -63,7 +72,7 @@ const addListItem = (id, listName, item) => {
       [`#${listName}`]: `${listName}`,
     },
     ExpressionAttributeValues: {
-      ':item': [item],
+      ':item': item instanceof Array ? item : [item],
       ':empty_list': [],
     },
   });
@@ -75,4 +84,5 @@ module.exports.addListItem = addListItem;
 module.exports.removeListItemByIdx = removeListItemByIdx;
 module.exports.getDBUserById = getDBUserById;
 module.exports.addUserAttribute = addUserAttribute;
+module.exports.deleteUserAttribute = deleteUserAttribute;
 module.exports.getAllItems = getAllItems;

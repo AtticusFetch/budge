@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   openLink,
   LinkLogLevel,
@@ -6,21 +6,23 @@ import {
   usePlaidEmitter,
 } from 'react-native-plaid-link-sdk';
 
-import { exchangeToken } from '../../utils/plaidApi';
+import { createLinkToken, exchangeToken } from '../../utils/plaidApi';
 import { ColorButton } from '../ColorButton';
 
 export const PlaidLink = (props) => {
-  usePlaidEmitter((event) => {
-    console.log('=== plaid event', event);
-  });
+  const [linkToken, setLinkToken] = useState(null);
+  usePlaidEmitter((event) => {});
 
-  const onSuccess = useCallback((data) => {
+  useEffect(() => {
+    createLinkToken().then((data) => {
+      setLinkToken(data.link_token);
+    });
+  }, []);
+
+  const onSuccess = useCallback(async (data) => {
     const { publicToken } = data;
-    exchangeToken(publicToken, props.user.id)
-      .then((data) => {
-        return data;
-      })
-      .catch((e) => console.error('Token exchange failed', e));
+    const updatedUser = await exchangeToken(publicToken, props.user.id);
+    props.onLinkSuccess(updatedUser);
   }, []);
 
   const onExit = useCallback((data) => {}, []);
@@ -29,7 +31,7 @@ export const PlaidLink = (props) => {
   const onPress = useCallback(() => {
     openLink({
       tokenConfig: {
-        token: props.linkToken,
+        token: linkToken,
         logLevel: LinkLogLevel.ERROR,
         noLoadingState: false,
       },
@@ -38,7 +40,14 @@ export const PlaidLink = (props) => {
       onEvent,
       iOSPresentationStyle: LinkIOSPresentationStyle.MODAL,
     });
-  }, [props.linkToken]);
+  }, [linkToken]);
 
-  return <ColorButton inverted onPress={onPress} text="Add Account" />;
+  return (
+    <ColorButton
+      inverted
+      colorName="green"
+      onPress={onPress}
+      text="Add Account"
+    />
+  );
 };
