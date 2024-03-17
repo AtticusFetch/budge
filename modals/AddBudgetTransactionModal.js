@@ -13,14 +13,15 @@ import { colors } from '../utils/colors';
 import { getFrequencyMultiplier } from '../utils/getFrequencyMultiplier';
 
 export const AddBudgetTransactionModal = (props) => {
-  const { transactionToEdit = {} } = props;
-  const [split, setSplit] = useState(transactionToEdit.split);
-  const [frequency, setFrequency] = useState(transactionToEdit.frequency);
-  const [value, setValue] = useState(transactionToEdit.value);
-  const [category, setCategory] = useState(transactionToEdit.category);
-  const [isIncome, setIsIncome] = useState(transactionToEdit.isIncome);
+  const { transactionToEdit } = props;
+  const [split, setSplit] = useState(transactionToEdit?.split);
+  const [frequency, setFrequency] = useState(transactionToEdit?.frequency);
+  const [value, setValue] = useState(transactionToEdit?.value);
+  const [category, setCategory] = useState(transactionToEdit?.category);
+  const [isIncome, setIsIncome] = useState(transactionToEdit?.isIncome);
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
   const onInputChange = useCallback((e) => {
+    console.log('e', e);
     setValue(e);
   }, []);
   const onFrequencyChange = useCallback((e) => {
@@ -52,11 +53,12 @@ export const AddBudgetTransactionModal = (props) => {
 
   useEffect(() => {
     if (transactionToEdit) {
-      setValue(transactionToEdit.value);
-      setFrequency(transactionToEdit.frequency);
-      setSplit(transactionToEdit.split);
-      setIsIncome(transactionToEdit.isIncome);
-      setCategory(transactionToEdit.category);
+      console.log('transactionToEdit', transactionToEdit);
+      setValue(transactionToEdit?.value);
+      setFrequency(transactionToEdit?.frequency);
+      setSplit(transactionToEdit?.split);
+      setIsIncome(transactionToEdit?.isIncome);
+      setCategory(transactionToEdit?.category);
     }
   }, [transactionToEdit]);
 
@@ -73,6 +75,7 @@ export const AddBudgetTransactionModal = (props) => {
       value,
       isIncome,
     };
+    console.log('onSubmit');
     props.onSubmit(data);
     props.onClose();
     setValue();

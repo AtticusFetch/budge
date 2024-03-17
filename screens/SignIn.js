@@ -15,10 +15,7 @@ import { colors } from '../utils/colors';
 import { authUser, getUserById, verifyUserSession } from '../utils/plaidApi';
 
 export default function SignIn({ navigation, route }) {
-  const {
-    dispatch,
-    state: { user },
-  } = useUserContext();
+  const { dispatch } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [isSignUpVisible, setisSignUpVisible] = useState(false);
   const [isSignInVisible, setisSignInVisible] = useState(false);

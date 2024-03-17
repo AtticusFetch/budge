@@ -93,7 +93,7 @@ export default function Transactions() {
       if (tDate.isSame(now, 'day')) {
         return 'Today';
       }
-      if (tDate.isSame(now, 'week')) {
+      if (tDate.isSame(now, 'isoWeek')) {
         return 'This week';
       }
       if (tDate.week() + 1 === now.week()) {
@@ -134,6 +134,7 @@ export default function Transactions() {
       />
       <View style={styles.addButtonWrapper}>
         <ColorButton
+          style={styles.addButtonContainer}
           childrenWrapperStyle={styles.addButton}
           colorName="blue"
           type="fill"
@@ -172,8 +173,18 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   list: {
-    width: '70%',
+    width: '100%',
     paddingHorizontal: 20,
+  },
+  addButtonContainer: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    borderTopLeftRadius: 35,
+    borderBottomLeftRadius: 35,
+    shadowColor: colors.grey,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
   },
   addButtonWrapper: {
     position: 'absolute',
@@ -185,10 +196,6 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderTopLeftRadius: 35,
     borderBottomLeftRadius: 35,
-    shadowColor: colors.grey,
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
   },
   section: {
     backgroundColor: colors.dimmed.blue,

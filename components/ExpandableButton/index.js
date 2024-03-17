@@ -29,7 +29,7 @@ export const ExpandableButton = (props) => {
       onPress={onPress}
       colorName="blue"
       size={expanded ? 'thick' : ''}
-      style={[styles.button, style]}
+      style={[styles.button, expanded && styles.expandedStyle, style]}
       childrenWrapperStyle={[
         styles.itemContainer,
         childrenWrapperStyle,
@@ -37,7 +37,15 @@ export const ExpandableButton = (props) => {
       ]}
       {...restProps}
     >
-      <View style={[styles.mainContent, mainContentStyle]}>{mainContent}</View>
+      <View
+        style={[
+          styles.mainContent,
+          expanded && styles.mainExpandedStyle,
+          mainContentStyle,
+        ]}
+      >
+        {mainContent}
+      </View>
       {expanded && <View style={styles.extraContent}>{extraContent}</View>}
     </ColorButton>
   );
@@ -54,6 +62,10 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderTopRightRadius: 50,
     borderBottomRightRadius: 50,
+  },
+  expandedStyle: {},
+  mainExpandedStyle: {
+    flex: 0.4,
   },
   round: {
     right: {
@@ -80,5 +92,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 20,
   },
-  extraContent: {},
+  extraContent: {
+    flex: 1,
+  },
 });

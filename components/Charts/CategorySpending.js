@@ -18,7 +18,7 @@ import { colorRoulette } from '../UserListItem';
 export const CategorySpending = (props) => {
   const { transactions, chartConfig } = props;
   const [categorySpending, setCategorySpending] = useState([]);
-  const [selectedDateRange, setSetselectedDateRange] = useState('month');
+  const [selectedDateRange, setSelectedDateRange] = useState('month');
   const start = moment().startOf('month');
   const end = moment().endOf('month');
   const [dateFrom, setDateFrom] = useState(start.toDate());
@@ -63,15 +63,15 @@ export const CategorySpending = (props) => {
   }, [selectedDateRange, dateFrom, dateTo]);
 
   const onDayRangePress = useCallback(() => {
-    setSetselectedDateRange('day');
+    setSelectedDateRange('day');
   }, []);
 
   const onWeekRangePress = useCallback(() => {
-    setSetselectedDateRange('week');
+    setSelectedDateRange('isoWeek');
   }, []);
 
   const onMonthRangePress = useCallback(() => {
-    setSetselectedDateRange('month');
+    setSelectedDateRange('month');
   }, []);
 
   const onCustomRangePress = useCallback(() => {
@@ -80,7 +80,7 @@ export const CategorySpending = (props) => {
       update: { type: 'spring', springDamping: 0.4 },
       create: { type: 'linear', property: 'opacity' },
     });
-    setSetselectedDateRange('custom');
+    setSelectedDateRange('custom');
   }, []);
 
   return (
@@ -98,7 +98,7 @@ export const CategorySpending = (props) => {
         <ColorButton
           size="slim"
           childrenWrapperStyle={styles.btn}
-          colorName={selectedDateRange === 'week' ? 'yellow' : 'blue'}
+          colorName={selectedDateRange === 'isoWeek' ? 'yellow' : 'blue'}
           onPress={onWeekRangePress}
           style={styles.dateSelectBtn}
           text="This Week"

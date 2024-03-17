@@ -21,7 +21,7 @@ export const ProgressSpending = (props) => {
       moment(t.date).isSame(today, 'month'),
     );
     const transactionsThisWeek = transactions.filter((t) =>
-      moment(t.date).isSame(today, 'week'),
+      moment(t.date).isSame(today, 'isoWeek'),
     );
     const transactionsToday = transactions.filter((t) =>
       moment(t.date).isSame(today, 'day'),

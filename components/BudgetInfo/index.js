@@ -216,8 +216,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   incomeSection: {
-    borderRightWidth: 1,
-    borderColor: colors.dimmed.grey,
+    borderRightWidth: 2,
+    borderColor: colors.dimmed.blue,
   },
   headerText: {
     fontSize: 30,

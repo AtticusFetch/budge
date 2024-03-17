@@ -99,7 +99,11 @@ export const TransactionListItem = (props) => {
     <ExpandableButton
       onLongPress={isPlaidTransaction ? () => {} : onTransactionLongPress}
       colorName={isUpcoming || isPlaidTransaction ? 'grey' : 'blue'}
-      style={[isUpcoming && { opacity: 0.5 }]}
+      style={[
+        styles.btnContainer,
+        isPlaidTransaction && styles.plaidItem,
+        isUpcoming && { opacity: 0.5 },
+      ]}
       childrenWrapperStyle={styles.btnStyle}
       mainContentStyle={styles.mainContentStyle}
       roundDirection={isPlaidTransaction ? 'left' : 'right'}
@@ -114,7 +118,7 @@ export const TransactionListItem = (props) => {
         </View>
       }
       extraContent={
-        <>
+        <View style={styles.extraContainer}>
           {note && (
             <View style={[styles.labelContainer, styles.noteContainer]}>
               <Text style={[styles.labelText, styles.noteText]}>{note}</Text>
@@ -144,7 +148,7 @@ export const TransactionListItem = (props) => {
               <Text style={styles.categoryName}>{categoryToUse?.name}</Text>
             </View>
           </View>
-        </>
+        </View>
       }
     />
   );
@@ -165,6 +169,16 @@ const styles = StyleSheet.create({
   btnStyle: {
     paddingBottom: 0,
   },
+  extraContainer: {
+    justifyContent: 'center',
+    flex: 1,
+  },
+  btnContainer: {
+    maxWidth: '80%',
+  },
+  plaidItem: {
+    alignSelf: 'flex-end',
+  },
   splitBorder: {
     borderStartColor: colors.yellow,
     borderTopColor: 'transparent',
@@ -175,11 +189,10 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 100,
   },
   transactionWrapper: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
-    height: '100%',
   },
   categoryNameContainer: {
     opacity: 0.5,

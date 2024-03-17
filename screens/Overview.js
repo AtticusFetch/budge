@@ -23,6 +23,7 @@ export default function Overview({ navigation }) {
   return (
     <View style={styles.container}>
       <CategorySpending transactions={transactions} chartConfig={chartConfig} />
+      <View style={styles.separator} />
       <ProgressSpending
         budget={budget}
         transactions={transactions}
@@ -38,6 +39,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 40,
+  },
+  separator: {
+    height: 2,
+    width: '100%',
+    backgroundColor: colors.dimmed.grey,
+    marginVertical: 15,
+    borderRadius: 100,
   },
 });
