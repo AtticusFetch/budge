@@ -21,7 +21,6 @@ export const AddBudgetTransactionModal = (props) => {
   const [isIncome, setIsIncome] = useState(transactionToEdit?.isIncome);
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
   const onInputChange = useCallback((e) => {
-    console.log('e', e);
     setValue(e);
   }, []);
   const onFrequencyChange = useCallback((e) => {
@@ -53,7 +52,6 @@ export const AddBudgetTransactionModal = (props) => {
 
   useEffect(() => {
     if (transactionToEdit) {
-      console.log('transactionToEdit', transactionToEdit);
       setValue(transactionToEdit?.value);
       setFrequency(transactionToEdit?.frequency);
       setSplit(transactionToEdit?.split);
@@ -75,7 +73,6 @@ export const AddBudgetTransactionModal = (props) => {
       value,
       isIncome,
     };
-    console.log('onSubmit');
     props.onSubmit(data);
     props.onClose();
     setValue();
