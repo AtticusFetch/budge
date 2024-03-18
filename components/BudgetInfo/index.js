@@ -1,7 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import { BUDGET_STAGES, SetupBudgetModal } from '../../modals/SetupBudgetModal';
 import { colors } from '../../utils/colors';
@@ -12,9 +12,7 @@ import { TransactionListItem } from '../TransactionListItem';
 export const BudgetInfo = (props) => {
   const { budget } = props;
   const [totalIncome, setTotalIncome] = useState('');
-  const listHeight = useRef(new Animated.Value(1)).current;
   const [totalOutcome, setTotalOutcome] = useState('');
-  const [expanded, setExpanded] = useState(true);
   const [budgetStage, setBudgetStage] = useState();
   const [transactionToEdit, setTransactionToEdit] = useState(null);
   const [isEditBudgetModalVisible, setIsEditBudgetModalVisible] =
@@ -59,28 +57,6 @@ export const BudgetInfo = (props) => {
     setIsEditBudgetModalVisible(true);
   }, []);
 
-  const expand = useCallback(() => {
-    Animated.timing(listHeight, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-    setExpanded(true);
-  }, []);
-  const collapse = useCallback(() => {
-    Animated.timing(listHeight, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-    setExpanded(false);
-  }, []);
-
-  const lisetHeightPercent = listHeight.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
-  });
-
   const onDelete = useCallback(async (transactionId) => {
     await props.onDeleteTransaction(transactionId);
   }, []);
@@ -109,9 +85,7 @@ export const BudgetInfo = (props) => {
   );
 
   return (
-    <View
-      style={[styles.overviewHeader, expanded && styles.overviewHeaderExpanded]}
-    >
+    <View style={[styles.overviewHeader]}>
       <Text style={styles.titleText}>Weekly Breakdown</Text>
       <View style={[globalStyles.row, styles.headerContainer]}>
         <View style={[styles.headerSection, styles.incomeSection]}>
@@ -129,30 +103,22 @@ export const BudgetInfo = (props) => {
       </View>
       <Animated.FlatList
         data={sortedBudget}
-        style={[styles.list, { height: lisetHeightPercent }]}
+        style={[styles.list]}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContent}
         renderItem={(transaction) => {
           return (
             <TransactionListItem
               onDelete={onDelete}
               onEdit={onEdit}
+              style={styles.transaction}
+              roundDirection="none"
               {...transaction.item}
             />
           );
         }}
         keyExtractor={(transaction) => transaction?.id || transaction?.amount}
       />
-      <Pressable
-        onPress={expanded ? collapse : expand}
-        style={styles.expandBtn}
-      >
-        <Feather
-          style={[styles.chevronIcon, expanded && styles.chevronIconExpanded]}
-          color={colors.blue}
-          name="chevron-down"
-          size={40}
-        />
-      </Pressable>
       <SetupBudgetModal
         onClose={closeSetupBudgetModal}
         onRequestClose={closeSetupBudgetModal}
@@ -168,7 +134,6 @@ export const BudgetInfo = (props) => {
 const styles = StyleSheet.create({
   overviewHeader: {
     paddingTop: 10,
-    paddingBottom: 50,
     flexDirection: 'column',
     borderColor: colors.dimmed.grey,
     borderRadius: 10,
@@ -176,16 +141,14 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'white',
   },
-  overviewHeaderExpanded: {
-    flex: 1,
-  },
   list: {
-    flex: 0,
-    flexGrow: 0,
+    flex: 1,
+    width: '100%',
     paddingHorizontal: 20,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: colors.dimmed.blue,
+  },
+  listContent: {},
+  transaction: {
+    maxWidth: '100%',
   },
   titleText: {
     fontSize: 20,
@@ -195,17 +158,8 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     marginBottom: 10,
   },
-  expandBtn: {
-    width: '100%',
-  },
-  chevronIcon: {
-    alignSelf: 'center',
-  },
-  chevronIconExpanded: {
-    transform: [{ rotateX: '180deg' }],
-  },
   headerContainer: {
-    flex: 0.2,
+    flex: 0.1,
     width: '100%',
     minHeight: '10%',
   },

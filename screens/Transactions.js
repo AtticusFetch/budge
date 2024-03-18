@@ -96,7 +96,7 @@ export default function Transactions() {
       if (tDate.isSame(now, 'isoWeek')) {
         return 'This week';
       }
-      if (tDate.week() + 1 === now.week()) {
+      if (tDate.isoWeek() + 1 === now.isoWeek()) {
         return 'Last week';
       }
       return tDate.format('MMM YYYY');

@@ -124,6 +124,7 @@ export default function Budget(props) {
       {!!user.budget && (
         <View style={styles.addButtonWrapper}>
           <ColorButton
+            style={styles.addButtonContainer}
             childrenWrapperStyle={styles.addButton}
             onPress={showAddBudgetTransactionModal}
             colorName="blue"
@@ -165,6 +166,16 @@ const styles = StyleSheet.create({
     fontSize: 30,
     opacity: 0.5,
   },
+  addButtonContainer: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    borderTopLeftRadius: 35,
+    borderBottomLeftRadius: 35,
+    shadowColor: colors.grey,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+  },
   addButtonWrapper: {
     position: 'absolute',
     bottom: 40,
@@ -175,9 +186,5 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderTopLeftRadius: 35,
     borderBottomLeftRadius: 35,
-    shadowColor: colors.grey,
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
   },
 });

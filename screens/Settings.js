@@ -28,8 +28,8 @@ export default function Settings(props) {
   }, []);
 
   const fetchTransactions = useCallback(async () => {
-    const result = await getPlaidTransactionUpdates(user.id);
-    console.log('result', result);
+    const updatedUser = await getPlaidTransactionUpdates(user.id);
+    dispatchUserAction(userActions.update(updatedUser));
   }, []);
 
   return (
@@ -43,7 +43,7 @@ export default function Settings(props) {
           <ColorButton
             colorName="green"
             onPress={fetchTransactions}
-            text="Get Plaid Transactions"
+            text="Pull Transactions"
           />
           <PlaidLink onLinkSuccess={onLinkSuccess} user={user} />
           {!!user.plaidItems?.length && (

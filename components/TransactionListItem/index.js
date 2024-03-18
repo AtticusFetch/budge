@@ -42,7 +42,7 @@ const mapPlaidCategory = (plaidCategory, categories) => {
 };
 
 export const TransactionListItem = (props) => {
-  const { onDelete, onEdit, ...transactionData } = props;
+  const { onDelete, onEdit, roundDirection, style, ...transactionData } = props;
   const {
     state: { categories },
   } = useCategoriesContext();
@@ -103,10 +103,11 @@ export const TransactionListItem = (props) => {
         styles.btnContainer,
         isPlaidTransaction && styles.plaidItem,
         isUpcoming && { opacity: 0.5 },
+        style,
       ]}
       childrenWrapperStyle={styles.btnStyle}
       mainContentStyle={styles.mainContentStyle}
-      roundDirection={isPlaidTransaction ? 'left' : 'right'}
+      roundDirection={roundDirection || (isPlaidTransaction ? 'left' : 'right')}
       mainContent={
         <View
           style={[styles.transactionWrapper, hasSplit && styles.splitBorder]}
@@ -127,7 +128,7 @@ export const TransactionListItem = (props) => {
           {date && (
             <View style={[styles.labelContainer, styles.dateContainer]}>
               <Text style={[styles.labelText, styles.dateText]}>
-                {moment(date).format('MMM D, YYYY')}
+                {moment(date).format('MMM D, YYYY Z')}
               </Text>
             </View>
           )}

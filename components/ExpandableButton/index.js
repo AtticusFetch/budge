@@ -60,8 +60,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
-    borderTopRightRadius: 50,
-    borderBottomRightRadius: 50,
   },
   expandedStyle: {},
   mainExpandedStyle: {
@@ -79,6 +77,12 @@ const styles = StyleSheet.create({
       borderBottomRightRadius: 0,
       borderTopLeftRadius: 50,
       borderBottomLeftRadius: 50,
+    },
+    none: {
+      borderTopLeftRadius: 0,
+      borderBottomLeftRadius: 0,
+      borderTopRightRadius: 0,
+      borderBottomRightRadius: 0,
     },
   },
   button: {

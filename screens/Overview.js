@@ -1,4 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import moment from 'moment';
+import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 
 import { CategorySpending } from '../components/Charts/CategorySpending';
 import { ProgressSpending } from '../components/Charts/ProgressSpending';
@@ -13,29 +14,47 @@ export default function Overview({ navigation }) {
 
   const chartConfig = {
     backgroundColor: colors.yellow,
-    backgroundGradientFrom: colors.grey,
-    backgroundGradientTo: colors.seeThrough.grey,
+    backgroundGradientFrom: colors.seeThrough.grey,
+    backgroundGradientTo: colors.grey,
     decimalPlaces: 2, // optional, defaults to 2dp
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     labelColor: (opacity = 1) => 'white',
   };
+  const today = parseInt(moment().format('DD'), 10);
+  const firstDay = parseInt(moment().startOf('month').format('DD'), 10);
+  const daysPassed = today - firstDay;
 
   return (
-    <View style={styles.container}>
-      <CategorySpending transactions={transactions} chartConfig={chartConfig} />
-      <View style={styles.separator} />
-      <ProgressSpending
-        budget={budget}
-        transactions={transactions}
-        chartConfig={chartConfig}
-      />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.contentWrapper}
+      >
+        <CategorySpending
+          transactions={transactions}
+          chartConfig={chartConfig}
+        />
+        <ProgressSpending
+          budget={budget}
+          slim={false}
+          extraDays={
+            daysPassed &&
+            new Array(daysPassed)
+              .fill({})
+              .map((i, index) => moment().subtract(index + 1, 'day'))
+          }
+          transactions={transactions}
+          chartConfig={chartConfig}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
+  contentWrapper: {
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',

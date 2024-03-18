@@ -1,16 +1,10 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  Dimensions,
-  LayoutAnimation,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Dimensions, LayoutAnimation, StyleSheet, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
-import { colors, getRandomColor } from '../../utils/colors';
+import { colors } from '../../utils/colors';
 import { ColorButton } from '../ColorButton';
 import { DatePicker } from '../DatePicker';
 import { colorRoulette } from '../UserListItem';
@@ -40,7 +34,7 @@ export const CategorySpending = (props) => {
         // TODO Need more random colors
         return {
           name: categoryName !== 'undefined' ? categoryName : 'Unknown',
-          color: colors[colorRoulette[index]] || getRandomColor(),
+          color: colors[colorRoulette[index]],
           legendFontColor: '#7F7F7F',
           legendFontSize: 15,
           total: _.sumBy(groupedTransactions[categoryName], (t) =>
@@ -85,7 +79,6 @@ export const CategorySpending = (props) => {
 
   return (
     <View style={styles.container}>
-      <Text>Category Spending</Text>
       <View style={styles.btnContainer}>
         <ColorButton
           onPress={onDayRangePress}
@@ -136,7 +129,8 @@ export const CategorySpending = (props) => {
           marginVertical: 8,
           borderRadius: 16,
           borderWidth: 2,
-          borderColor: colors.dimmed.blue,
+          borderColor: colors.blue,
+          backgroundColor: colors.grey,
         }}
         accessor="total"
         backgroundColor="transparent"
@@ -146,9 +140,19 @@ export const CategorySpending = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    backgroundColor: colors.dimmed.yellow,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.yellow,
+    borderRadius: 10,
+    marginVertical: 5,
+  },
   dateSelectBtn: {
     flex: 1,
+    marginHorizontal: 1,
   },
   btn: {
     padding: 5,
