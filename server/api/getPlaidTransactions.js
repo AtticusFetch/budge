@@ -44,6 +44,7 @@ const getTransactionsForItem = async function (item) {
 const getPlaidTransactions = async (request, response) => {
   try {
     const { userId, sync } = request.params;
+    console.log('getPlaidTransactions', userId);
     const userDb = await getDBUserById(userId);
     const user = userDb?.Item;
     if (!sync) {

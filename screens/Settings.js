@@ -1,8 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { ColorButton } from '../components/ColorButton';
+import { PlaidItem } from '../components/PlaidItem';
 import { PlaidLink } from '../components/PlaidLink';
 import { useUserContext, userActions } from '../context/User';
 import { clearUserSession } from '../utils/asyncStorage';
@@ -33,56 +41,69 @@ export default function Settings(props) {
   }, []);
 
   return (
-    <View style={styles.container}>
-      {isLoading ? (
-        <ActivityIndicator size="large" color={colors.orange} />
-      ) : (
-        <View style={styles.buttonsWrapper}>
-          <Text style={styles.name}>{user?.username}</Text>
-          <ColorButton colorName="green" onPress={signOut} text="Sign Out" />
-          <ColorButton
-            colorName="green"
-            onPress={fetchTransactions}
-            text="Pull Transactions"
-          />
-          <PlaidLink onLinkSuccess={onLinkSuccess} user={user} />
-          {!!user.plaidItems?.length && (
-            <View style={styles.items}>
-              <Text>Accounts:</Text>
-              {user.plaidItems.map((p) => (
-                <View style={styles.plaidItem} key={p.id}>
-                  {p.accounts?.map((a) => (
-                    <Text key={a.account_id}>{a.official_name}</Text>
-                  ))}
-                </View>
-              ))}
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+        {isLoading ? (
+          <ActivityIndicator size="large" color={colors.orange} />
+        ) : (
+          <View style={styles.content}>
+            <View style={styles.buttonsContainer}>
+              <Text style={styles.name}>{user?.username}</Text>
+              <ColorButton
+                colorName="green"
+                onPress={signOut}
+                text="Sign Out"
+              />
+              <ColorButton
+                colorName="green"
+                onPress={fetchTransactions}
+                text="Pull Transactions"
+              />
+              <PlaidLink onLinkSuccess={onLinkSuccess} user={user} />
             </View>
-          )}
-        </View>
-      )}
-      <StatusBar style="auto" />
-    </View>
+            {!!user.plaidItems?.length && (
+              <View style={styles.items}>
+                <Text style={styles.accountsHeader}>Linked Accounts:</Text>
+                {user.plaidItems.map((p) => (
+                  <PlaidItem item={p} />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+        <StatusBar style="auto" />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    backgroundColor: 'white',
     justifyContent: 'center',
   },
-  buttonsWrapper: {
-    flex: 1,
+  content: {
     paddingHorizontal: 40,
     paddingVertical: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonsContainer: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  accountsHeader: {
+    textAlign: 'center',
+    fontSize: 20,
+    marginBottom: 15,
+    marginTop: 25,
+  },
+  items: {
+    width: '100%',
+  },
   name: {
     fontSize: 40,
     fontWeight: '600',
-  },
-  plaidItem: {
-    borderWidth: 1,
-    margin: 10,
   },
 });

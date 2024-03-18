@@ -22,10 +22,12 @@ export const CategoryStage = (props) => {
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
   const [categories, setCategories] = useState([]);
   const onCategoryModalClose = useCallback(() => {
+    console.log('onCategoryModalClose');
     setIsCategoryModalVisible(false);
   }, []);
 
   const onCategoryModalShow = useCallback(() => {
+    console.log('onCategoryModalShow');
     setIsCategoryModalVisible(true);
   }, []);
 
@@ -38,7 +40,11 @@ export const CategoryStage = (props) => {
   const onItemPress = useCallback((category) => {
     if (category.id === addNewCategory.id) {
       onCategoryModalShow();
+
+      return true;
     }
+
+    return false;
   }, []);
 
   useEffect(() => {

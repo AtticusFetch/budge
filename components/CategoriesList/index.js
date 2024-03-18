@@ -41,7 +41,10 @@ export const CategoriesList = (props) => {
 
   const onItemPress = useCallback(
     (category) => {
-      props.onItemPress?.(category);
+      const exit = props.onItemPress?.(category);
+      if (exit) {
+        return;
+      }
       if (getCategoryId(selectedCategory) === getCategoryId(category)) {
         setSelectedCategory(null);
         onSelectedCategoryChange(null);

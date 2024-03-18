@@ -9,6 +9,7 @@ export const colorRoulette = [
   'purple',
   'lightPink',
   'pink',
+  'rouge',
   'beige',
   'red',
 ];

@@ -34,7 +34,7 @@ export default function Transactions() {
     state: { categories },
     dispatch: dispatchCategoriesAction,
   } = useCategoriesContext();
-  const { transactions = [], plaidTransactions = [] } = user;
+  const { transactions, plaidTransactions } = user;
   const [refreshing] = useState(false);
   const [transaction, setTransaction] = useState();
   const [transactionSections, setTransactionSections] = useState([]);
@@ -80,7 +80,7 @@ export default function Transactions() {
   }, []);
 
   useEffect(() => {
-    const allTransactions = [...transactions, ...plaidTransactions];
+    const allTransactions = transactions?.concat(plaidTransactions || []) || [];
     const sortedTransactions = _.sortBy(allTransactions, (t) =>
       new Date(t.date).getTime(),
     ).reverse();
