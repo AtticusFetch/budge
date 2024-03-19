@@ -1,8 +1,9 @@
 import moment from 'moment';
 import numbro from 'numbro';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActionSheetIOS, StyleSheet, Text, View } from 'react-native';
 
+import { useCategoriesContext } from '../../context/Categories';
 import { colors } from '../../utils/colors';
 import { mapPlaidCategory } from '../../utils/plaidCategoryMapper';
 import { ExpandableButton } from '../ExpandableButton';
@@ -25,6 +26,10 @@ const plaidActionSheetOptions = Object.values(PLAID_TRANSACTION_ACTIONS);
 
 export const TransactionListItem = (props) => {
   const {
+    state: { categories },
+  } = useCategoriesContext();
+  const [mappedCategory, setMappedCategory] = useState(props.category);
+  const {
     onDelete,
     onEdit,
     roundDirection,
@@ -36,7 +41,6 @@ export const TransactionListItem = (props) => {
   const {
     note,
     amount,
-    category,
     date,
     merchant_name,
     splitWith,
@@ -45,10 +49,13 @@ export const TransactionListItem = (props) => {
     personal_finance_category,
   } = transactionData;
 
-  let mappedCategory;
-  if (personal_finance_category) {
-    mappedCategory = mapPlaidCategory(personal_finance_category);
-  }
+  useEffect(() => {
+    if (personal_finance_category) {
+      setMappedCategory(
+        mapPlaidCategory(personal_finance_category, categories),
+      );
+    }
+  }, [personal_finance_category, categories]);
 
   const isPositiveFlow = amount <= 0;
   const isUpcoming = moment.utc(date).isAfter(moment.utc());
@@ -101,7 +108,6 @@ export const TransactionListItem = (props) => {
   const hasSplit = !!splitWith?.length;
   const isPlaidTransaction =
     !transactionData.transformedPlaid && !!transactionData.transaction_id;
-  const categoryToUse = mappedCategory || category;
 
   return (
     <ExpandableButton
@@ -124,7 +130,7 @@ export const TransactionListItem = (props) => {
         <View
           style={[styles.transactionWrapper, hasSplit && styles.splitBorder]}
         >
-          <Icon color={colors.grey} name={categoryToUse?.icon} size={30} />
+          <Icon color={colors.grey} name={mappedCategory?.icon} size={30} />
           <Text style={[styles.text, isPositiveFlow && styles.positiveAmount]}>
             {formattedAmount}
           </Text>
@@ -165,7 +171,7 @@ export const TransactionListItem = (props) => {
               </View>
             )}
             <View style={[styles.subLabel, styles.categoryNameContainer]}>
-              <Text style={styles.categoryName}>{categoryToUse?.name}</Text>
+              <Text style={styles.categoryName}>{mappedCategory?.name}</Text>
             </View>
           </View>
         </View>

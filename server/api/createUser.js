@@ -14,6 +14,7 @@ const createUser = async (request, response) => {
       id,
     },
   });
+  // TODO probably just need to supply return values to previous command
   const getCommand = new GetCommand({
     TableName: TABLE_NAMES.USERS,
     Key: {

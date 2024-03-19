@@ -36,9 +36,6 @@ const { verifyUser } = require('./api/verifyUser');
 
 const APP_PORT = process.env.APP_PORT || 8000;
 
-// Parameters used for the OAuth redirect Link flow.
-//
-
 const app = express();
 app.use(
   bodyParser.urlencoded({

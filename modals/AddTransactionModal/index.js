@@ -54,7 +54,15 @@ export default function AddTransactionModal(props) {
       splitWith,
       shouldRememberNote,
     });
-  }, [amount, category, note, shouldRememberNote, tips, transaction]);
+  }, [
+    amount,
+    category,
+    note,
+    shouldRememberNote,
+    tips,
+    transaction,
+    splitWith,
+  ]);
 
   const onCancel = useCallback(() => {
     props.onClose();

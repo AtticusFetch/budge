@@ -27,12 +27,15 @@ import {
 } from '../utils/plaidApi';
 import { mapPlaidCategory } from '../utils/plaidCategoryMapper';
 
-const transformPlaidTransaction = (plaidTransaction) => {
+const transformPlaidTransaction = (plaidTransaction, categories) => {
   return {
     ...plaidTransaction,
     transformedPlaid: true,
     id: plaidTransaction.transaction_id,
-    category: mapPlaidCategory(plaidTransaction.personal_finance_category),
+    category: mapPlaidCategory(
+      plaidTransaction.personal_finance_category,
+      categories,
+    ),
   };
 };
 
@@ -71,7 +74,6 @@ export default function Transactions() {
 
   const onSubmitTransaction = useCallback(async (transaction) => {
     let updatedUser;
-    console.log('onSubmitTransaction', transaction.transformedPlaid);
     setisAddTransactionModalVisible(false);
     if (transaction.transformedPlaid) {
       updatedUser = await transferPlaidTransaction(transaction, user.id);
@@ -95,15 +97,16 @@ export default function Transactions() {
 
   const onTransferTransaction = useCallback(
     async (plaidTransaction) => {
-      const transformed = transformPlaidTransaction(plaidTransaction);
+      const transformed = transformPlaidTransaction(
+        plaidTransaction,
+        categories,
+      );
       onEditTransaction(transformed);
     },
-    [onEditTransaction],
+    [onEditTransaction, categories],
   );
 
-  const onIgnoreTransaction = useCallback(async (plaidTransaction) => {
-    console.log('ignore', plaidTransaction.transaction_id);
-  }, []);
+  const onIgnoreTransaction = useCallback(async (plaidTransaction) => {}, []);
 
   useEffect(() => {
     const allTransactions = transactions?.concat(plaidTransactions || []) || [];
