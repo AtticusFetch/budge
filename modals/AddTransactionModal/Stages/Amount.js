@@ -6,10 +6,12 @@ import { CategoryStage } from './Category';
 import { NoteStage } from './Note';
 import { ColorButton } from '../../../components/ColorButton';
 import { DatePicker } from '../../../components/DatePicker';
+import { Icon } from '../../../components/Icon';
 import { StageWrapper } from '../../../components/ModalStageWrapper';
 import { StageTextInput } from '../../../components/TextInput';
 import { colors } from '../../../utils/colors';
 import { getTipAmount } from '../../../utils/getTipAmount';
+import { globalStyles } from '../../../utils/globalStyles';
 import FriendsSplitModal from '../../FriendsSplitModal';
 import TipsModal from '../../TipsModal';
 
@@ -84,10 +86,14 @@ export const AmountStage = (props) => {
   }, [props.tips, props.amount]);
 
   return (
-    <StageWrapper {...props.stageProps}>
+    <StageWrapper
+      {...props.stageProps}
+      contentWrapperStyle={styles.contentWrapperStyle}
+    >
       <StageTextInput
         onChange={props.onChange}
         value={props.amount}
+        containerStyle={{ flex: 0 }}
         placeholder={numbro(0).formatCurrency({ mantissa: 2 })}
         autoFocus
         keyboardType="numeric"
@@ -95,7 +101,7 @@ export const AmountStage = (props) => {
         returnKeyType="next"
       />
       <View style={styles.textContainer}>
-        {!!props.splitWith.length && (
+        {!!props.splitWith?.length && (
           <Text style={styles.secondaryText}>
             Split amount:{' '}
             {numbro(
@@ -113,37 +119,53 @@ export const AmountStage = (props) => {
         )}
       </View>
       <View style={styles.modifierButtonsContainer}>
-        {!!props.friends?.length && (
+        <View style={[globalStyles.row, styles.btnRow]}>
+          {!!props.friends?.length && (
+            <ColorButton
+              colorName="blue"
+              childrenWrapperStyle={styles.modifierBtnContent}
+              onPress={onSplitModalShow}
+              style={[styles.modifierBtn, styles.splitBtn]}
+              text="Split"
+            />
+          )}
           <ColorButton
             colorName="blue"
             childrenWrapperStyle={styles.modifierBtnContent}
-            onPress={onSplitModalShow}
-            style={[styles.modifierBtn, styles.splitBtn]}
-            text="Split"
+            onPress={onTipsModalShow}
+            style={[styles.modifierBtn, styles.tipsBtn]}
+            text="Tips"
           />
-        )}
-        <ColorButton
-          colorName="blue"
-          childrenWrapperStyle={styles.modifierBtnContent}
-          onPress={onTipsModalShow}
-          style={[styles.modifierBtn, styles.tipsBtn]}
-          text="Tips"
-        />
-        <DatePicker value={props.date} onChange={props.onDateChange} />
-        <ColorButton
-          colorName="yellow"
-          childrenWrapperStyle={styles.modifierBtnContent}
-          onPress={onCategoryModalShow}
-          style={[styles.modifierBtn, styles.categoryBtn]}
-          text="Category"
-        />
-        <ColorButton
-          colorName="yellow"
-          childrenWrapperStyle={styles.modifierBtnContent}
-          onPress={onNoteModalShow}
-          style={[styles.modifierBtn, styles.noteBtn]}
-          text="Note"
-        />
+        </View>
+        <View style={[globalStyles.row, styles.btnRow]}>
+          <ColorButton
+            colorName="yellow"
+            childrenWrapperStyle={styles.categoryBtnContent}
+            onPress={onCategoryModalShow}
+            style={[styles.modifierBtn, styles.categoryBtn]}
+          >
+            <Icon
+              size={15}
+              style={styles.categoryIcon}
+              name={props.category?.icon}
+            />
+            <Text style={styles.categoryName}>
+              {props.category?.name || 'Choose Category'}
+            </Text>
+          </ColorButton>
+        </View>
+        <View style={[globalStyles.row, styles.btnRow]}>
+          <DatePicker value={props.date} onChange={props.onDateChange} />
+        </View>
+        <View style={[globalStyles.row, styles.btnRow]}>
+          <ColorButton
+            colorName="yellow"
+            childrenWrapperStyle={styles.modifierBtnContent}
+            onPress={onNoteModalShow}
+            style={[styles.modifierBtn, styles.noteBtn]}
+            text="Note"
+          />
+        </View>
       </View>
       <Modal
         animationType="slide"
@@ -206,23 +228,43 @@ export const AmountStage = (props) => {
 
 const styles = StyleSheet.create({
   modifierButtonsContainer: {
-    flexWrap: 'wrap',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
     width: '100%',
+    flex: 1,
+  },
+  contentWrapperStyle: {
+    flex: 0.55,
   },
   modifierBtn: {
     height: 40,
     width: '30%',
+    marginHorizontal: 20,
+  },
+  categoryBtn: {
+    flex: 1,
   },
   splitBtn: {},
   modifierBtnContent: {
     padding: 0,
   },
+  categoryIcon: {
+    marginRight: 10,
+  },
+  categoryName: {
+    fontSize: 15,
+  },
+  btnRow: {
+    justifyContent: 'center',
+  },
+  categoryBtnContent: {
+    borderWidth: 0,
+    padding: 0,
+    backgroundColor: colors.seeThrough.grey,
+  },
   textContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 5,
+    flex: 0,
   },
   secondaryText: {
     color: colors.grey,

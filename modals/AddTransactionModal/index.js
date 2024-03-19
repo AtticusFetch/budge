@@ -1,32 +1,26 @@
+import moment from 'moment';
 import numbro from 'numbro';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, LayoutAnimation, StyleSheet, View } from 'react-native';
 
 import { AmountStage } from './Stages/Amount';
 import { getTipAmount } from '../../utils/getTipAmount';
 
 export default function AddTransactionModal(props) {
-  const { transaction = {}, userCategories } = props;
-  const {
-    tips: tTip,
-    amount: tAmount,
-    note: tNote,
-    splitWith: tSplitWith,
-    date: tDate,
-    category: tCategory,
-  } = transaction;
-  const tipMultiplier = getTipAmount(tTip) || 1;
+  const { transaction, userCategories } = props;
+  const tipMultiplier = getTipAmount(transaction?.tTip) || 0;
   const initialAmount =
-    (parseFloat(tAmount) * (tSplitWith?.length + 1)) / (1 + tipMultiplier);
-  const [amount, setamount] = useState(
-    tAmount ? numbro(initialAmount).format({ mantissa: 0 }) : '',
+    (parseFloat(transaction?.amount) * (transaction?.splitWith?.length + 1)) /
+    (tipMultiplier + 1);
+  const [amount, setAmount] = useState(
+    transaction?.amount ? numbro(initialAmount).format({ mantissa: 0 }) : '',
   );
-  const [note, setnote] = useState(tNote || '');
-  const [date, setdate] = useState(tDate ? new Date(tDate) : new Date());
+  const [note, setNote] = useState(transaction?.note || '');
+  const [date, setDate] = useState(moment.utc(transaction?.date));
   const [rememberCheckboxVisible, setRememberCheckboxVisible] = useState(true);
-  const [splitWith, setSplitWith] = useState(tSplitWith || []);
-  const [tips, setTips] = useState(tTip || null);
-  const [category, setcategory] = useState(tCategory || null);
+  const [splitWith, setSplitWith] = useState(transaction?.splitWith || []);
+  const [tips, setTips] = useState(transaction?.tip || null);
+  const [category, setCategory] = useState(transaction?.category);
   const [shouldRememberNote, setShouldRememberNote] = useState(false);
 
   const slideOutAnim = useRef(new Animated.Value(0)).current;
@@ -36,7 +30,7 @@ export default function AddTransactionModal(props) {
   };
 
   const onAmountChange = useCallback((e) => {
-    setamount(e);
+    setAmount(e);
   }, []);
 
   const onSubmitTransaction = useCallback(() => {
@@ -48,8 +42,9 @@ export default function AddTransactionModal(props) {
       tipAmount = parseFloat(tips);
     }
     const finalAmount = `${amountNum + tipAmount}`;
-    setamount(finalAmount);
+    setAmount(finalAmount);
     props.onSubmit({
+      ...transaction,
       amount: finalAmount,
       category,
       note,
@@ -66,11 +61,11 @@ export default function AddTransactionModal(props) {
   }, []);
 
   const onDateChange = useCallback((e) => {
-    setdate(e);
+    setDate(e);
   }, []);
 
   const onCategoryChange = useCallback((e) => {
-    setcategory(e);
+    setCategory(e);
   }, []);
 
   const onNoteChange = useCallback(
@@ -88,10 +83,23 @@ export default function AddTransactionModal(props) {
       } else {
         setRememberCheckboxVisible(true);
       }
-      setnote(e?.name || e);
+      setNote(e?.name || e);
     },
     [rememberCheckboxVisible],
   );
+
+  useEffect(() => {
+    if (transaction) {
+      setAmount(`${transaction?.amount}`);
+      setCategory(transaction?.category);
+      setNote(transaction?.note);
+      if (transaction?.date) {
+        setDate(moment.utc(transaction?.date));
+      }
+      setSplitWith(transaction?.splitWith);
+      setTips(transaction?.tips);
+    }
+  }, [transaction]);
 
   const stageProps = {
     style: slideOutStyle,

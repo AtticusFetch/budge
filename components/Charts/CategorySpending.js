@@ -13,8 +13,8 @@ export const CategorySpending = (props) => {
   const { transactions, chartConfig } = props;
   const [categorySpending, setCategorySpending] = useState([]);
   const [selectedDateRange, setSelectedDateRange] = useState('month');
-  const start = moment().startOf('month');
-  const end = moment().endOf('month');
+  const start = moment.utc().startOf('month');
+  const end = moment.utc().endOf('month');
   const [dateFrom, setDateFrom] = useState(start.toDate());
   const [dateTo, setDateTo] = useState(end.toDate());
   const [dateRange, setDateRange] = useState([start, end]);
@@ -26,7 +26,7 @@ export const CategorySpending = (props) => {
       create: { type: 'linear', property: 'opacity' },
     });
     const timedTransactions = transactions.filter((t) =>
-      moment(t.date).isBetween(...dateRange),
+      moment.utc(t.date).isBetween(...dateRange),
     );
     const groupedTransactions = _.groupBy(timedTransactions, 'category.name');
     const spending = Object.keys(groupedTransactions).map(
@@ -47,11 +47,11 @@ export const CategorySpending = (props) => {
   }, [transactions, dateRange]);
 
   useEffect(() => {
-    let start = moment().startOf(selectedDateRange);
-    let end = moment().endOf(selectedDateRange);
+    let start = moment.utc().startOf(selectedDateRange);
+    let end = moment.utc().endOf(selectedDateRange);
     if (selectedDateRange === 'custom') {
-      start = moment(dateFrom);
-      end = moment(dateTo);
+      start = moment.utc(dateFrom);
+      end = moment.utc(dateTo);
     }
     setDateRange([start, end]);
   }, [selectedDateRange, dateFrom, dateTo]);

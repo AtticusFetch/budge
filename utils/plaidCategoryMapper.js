@@ -416,3 +416,10 @@ export const detailedCategoriesMap = {
     icon: 'Entypo/tools',
   },
 };
+
+export const mapPlaidCategory = (plaidCategory) => {
+  const { detailed } = plaidCategory;
+  const detailedCategory = detailedCategoriesMap[detailed];
+
+  return detailedCategory;
+};

@@ -61,6 +61,13 @@ export const updateTransactionForUser = (transaction, id) => {
   });
 };
 
+export const transferPlaidTransaction = (transaction, id) => {
+  return postToApi('user/transaction/transfer', {
+    transaction,
+    userId: id,
+  });
+};
+
 export const deleteTransaction = (transactionId, userId) => {
   return postToApi('user/transaction/delete', {
     transactionId,

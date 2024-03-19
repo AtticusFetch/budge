@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   input: {
-    height: 60,
     padding: 10,
     width: '100%',
     fontSize: 20,

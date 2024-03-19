@@ -14,9 +14,10 @@ export const DatePicker = (props) => {
 
   return (
     <DateTimePicker
-      value={value}
+      value={value.toDate()}
       mode="date"
       is24Hour
+      timeZoneName="Universal"
       onChange={onDateChange}
     />
   );

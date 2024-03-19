@@ -21,9 +21,20 @@ import { colors } from '../utils/colors';
 import {
   createTransactionForUser,
   updateTransactionForUser,
+  transferPlaidTransaction,
   deleteTransaction,
   getCategories,
 } from '../utils/plaidApi';
+import { mapPlaidCategory } from '../utils/plaidCategoryMapper';
+
+const transformPlaidTransaction = (plaidTransaction) => {
+  return {
+    ...plaidTransaction,
+    transformedPlaid: true,
+    id: plaidTransaction.transaction_id,
+    category: mapPlaidCategory(plaidTransaction.personal_finance_category),
+  };
+};
 
 export default function Transactions() {
   const {
@@ -60,8 +71,11 @@ export default function Transactions() {
 
   const onSubmitTransaction = useCallback(async (transaction) => {
     let updatedUser;
+    console.log('onSubmitTransaction', transaction.transformedPlaid);
     setisAddTransactionModalVisible(false);
-    if (transaction.id) {
+    if (transaction.transformedPlaid) {
+      updatedUser = await transferPlaidTransaction(transaction, user.id);
+    } else if (transaction.id) {
       updatedUser = await updateTransactionForUser(transaction, user.id);
     } else {
       updatedUser = await createTransactionForUser(transaction, user.id);
@@ -76,7 +90,19 @@ export default function Transactions() {
 
   const onEditTransaction = useCallback(async (transactionData) => {
     setTransaction(transactionData);
-    onAddTransactionPress();
+    setisAddTransactionModalVisible(true);
+  }, []);
+
+  const onTransferTransaction = useCallback(
+    async (plaidTransaction) => {
+      const transformed = transformPlaidTransaction(plaidTransaction);
+      onEditTransaction(transformed);
+    },
+    [onEditTransaction],
+  );
+
+  const onIgnoreTransaction = useCallback(async (plaidTransaction) => {
+    console.log('ignore', plaidTransaction.transaction_id);
   }, []);
 
   useEffect(() => {
@@ -85,8 +111,8 @@ export default function Transactions() {
       new Date(t.date).getTime(),
     ).reverse();
     const groupedTransactions = _.groupBy(sortedTransactions, (t) => {
-      const tDate = moment(t.date);
-      const now = moment();
+      const tDate = moment.utc(t.date);
+      const now = moment.utc();
       if (tDate.isAfter(now)) {
         return 'Upcoming';
       }
@@ -120,6 +146,8 @@ export default function Transactions() {
           return (
             <TransactionListItem
               {...item}
+              onTransfer={onTransferTransaction}
+              onIgnore={onIgnoreTransaction}
               onDelete={onDeleteTransaction}
               onEdit={onEditTransaction}
             />

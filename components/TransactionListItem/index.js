@@ -3,9 +3,8 @@ import numbro from 'numbro';
 import { useCallback } from 'react';
 import { ActionSheetIOS, StyleSheet, Text, View } from 'react-native';
 
-import { useCategoriesContext } from '../../context/Categories';
 import { colors } from '../../utils/colors';
-import { detailedCategoriesMap } from '../../utils/plaidCategoryMapper';
+import { mapPlaidCategory } from '../../utils/plaidCategoryMapper';
 import { ExpandableButton } from '../ExpandableButton';
 import { Icon } from '../Icon';
 
@@ -15,40 +14,25 @@ const TRANSACTION_ACTIONS = {
   EDIT: 'Edit',
 };
 
+const PLAID_TRANSACTION_ACTIONS = {
+  CANCEL: 'Cancel',
+  IGNORE: 'Ignore',
+  TRANSFER: 'Transfer',
+};
+
 const actionSheetOptions = Object.values(TRANSACTION_ACTIONS);
-const CATEGORY_MAP = {
-  INCOME: 9,
-  TRANSFER_IN: 9,
-  TRANSFER_OUT: 9,
-  LOAN_PAYMENTS: 9,
-  BANK_FEES: 9,
-  ENTERTAINMENT: 5,
-  FOOD_AND_DRINK: 4,
-  GENERAL_MERCHANDISE: 3,
-  HOME_IMPROVEMENT: 6,
-  MEDICAL: 9,
-  PERSONAL_CARE: 9,
-  GENERAL_SERVICES: 1,
-  GOVERNMENT_AND_NON_PROFIT: 1,
-  TRANSPORTATION: 2,
-  TRAVEL: 5,
-  RENT_AND_UTILITIES: 6,
-};
-
-const mapPlaidCategory = (plaidCategory, categories) => {
-  const { primary, detailed } = plaidCategory;
-  const categoryId = CATEGORY_MAP[primary];
-  const detailedCategory = detailedCategoriesMap[detailed];
-  const category = categories.find((c) => c.id === `${categoryId}`);
-
-  return detailedCategory || category;
-};
+const plaidActionSheetOptions = Object.values(PLAID_TRANSACTION_ACTIONS);
 
 export const TransactionListItem = (props) => {
-  const { onDelete, onEdit, roundDirection, style, ...transactionData } = props;
   const {
-    state: { categories },
-  } = useCategoriesContext();
+    onDelete,
+    onEdit,
+    roundDirection,
+    style,
+    onIgnore,
+    onTransfer,
+    ...transactionData
+  } = props;
   const {
     note,
     amount,
@@ -63,11 +47,11 @@ export const TransactionListItem = (props) => {
 
   let mappedCategory;
   if (personal_finance_category) {
-    mappedCategory = mapPlaidCategory(personal_finance_category, categories);
+    mappedCategory = mapPlaidCategory(personal_finance_category);
   }
 
   const isPositiveFlow = amount <= 0;
-  const isUpcoming = moment(date).isAfter(moment());
+  const isUpcoming = moment.utc(date).isAfter(moment.utc());
   const formattedAmount = numbro(0 - amount).formatCurrency({ mantissa: 2 });
   const onActionSelected = useCallback(async (actionIndex) => {
     switch (actionSheetOptions[actionIndex]) {
@@ -81,6 +65,18 @@ export const TransactionListItem = (props) => {
         break;
     }
   }, []);
+  const onPlaidActionSelected = useCallback(async (actionIndex) => {
+    switch (plaidActionSheetOptions[actionIndex]) {
+      case PLAID_TRANSACTION_ACTIONS.CANCEL:
+        break;
+      case PLAID_TRANSACTION_ACTIONS.IGNORE:
+        await onIgnore(transactionData);
+        break;
+      case PLAID_TRANSACTION_ACTIONS.TRANSFER:
+        await onTransfer(transactionData);
+        break;
+    }
+  }, []);
   const onTransactionLongPress = useCallback(() => {
     ActionSheetIOS.showActionSheetWithOptions(
       {
@@ -91,14 +87,29 @@ export const TransactionListItem = (props) => {
       onActionSelected,
     );
   }, []);
+  const onPlaidTransactionLongPress = useCallback(() => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: plaidActionSheetOptions,
+        destructiveButtonIndex: 1,
+        cancelButtonIndex: 0,
+      },
+      onPlaidActionSelected,
+    );
+  }, []);
 
   const hasSplit = !!splitWith?.length;
-  const isPlaidTransaction = !!transactionData.transaction_id;
+  const isPlaidTransaction =
+    !transactionData.transformedPlaid && !!transactionData.transaction_id;
   const categoryToUse = mappedCategory || category;
 
   return (
     <ExpandableButton
-      onLongPress={isPlaidTransaction ? () => {} : onTransactionLongPress}
+      onLongPress={
+        isPlaidTransaction
+          ? onPlaidTransactionLongPress
+          : onTransactionLongPress
+      }
       colorName={isUpcoming || isPlaidTransaction ? 'grey' : 'blue'}
       style={[
         styles.btnContainer,
@@ -136,7 +147,7 @@ export const TransactionListItem = (props) => {
           {date && (
             <View style={[styles.labelContainer, styles.dateContainer]}>
               <Text style={[styles.labelText, styles.dateText]}>
-                {moment(date).format('MMM D, YYYY')}
+                {moment.utc(date).format('MMM D, YYYY')}
               </Text>
             </View>
           )}

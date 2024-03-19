@@ -20,8 +20,8 @@ export default function Overview({ navigation }) {
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     labelColor: (opacity = 1) => 'white',
   };
-  const today = parseInt(moment().format('DD'), 10);
-  const firstDay = parseInt(moment().startOf('month').format('DD'), 10);
+  const today = parseInt(moment.utc().format('DD'), 10);
+  const firstDay = parseInt(moment.utc().startOf('month').format('DD'), 10);
   const daysPassed = today - firstDay;
 
   return (
@@ -41,7 +41,7 @@ export default function Overview({ navigation }) {
             daysPassed &&
             new Array(daysPassed)
               .fill({})
-              .map((i, index) => moment().subtract(index + 1, 'day'))
+              .map((i, index) => moment.utc().subtract(index + 1, 'day'))
           }
           transactions={transactions}
           chartConfig={chartConfig}

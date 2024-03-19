@@ -71,7 +71,7 @@ const deleteUserTransactionById = async (
   key = 'transactions',
 ) => {
   const transactionToRemoveIdx = user?.[key]?.findIndex(
-    (r) => r.id === transactionId,
+    (r) => (r.id || r.transaction_id) === transactionId,
   );
 
   if (transactionToRemoveIdx < 0) {
@@ -95,7 +95,7 @@ const deleteTransaction = async (
   const removingUserDb = await getDBUserById(userId);
   const removingUser = removingUserDb?.Item;
   const transactionToRemove = removingUser?.[key]?.find(
-    (r) => r.id === transactionId,
+    (r) => (r.id || r.transaction_id) === transactionId,
   );
   transactionToRemove.splitWith?.forEach(async (splitterId) => {
     const splitter = await getDBUserById(splitterId);
