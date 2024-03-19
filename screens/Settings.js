@@ -65,7 +65,7 @@ export default function Settings(props) {
               <View style={styles.items}>
                 <Text style={styles.accountsHeader}>Linked Accounts:</Text>
                 {user.plaidItems.map((p) => (
-                  <PlaidItem item={p} />
+                  <PlaidItem key={p.itemId} item={p} />
                 ))}
               </View>
             )}

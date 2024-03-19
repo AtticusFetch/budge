@@ -5,6 +5,7 @@ import { ActionSheetIOS, StyleSheet, Text, View } from 'react-native';
 
 import { useCategoriesContext } from '../../context/Categories';
 import { colors } from '../../utils/colors';
+import { detailedCategoriesMap } from '../../utils/plaidCategoryMapper';
 import { ExpandableButton } from '../ExpandableButton';
 import { Icon } from '../Icon';
 
@@ -35,10 +36,12 @@ const CATEGORY_MAP = {
 };
 
 const mapPlaidCategory = (plaidCategory, categories) => {
-  const categoryId = CATEGORY_MAP[plaidCategory];
+  const { primary, detailed } = plaidCategory;
+  const categoryId = CATEGORY_MAP[primary];
+  const detailedCategory = detailedCategoriesMap[detailed];
   const category = categories.find((c) => c.id === `${categoryId}`);
 
-  return category;
+  return detailedCategory || category;
 };
 
 export const TransactionListItem = (props) => {
@@ -51,6 +54,7 @@ export const TransactionListItem = (props) => {
     amount,
     category,
     date,
+    merchant_name,
     splitWith,
     tips,
     id,
@@ -59,10 +63,7 @@ export const TransactionListItem = (props) => {
 
   let mappedCategory;
   if (personal_finance_category) {
-    mappedCategory = mapPlaidCategory(
-      personal_finance_category.primary,
-      categories,
-    );
+    mappedCategory = mapPlaidCategory(personal_finance_category, categories);
   }
 
   const isPositiveFlow = amount <= 0;
@@ -125,10 +126,17 @@ export const TransactionListItem = (props) => {
               <Text style={[styles.labelText, styles.noteText]}>{note}</Text>
             </View>
           )}
+          {merchant_name && (
+            <View style={[styles.labelContainer, styles.noteContainer]}>
+              <Text style={[styles.labelText, styles.noteText]}>
+                {merchant_name}
+              </Text>
+            </View>
+          )}
           {date && (
             <View style={[styles.labelContainer, styles.dateContainer]}>
               <Text style={[styles.labelText, styles.dateText]}>
-                {moment(date).format('MMM D, YYYY Z')}
+                {moment(date).format('MMM D, YYYY')}
               </Text>
             </View>
           )}
