@@ -31,13 +31,15 @@ export default function Overview({ navigation }) {
         style={styles.scrollView}
         contentContainerStyle={styles.contentWrapper}
       >
-        <BudgetRemainder transactions={transactions} budget={budget} />
         <CategorySpending
           transactions={transactions}
           chartConfig={chartConfig}
         />
         <ProgressSpending
           transactions={transactions}
+          header={
+            <BudgetRemainder transactions={transactions} budget={budget} />
+          }
           budget={budget}
           slim={false}
           extraDays={

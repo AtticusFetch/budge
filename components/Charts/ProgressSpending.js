@@ -52,7 +52,7 @@ export const getProgressSpendingForDay = (day, budget, transactions) => {
 };
 
 export const ProgressSpending = (props) => {
-  const { chartConfig, budget, transactions, day, extraDays } = props;
+  const { chartConfig, budget, transactions, day, extraDays, header } = props;
   const [progressSpending, setProgressSpending] = useState([]);
   const [pastProgressSpending, setPastProgressSpending] = useState([]);
 
@@ -105,25 +105,29 @@ export const ProgressSpending = (props) => {
 
   return (
     <View style={styles.container}>
-      <ProgressChart
-        data={{
-          labels: ['Day', 'Week', 'Month'],
-          data: progressSpending,
-        }}
-        width={props.slim ? 120 : Dimensions.get('screen').width * 0.95}
-        height={props.slim ? 120 : 200}
-        strokeWidth={props.slim ? 8 : 16}
-        radius={props.slim ? 20 : 32}
-        hideLegend={props.slim}
-        chartConfig={{
-          ...chartConfig,
-          color: getChartColor,
-        }}
-        style={{
-          borderRadius: 16,
-          marginVertical: 8,
-        }}
-      />
+      <View style={styles.progressChartWrapper}>
+        {header}
+        <ProgressChart
+          data={{
+            labels: ['Day', 'Week', 'Month'],
+            data: progressSpending,
+          }}
+          width={props.slim ? 120 : Dimensions.get('screen').width * 0.95}
+          height={props.slim ? 120 : 200}
+          strokeWidth={props.slim ? 8 : 16}
+          radius={props.slim ? 20 : 32}
+          hideLegend={props.slim}
+          chartConfig={{
+            ...chartConfig,
+            color: getChartColor,
+          }}
+          style={{
+            borderTopWidth: 0,
+            marginBottom: 8,
+            borderRadius: 16,
+          }}
+        />
+      </View>
       {pastProgressSpending && (
         <View style={styles.historyContainer}>
           {pastProgressSpending.map((s, globalIndex) => (
@@ -145,12 +149,7 @@ export const ProgressSpending = (props) => {
                   color: (opacity, index) =>
                     getExtraChartColor(opacity, index, globalIndex),
                 }}
-                style={{
-                  borderColor: 'red',
-                  alignItems: 'flex-start',
-                  justifyContent: 'flex-start',
-                  borderRadius: 16,
-                }}
+                style={{}}
               />
             </View>
           ))}
@@ -170,6 +169,9 @@ const styles = StyleSheet.create({
     borderColor: colors.blue,
     borderRadius: 10,
     marginVertical: 5,
+  },
+  progressChartWrapper: {
+    alignItems: 'center',
   },
   historyContainer: {
     flexDirection: 'row',

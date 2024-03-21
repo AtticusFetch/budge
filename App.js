@@ -35,17 +35,17 @@ const HomeStackTabs = () => (
   >
     <Tab.Screen
       options={{
-        tabBarButton: TransactionsTabBtn,
-      }}
-      name="Transactions"
-      component={Transactions}
-    />
-    <Tab.Screen
-      options={{
         tabBarButton: OverviewTabBtn,
       }}
       name="Overview"
       component={Overview}
+    />
+    <Tab.Screen
+      options={{
+        tabBarButton: TransactionsTabBtn,
+      }}
+      name="Transactions"
+      component={Transactions}
     />
     <Tab.Screen
       options={{

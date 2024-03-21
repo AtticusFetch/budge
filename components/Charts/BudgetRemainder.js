@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { getMaxSpending, getProgressSpendingForDay } from './ProgressSpending';
-import { addOpacityToColor, colors } from '../../utils/colors';
+import { colors } from '../../utils/colors';
 
 const remainderLabels = ['Today', 'This Week', 'This Month'];
 
 export const BudgetRemainder = (props) => {
   const [remainder, setRemainder] = useState([]);
-  const { budget, transactions } = props;
+  const { budget, transactions, showBars = false } = props;
   const max = getMaxSpending(budget);
   useEffect(() => {
     const [, totalAmountSpent] = getProgressSpendingForDay(
@@ -25,37 +25,45 @@ export const BudgetRemainder = (props) => {
   }, [budget, transactions]);
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Remainder This Month</Text>
       {remainder.map(([amount, percent], i) => (
         <View key={i} style={styles.progressWrapper}>
-          <Text style={[styles.label, styles.progressHeader]}>
-            {remainderLabels[i]}
-          </Text>
-          <View
-            style={[
-              styles.progressBarContainer,
-              amount <= 0.5 && styles.warningBar,
-              amount <= 0 && styles.negativeBar,
-            ]}
-          >
-            <View
-              style={[
-                styles.progressPart,
-                styles.progressBarFull,
-                { width: amount <= 0 ? 0 : `${percent * 100}%` },
-              ]}
-            />
-            <View
-              style={[
-                styles.progressPart,
-                styles.progressBarEmpty,
-                { width: amount <= 0 ? 0 : `${(1 - percent) * 100}%` },
-              ]}
-            />
-          </View>
           <Text
             style={[
               styles.label,
+              styles.progressHeader,
+              showBars && styles.labelShort,
+            ]}
+          >
+            {remainderLabels[i]}
+          </Text>
+          {showBars && (
+            <View
+              style={[
+                styles.progressBarContainer,
+                amount <= 0.5 && styles.warningBar,
+                amount <= 0 && styles.negativeBar,
+              ]}
+            >
+              <View
+                style={[
+                  styles.progressPart,
+                  styles.progressBarFull,
+                  { width: amount <= 0 ? 0 : `${percent * 100}%` },
+                ]}
+              />
+              <View
+                style={[
+                  styles.progressPart,
+                  styles.progressBarEmpty,
+                  { width: amount <= 0 ? 0 : `${(1 - percent) * 100}%` },
+                ]}
+              />
+            </View>
+          )}
+          <Text
+            style={[
+              styles.label,
+              showBars && styles.labelShort,
               styles.progressAmount,
               amount <= 0.5 && styles.warningLabel,
               amount <= 0 && styles.negativeLabel,
@@ -71,15 +79,16 @@ export const BudgetRemainder = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: addOpacityToColor('grey', 0.9),
-    width: '100%',
+    backgroundColor: colors.grey,
+    width: '80%',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: colors.blue,
     borderRadius: 16,
     paddingHorizontal: 15,
-    paddingBottom: 30,
+    borderBottomWidth: 0,
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    marginTop: 10,
   },
   progressWrapper: {
     flex: 1,
@@ -98,10 +107,13 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   label: {
-    flex: 0.2,
+    flex: 1,
     color: 'white',
     fontWeight: '600',
     opacity: 0.7,
+  },
+  labelShort: {
+    flex: 0.2,
   },
   negativeLabel: {
     color: colors.red,
