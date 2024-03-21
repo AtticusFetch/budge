@@ -50,7 +50,6 @@ export default function AddTransactionModal(props) {
       note,
       date,
       tips,
-      id: transaction.id,
       splitWith,
       shouldRememberNote,
     });

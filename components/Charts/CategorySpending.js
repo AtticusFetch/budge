@@ -1,7 +1,13 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
-import { Dimensions, LayoutAnimation, StyleSheet, View } from 'react-native';
+import {
+  Dimensions,
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 import { colors } from '../../utils/colors';
@@ -79,6 +85,7 @@ export const CategorySpending = (props) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.header}>Spending By Category</Text>
       <View style={styles.btnContainer}>
         <ColorButton
           onPress={onDayRangePress}
@@ -121,19 +128,18 @@ export const CategorySpending = (props) => {
       )}
       <PieChart
         data={categorySpending}
-        width={Dimensions.get('screen').width * 0.95}
-        height={200}
-        chartConfig={chartConfig}
-        bezier
+        width={Dimensions.get('screen').width}
+        height={220}
+        chartConfig={{
+          ...chartConfig,
+        }}
         style={{
-          marginVertical: 8,
+          marginTop: 8,
+          marginBottom: 20,
           borderRadius: 16,
-          borderWidth: 2,
-          borderColor: colors.blue,
-          backgroundColor: colors.grey,
         }}
         accessor="total"
-        backgroundColor="transparent"
+        backgroundColor="white"
       />
     </View>
   );
@@ -149,6 +155,12 @@ const styles = StyleSheet.create({
     borderColor: colors.yellow,
     borderRadius: 10,
     marginVertical: 5,
+  },
+  header: {
+    fontSize: 20,
+    color: colors.grey,
+    fontWeight: '500',
+    marginVertical: 20,
   },
   dateSelectBtn: {
     flex: 1,

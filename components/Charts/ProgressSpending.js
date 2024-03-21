@@ -7,15 +7,21 @@ import { ProgressChart } from 'react-native-chart-kit';
 import { addOpacityToColor, colors } from '../../utils/colors';
 import { DAYS_IN_WEEK, WEEKS_IN_MONTH } from '../../utils/constants';
 
-const getProgressSpendingForDay = (day, budget, transactions) => {
+export const getMaxSpending = (budget) => {
+  const maxWeeklySpending = -1 * _.sumBy(budget, 'amount');
+  const maxMonthlySpending = maxWeeklySpending * WEEKS_IN_MONTH;
+  const maxDailySpending = maxWeeklySpending / DAYS_IN_WEEK;
+
+  return [maxDailySpending, maxWeeklySpending, maxMonthlySpending];
+};
+
+export const getProgressSpendingForDay = (day, budget, transactions) => {
   const today = moment.utc(day);
   const relevantTransactions = transactions.filter((t) =>
     moment.utc(t.date).isSameOrBefore(today),
   );
-  const maxWeeklySpending =
-    -1 * _.sumBy(budget, (t) => (t.amount > 0 ? 0 : t.amount));
-  const maxMonthlySpending = maxWeeklySpending * WEEKS_IN_MONTH;
-  const maxDailySpending = maxWeeklySpending / DAYS_IN_WEEK;
+  const [maxDailySpending, maxWeeklySpending, maxMonthlySpending] =
+    getMaxSpending(budget);
   const transactionsThisMonth = relevantTransactions.filter((t) =>
     moment.utc(t.date).isSame(today, 'month'),
   );
@@ -35,13 +41,14 @@ const getProgressSpendingForDay = (day, budget, transactions) => {
   const todayPercent = spentToday / maxDailySpending;
   const weekPercent = spentThisWeek / maxWeeklySpending;
   const monthPercent = spentThisMonth / maxMonthlySpending;
-  const spending = [
+  const spendingPercent = [
     todayPercent <= 1 ? todayPercent : 1,
     weekPercent <= 1 ? weekPercent : 1,
     monthPercent <= 1 ? monthPercent : 1,
   ];
+  const spendingAmount = [spentToday, spentThisWeek, spentThisMonth];
 
-  return spending;
+  return [spendingPercent, spendingAmount];
 };
 
 export const ProgressSpending = (props) => {
@@ -50,13 +57,13 @@ export const ProgressSpending = (props) => {
   const [pastProgressSpending, setPastProgressSpending] = useState([]);
 
   useEffect(() => {
-    const spending = getProgressSpendingForDay(
+    const [spending] = getProgressSpendingForDay(
       day || moment.utc(),
       budget,
       transactions,
     );
-    const extraInfo = extraDays?.map((d) =>
-      getProgressSpendingForDay(d, budget, transactions),
+    const extraInfo = extraDays?.map(
+      (d) => getProgressSpendingForDay(d, budget, transactions)[0],
     );
     setPastProgressSpending(extraInfo);
     setProgressSpending(spending);

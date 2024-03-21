@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 
+import { BudgetRemainder } from '../components/Charts/BudgetRemainder';
 import { CategorySpending } from '../components/Charts/CategorySpending';
 import { ProgressSpending } from '../components/Charts/ProgressSpending';
 import { useUserContext } from '../context/User';
@@ -30,11 +31,13 @@ export default function Overview({ navigation }) {
         style={styles.scrollView}
         contentContainerStyle={styles.contentWrapper}
       >
+        <BudgetRemainder transactions={transactions} budget={budget} />
         <CategorySpending
           transactions={transactions}
           chartConfig={chartConfig}
         />
         <ProgressSpending
+          transactions={transactions}
           budget={budget}
           slim={false}
           extraDays={
@@ -43,7 +46,6 @@ export default function Overview({ navigation }) {
               .fill({})
               .map((i, index) => moment.utc().subtract(index + 1, 'day'))
           }
-          transactions={transactions}
           chartConfig={chartConfig}
         />
       </ScrollView>
