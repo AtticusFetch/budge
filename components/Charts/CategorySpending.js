@@ -111,61 +111,63 @@ export const CategorySpending = (props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Spending By Category</Text>
-      <View style={styles.btnContainer}>
-        <ColorButton
-          onPress={onDayRangePress}
-          size="slim"
-          childrenWrapperStyle={styles.btn}
-          colorName={selectedDateRange === 'day' ? 'yellow' : 'blue'}
-          style={styles.dateSelectBtn}
-          text="Today"
-        />
-        <ColorButton
-          size="slim"
-          childrenWrapperStyle={styles.btn}
-          colorName={selectedDateRange === 'isoWeek' ? 'yellow' : 'blue'}
-          onPress={onWeekRangePress}
-          style={styles.dateSelectBtn}
-          text="This Week"
-        />
-        <ColorButton
-          size="slim"
-          childrenWrapperStyle={styles.btn}
-          colorName={selectedDateRange === 'month' ? 'yellow' : 'blue'}
-          onPress={onMonthRangePress}
-          style={styles.dateSelectBtn}
-          text="This Month"
-        />
-        <ColorButton
-          size="slim"
-          childrenWrapperStyle={styles.btn}
-          colorName={selectedDateRange === 'custom' ? 'yellow' : 'blue'}
-          onPress={onCustomRangePress}
-          style={styles.dateSelectBtn}
-          text="Custom"
+      <View style={styles.chartWrapper}>
+        <View style={styles.btnContainer}>
+          <ColorButton
+            onPress={onDayRangePress}
+            size="slim"
+            childrenWrapperStyle={styles.btn}
+            colorName={selectedDateRange === 'day' ? 'yellow' : 'blue'}
+            style={styles.dateSelectBtn}
+            text="Today"
+          />
+          <ColorButton
+            size="slim"
+            childrenWrapperStyle={styles.btn}
+            colorName={selectedDateRange === 'isoWeek' ? 'yellow' : 'blue'}
+            onPress={onWeekRangePress}
+            style={styles.dateSelectBtn}
+            text="This Week"
+          />
+          <ColorButton
+            size="slim"
+            childrenWrapperStyle={styles.btn}
+            colorName={selectedDateRange === 'month' ? 'yellow' : 'blue'}
+            onPress={onMonthRangePress}
+            style={styles.dateSelectBtn}
+            text="This Month"
+          />
+          <ColorButton
+            size="slim"
+            childrenWrapperStyle={styles.btn}
+            colorName={selectedDateRange === 'custom' ? 'yellow' : 'blue'}
+            onPress={onCustomRangePress}
+            style={styles.dateSelectBtn}
+            text="Custom"
+          />
+        </View>
+        {selectedDateRange === 'custom' && (
+          <View style={styles.dateSelectContainer}>
+            <DatePicker value={dateFrom} onChange={setDateFrom} />
+            <DatePicker value={dateTo} onChange={setDateTo} />
+          </View>
+        )}
+        <PieChart
+          data={categorySpending}
+          width={Dimensions.get('screen').width - 40}
+          height={220}
+          chartConfig={{
+            ...chartConfig,
+          }}
+          style={{
+            marginTop: 8,
+            marginBottom: 20,
+            borderRadius: 16,
+          }}
+          accessor="total"
+          backgroundColor="white"
         />
       </View>
-      {selectedDateRange === 'custom' && (
-        <View style={styles.dateSelectContainer}>
-          <DatePicker value={dateFrom} onChange={setDateFrom} />
-          <DatePicker value={dateTo} onChange={setDateTo} />
-        </View>
-      )}
-      <PieChart
-        data={categorySpending}
-        width={Dimensions.get('screen').width}
-        height={220}
-        chartConfig={{
-          ...chartConfig,
-        }}
-        style={{
-          marginTop: 8,
-          marginBottom: 20,
-          borderRadius: 16,
-        }}
-        accessor="total"
-        backgroundColor="white"
-      />
       <ColorButton
         style={styles.addButtonContainer}
         childrenWrapperStyle={styles.addButton}
@@ -182,6 +184,7 @@ export const CategorySpending = (props) => {
       />
       {user.categoryBudget?.map((categoryBudget) => (
         <CategoryBudgetListItem
+          key={categoryBudget.id}
           transactions={transactions}
           categoryBudget={categoryBudget}
           chartConfig={chartConfig}
@@ -201,6 +204,13 @@ const styles = StyleSheet.create({
     borderColor: colors.yellow,
     borderRadius: 10,
     marginVertical: 5,
+  },
+  chartWrapper: {
+    borderWidth: 2,
+    borderColor: colors.blue,
+    borderRadius: 16,
+    maxWidth: '100%',
+    padding: 10,
   },
   header: {
     fontSize: 20,
