@@ -1,64 +1,32 @@
-import _ from 'lodash';
 import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { ProgressChart } from 'react-native-chart-kit';
 
+import { BudgetRemainder } from './BudgetRemainder';
 import { addOpacityToColor, colors } from '../../utils/colors';
-import { DAYS_IN_WEEK, WEEKS_IN_MONTH } from '../../utils/constants';
-
-export const getMaxSpending = (budget) => {
-  const maxWeeklySpending = -1 * _.sumBy(budget, 'amount');
-  const maxMonthlySpending = maxWeeklySpending * WEEKS_IN_MONTH;
-  const maxDailySpending = maxWeeklySpending / DAYS_IN_WEEK;
-
-  return [maxDailySpending, maxWeeklySpending, maxMonthlySpending];
-};
-
-export const getProgressSpendingForDay = (day, budget, transactions) => {
-  const today = moment.utc(day);
-  const relevantTransactions = transactions.filter((t) =>
-    moment.utc(t.date).isSameOrBefore(today),
-  );
-  const [maxDailySpending, maxWeeklySpending, maxMonthlySpending] =
-    getMaxSpending(budget);
-  const transactionsThisMonth = relevantTransactions.filter((t) =>
-    moment.utc(t.date).isSame(today, 'month'),
-  );
-  const transactionsThisWeek = relevantTransactions.filter((t) =>
-    moment.utc(t.date).isSame(today, 'isoWeek'),
-  );
-  const transactionsToday = relevantTransactions.filter((t) =>
-    moment.utc(t.date).isSame(today, 'day'),
-  );
-  const spentThisMonth = _.sumBy(transactionsThisMonth, (t) =>
-    parseFloat(t.amount),
-  );
-  const spentThisWeek = _.sumBy(transactionsThisWeek, (t) =>
-    parseFloat(t.amount),
-  );
-  const spentToday = _.sumBy(transactionsToday, (t) => parseFloat(t.amount));
-  const todayPercent = spentToday / maxDailySpending;
-  const weekPercent = spentThisWeek / maxWeeklySpending;
-  const monthPercent = spentThisMonth / maxMonthlySpending;
-  const spendingPercent = [
-    todayPercent <= 1 ? todayPercent : 1,
-    weekPercent <= 1 ? weekPercent : 1,
-    monthPercent <= 1 ? monthPercent : 1,
-  ];
-  const spendingAmount = [spentToday, spentThisWeek, spentThisMonth];
-
-  return [spendingPercent, spendingAmount];
-};
+import { getProgressSpendingForDay } from '../../utils/spending';
 
 export const ProgressSpending = (props) => {
-  const { chartConfig, budget, transactions, day, extraDays, header } = props;
+  const {
+    chartConfig,
+    budget,
+    transactions,
+    day,
+    extraDays,
+    headerStyle,
+    showHeaderBars,
+    prependChild,
+    style,
+    hideLegend,
+    compact,
+  } = props;
   const [progressSpending, setProgressSpending] = useState([]);
   const [pastProgressSpending, setPastProgressSpending] = useState([]);
 
   useEffect(() => {
     const [spending] = getProgressSpendingForDay(
-      day || moment.utc(),
+      day || moment(),
       budget,
       transactions,
     );
@@ -104,29 +72,37 @@ export const ProgressSpending = (props) => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
+      {prependChild}
       <View style={styles.progressChartWrapper}>
-        {header}
-        <ProgressChart
-          data={{
-            labels: ['Day', 'Week', 'Month'],
-            data: progressSpending,
-          }}
-          width={props.slim ? 120 : Dimensions.get('screen').width * 0.95}
-          height={props.slim ? 120 : 200}
-          strokeWidth={props.slim ? 8 : 16}
-          radius={props.slim ? 20 : 32}
-          hideLegend={props.slim}
-          chartConfig={{
-            ...chartConfig,
-            color: getChartColor,
-          }}
-          style={{
-            borderTopWidth: 0,
-            marginBottom: 8,
-            borderRadius: 16,
-          }}
+        <BudgetRemainder
+          style={headerStyle}
+          showBars={showHeaderBars}
+          transactions={transactions}
+          budget={budget}
         />
+        {!compact && (
+          <ProgressChart
+            data={{
+              labels: ['Day', 'Week', 'Month'],
+              data: progressSpending,
+            }}
+            width={props.slim ? 120 : Dimensions.get('screen').width * 0.95}
+            height={props.slim ? 120 : 200}
+            strokeWidth={props.slim ? 8 : 16}
+            radius={props.slim ? 20 : 32}
+            hideLegend={hideLegend || props.slim}
+            chartConfig={{
+              ...chartConfig,
+              color: getChartColor,
+            }}
+            style={{
+              borderTopWidth: 0,
+              marginBottom: 8,
+              borderRadius: 16,
+            }}
+          />
+        )}
       </View>
       {pastProgressSpending && (
         <View style={styles.historyContainer}>

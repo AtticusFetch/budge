@@ -7,42 +7,34 @@ import { globalStyles } from '../../utils/globalStyles';
 import { LabeledCheckbox } from '../LabeledCheckbox';
 
 export const FrequencyCheckboxes = (props) => {
-  const { onChange, savedFrequency } = props;
+  const { onChange, savedFrequency, required = false } = props;
   const [checkedSalaryType, setCheckedSalaryType] = useState();
   const [pristine, setPristine] = useState(true);
 
+  const setFrequency = useCallback(
+    (frequency) => {
+      setPristine(false);
+      if (!required && checkedSalaryType === frequency) {
+        setCheckedSalaryType();
+      } else {
+        setCheckedSalaryType(frequency);
+      }
+    },
+    [checkedSalaryType],
+  );
+
   const onAnnualChecboxPress = useCallback(() => {
-    setPristine(false);
-    if (checkedSalaryType === FREQUENCY_TYPES.annual) {
-      setCheckedSalaryType();
-    } else {
-      setCheckedSalaryType(FREQUENCY_TYPES.annual);
-    }
-  }, [checkedSalaryType]);
+    setFrequency(FREQUENCY_TYPES.annual);
+  }, [setFrequency]);
   const onMonthlyChecboxPress = useCallback(() => {
-    setPristine(false);
-    if (checkedSalaryType === FREQUENCY_TYPES.monthly) {
-      setCheckedSalaryType();
-    } else {
-      setCheckedSalaryType(FREQUENCY_TYPES.monthly);
-    }
-  }, [checkedSalaryType]);
+    setFrequency(FREQUENCY_TYPES.monthly);
+  }, [setFrequency]);
   const onSemiMonthlyChecboxPress = useCallback(() => {
-    setPristine(false);
-    if (checkedSalaryType === FREQUENCY_TYPES.semiMonthly) {
-      setCheckedSalaryType();
-    } else {
-      setCheckedSalaryType(FREQUENCY_TYPES.semiMonthly);
-    }
-  }, [checkedSalaryType]);
+    setFrequency(FREQUENCY_TYPES.semiMonthly);
+  }, [setFrequency]);
   const onWeeklyChecboxPress = useCallback(() => {
-    setPristine(false);
-    if (checkedSalaryType === FREQUENCY_TYPES.weekly) {
-      setCheckedSalaryType();
-    } else {
-      setCheckedSalaryType(FREQUENCY_TYPES.weekly);
-    }
-  }, [checkedSalaryType]);
+    setFrequency(FREQUENCY_TYPES.weekly);
+  }, [setFrequency]);
 
   useEffect(() => {
     let salaryFrequency = checkedSalaryType || savedFrequency;
@@ -88,6 +80,7 @@ export const FrequencyCheckboxes = (props) => {
 
 const styles = StyleSheet.create({
   checkboxContainer: {
+    flex: 1,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',

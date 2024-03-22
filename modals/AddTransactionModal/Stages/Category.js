@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 
 import { CategoriesList } from '../../../components/CategoriesList';
@@ -47,8 +48,9 @@ export const CategoryStage = (props) => {
 
   useEffect(() => {
     const allCategories = [...props.categories, ...userCategories];
-    allCategories.push(addNewCategory);
-    setCategories(allCategories);
+    const sorted = _.sortBy(allCategories, 'name');
+    sorted.unshift(addNewCategory);
+    setCategories(sorted);
   }, [props.categories, userCategories]);
 
   return (

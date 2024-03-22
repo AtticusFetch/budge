@@ -49,7 +49,7 @@ export const CategoryListItem = (props) => {
         childrenWrapperStyle={[styles.contentWrapper, btnContentStyle]}
       >
         {!!category?.icon && (
-          <Icon color={colors.grey} name={category?.icon} size={20} />
+          <Icon color={colors.grey} name={category?.icon} size={25} />
         )}
         {!!categoryName && <Text style={styles.label}>{categoryName}</Text>}
       </ColorButton>
@@ -59,13 +59,14 @@ export const CategoryListItem = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 110,
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
   },
   label: {
-    fontSize: 10,
+    fontSize: 12,
     marginLeft: 5,
+    maxWidth: '80%',
   },
   button: {
     marginVertical: 0,
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
 
   contentWrapper: {
     justifyContent: 'flex-start',
-    padding: 0,
+    padding: 5,
     paddingLeft: 5,
   },
 });

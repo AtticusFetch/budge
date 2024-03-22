@@ -5,8 +5,12 @@ export const Icon = (props) => {
   if (!name) {
     return null;
   }
-  const iconName = name?.split('/')[1] || name;
-  const Icon = IconSets[name?.split('/')[0]] || IconSets.Feather;
+  if (name?.includes('/')) {
+    const [iconFamily, iconName] = name?.split('/');
+    const Icon = IconSets[iconFamily] || IconSets.Feather;
 
-  return <Icon name={iconName} {...rest} />;
+    return <Icon name={iconName} {...rest} />;
+  }
+
+  return <IconSets.Feather name={name} {...rest} />;
 };

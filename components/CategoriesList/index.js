@@ -27,7 +27,7 @@ export const CategoriesList = (props) => {
     canAddMore = false,
     btnContentStyle,
     btnStyle,
-    columns = 3,
+    columns = 2,
   } = props;
   const [selectedCategory, setSelectedCategory] = useState(
     props.category || null,

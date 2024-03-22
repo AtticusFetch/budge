@@ -58,7 +58,7 @@ export const TransactionListItem = (props) => {
   }, [personal_finance_category, categories]);
 
   const isPositiveFlow = amount <= 0;
-  const isUpcoming = moment.utc(date).isAfter(moment.utc());
+  const isUpcoming = moment(date).isAfter(moment());
   const formattedAmount = numbro(0 - amount).formatCurrency({ mantissa: 2 });
   const onActionSelected = useCallback(async (actionIndex) => {
     switch (actionSheetOptions[actionIndex]) {
@@ -153,7 +153,7 @@ export const TransactionListItem = (props) => {
           {date && (
             <View style={[styles.labelContainer, styles.dateContainer]}>
               <Text style={[styles.labelText, styles.dateText]}>
-                {moment.utc(date).format('MMM D, YYYY')}
+                {moment(date).format('MMM D, YYYY')}
               </Text>
             </View>
           )}

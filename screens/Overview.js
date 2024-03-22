@@ -1,17 +1,29 @@
 import moment from 'moment';
+import { useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 
-import { BudgetRemainder } from '../components/Charts/BudgetRemainder';
 import { CategorySpending } from '../components/Charts/CategorySpending';
 import { ProgressSpending } from '../components/Charts/ProgressSpending';
+import { categoriesActions, useCategoriesContext } from '../context/Categories';
 import { useUserContext } from '../context/User';
 import { colors } from '../utils/colors';
+import { getCategories } from '../utils/plaidApi';
 
 export default function Overview({ navigation }) {
   const {
     state: { user },
   } = useUserContext();
   const { budget, transactions } = user;
+  const {
+    state: { categories },
+    dispatch: dispatchCategoriesAction,
+  } = useCategoriesContext();
+
+  useEffect(() => {
+    getCategories().then((categories) => {
+      dispatchCategoriesAction(categoriesActions.set(categories));
+    });
+  }, []);
 
   const chartConfig = {
     backgroundColor: colors.yellow,
@@ -21,8 +33,8 @@ export default function Overview({ navigation }) {
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     labelColor: (opacity = 1) => 'white',
   };
-  const today = parseInt(moment.utc().format('DD'), 10);
-  const firstDay = parseInt(moment.utc().startOf('month').format('DD'), 10);
+  const today = parseInt(moment().format('DD'), 10);
+  const firstDay = parseInt(moment().startOf('month').format('DD'), 10);
   const daysPassed = today - firstDay;
 
   return (
@@ -33,20 +45,18 @@ export default function Overview({ navigation }) {
       >
         <CategorySpending
           transactions={transactions}
+          categories={categories}
           chartConfig={chartConfig}
         />
         <ProgressSpending
           transactions={transactions}
-          header={
-            <BudgetRemainder transactions={transactions} budget={budget} />
-          }
           budget={budget}
           slim={false}
           extraDays={
             daysPassed &&
             new Array(daysPassed)
               .fill({})
-              .map((i, index) => moment.utc().subtract(index + 1, 'day'))
+              .map((i, index) => moment().subtract(index + 1, 'day'))
           }
           chartConfig={chartConfig}
         />

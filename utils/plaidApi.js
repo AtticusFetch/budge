@@ -169,6 +169,10 @@ export const deleteBudgetTransaction = (data) => {
   return postToApi('budget/transaction/delete', data);
 };
 
+export const createCategoryBudget = (data) => {
+  return postToApi('budget/category/create', data);
+};
+
 export const updateUser = (data) => {
   return postToApi('user', data);
 };

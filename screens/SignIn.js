@@ -40,7 +40,7 @@ export default function SignIn({ navigation, route }) {
           ...user,
         });
         dispatch(userActions.set(user));
-        await navigation.navigate('Home');
+        navigation.navigate('Home');
       } else {
         clearUserSession();
         await Keychain.resetGenericPassword();

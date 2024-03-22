@@ -10,20 +10,37 @@ import {
 } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
+import { useUserContext } from '../../context/User';
+import { AddCategoryBudgetModal } from '../../modals/AddCategoryBudgetModal';
 import { colors } from '../../utils/colors';
+import { CategoryBudgetListItem } from '../CategoryBudgetListItem';
 import { ColorButton } from '../ColorButton';
 import { DatePicker } from '../DatePicker';
+import { Icon } from '../Icon';
 import { colorRoulette } from '../UserListItem';
 
 export const CategorySpending = (props) => {
-  const { transactions, chartConfig } = props;
+  const { transactions, chartConfig, categories } = props;
+  const {
+    state: { user = {} },
+  } = useUserContext();
   const [categorySpending, setCategorySpending] = useState([]);
+  const [categoryBudgetModalVisible, setCategoryBudgetModalVisible] =
+    useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState('month');
-  const start = moment.utc().startOf('month');
-  const end = moment.utc().endOf('month');
+  const start = moment().startOf('month');
+  const end = moment().endOf('month');
   const [dateFrom, setDateFrom] = useState(start.toDate());
   const [dateTo, setDateTo] = useState(end.toDate());
   const [dateRange, setDateRange] = useState([start, end]);
+
+  const hideCategoryBudgetModal = useCallback(() => {
+    setCategoryBudgetModalVisible(false);
+  });
+
+  const showCategoryBudgetModal = useCallback(() => {
+    setCategoryBudgetModalVisible(true);
+  });
 
   useEffect(() => {
     LayoutAnimation.configureNext({
@@ -32,7 +49,7 @@ export const CategorySpending = (props) => {
       create: { type: 'linear', property: 'opacity' },
     });
     const timedTransactions = transactions.filter((t) =>
-      moment.utc(t.date).isBetween(...dateRange),
+      moment(t.date).isBetween(...dateRange),
     );
     const groupedTransactions = _.groupBy(timedTransactions, 'category.name');
     const spending = Object.keys(groupedTransactions).map(
@@ -53,11 +70,19 @@ export const CategorySpending = (props) => {
   }, [transactions, dateRange]);
 
   useEffect(() => {
-    let start = moment.utc().startOf(selectedDateRange);
-    let end = moment.utc().endOf(selectedDateRange);
+    LayoutAnimation.configureNext({
+      duration: 700,
+      update: { type: 'spring', springDamping: 0.4 },
+      create: { type: 'linear', property: 'opacity' },
+    });
+  }, [user.categoryBudget]);
+
+  useEffect(() => {
+    let start = moment().startOf(selectedDateRange);
+    let end = moment().endOf(selectedDateRange);
     if (selectedDateRange === 'custom') {
-      start = moment.utc(dateFrom);
-      end = moment.utc(dateTo);
+      start = moment(dateFrom);
+      end = moment(dateTo);
     }
     setDateRange([start, end]);
   }, [selectedDateRange, dateFrom, dateTo]);
@@ -141,6 +166,27 @@ export const CategorySpending = (props) => {
         accessor="total"
         backgroundColor="white"
       />
+      <ColorButton
+        style={styles.addButtonContainer}
+        childrenWrapperStyle={styles.addButton}
+        colorName="blue"
+        onPress={showCategoryBudgetModal}
+        type="fill"
+      >
+        <Icon color="white" name="plus" size={20} />
+      </ColorButton>
+      <AddCategoryBudgetModal
+        visible={categoryBudgetModalVisible}
+        onRequestClose={hideCategoryBudgetModal}
+        categories={categories}
+      />
+      {user.categoryBudget?.map((categoryBudget) => (
+        <CategoryBudgetListItem
+          transactions={transactions}
+          categoryBudget={categoryBudget}
+          chartConfig={chartConfig}
+        />
+      ))}
     </View>
   );
 };
@@ -176,5 +222,18 @@ const styles = StyleSheet.create({
   dateSelectContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+  },
+  addButtonContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 35,
+    shadowColor: colors.grey,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+  },
+  addButton: {
+    borderRadius: 35,
+    padding: 0,
   },
 });

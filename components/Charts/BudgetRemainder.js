@@ -3,8 +3,11 @@ import numbro from 'numbro';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { getMaxSpending, getProgressSpendingForDay } from './ProgressSpending';
 import { colors } from '../../utils/colors';
+import {
+  getMaxSpending,
+  getProgressSpendingForDay,
+} from '../../utils/spending';
 
 const remainderLabels = ['Today', 'This Week', 'This Month'];
 
@@ -24,7 +27,7 @@ export const BudgetRemainder = (props) => {
     setRemainder(remainderSet);
   }, [budget, transactions]);
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, props.style]}>
       {remainder.map(([amount, percent], i) => (
         <View key={i} style={styles.progressWrapper}>
           <Text
@@ -40,7 +43,7 @@ export const BudgetRemainder = (props) => {
             <View
               style={[
                 styles.progressBarContainer,
-                amount <= 0.5 && styles.warningBar,
+                percent <= 0.5 && styles.warningBar,
                 amount <= 0 && styles.negativeBar,
               ]}
             >
@@ -65,7 +68,7 @@ export const BudgetRemainder = (props) => {
               styles.label,
               showBars && styles.labelShort,
               styles.progressAmount,
-              amount <= 0.5 && styles.warningLabel,
+              percent <= 0.5 && styles.warningLabel,
               amount <= 0 && styles.negativeLabel,
             ]}
           >
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   labelShort: {
-    flex: 0.2,
+    flex: 0.5,
   },
   negativeLabel: {
     color: colors.red,
@@ -124,10 +127,9 @@ const styles = StyleSheet.create({
   progressBarContainer: {
     flex: 1,
     flexDirection: 'row',
-    height: 30,
+    height: 10,
     backgroundColor: colors.green,
     marginVertical: 10,
-    borderRadius: 10,
   },
   negativeBar: {
     backgroundColor: colors.red,
@@ -154,12 +156,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     flex: 0.4,
     opacity: 1,
+    marginLeft: 5,
   },
   progressBarFull: {},
   progressBarEmpty: {
     backgroundColor: colors.grey,
     opacity: 0.8,
     right: 0,
-    borderRadius: 10,
   },
 });

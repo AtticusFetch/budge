@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { ColorButton } from '../components/ColorButton';
 import { DismissKeyboard } from '../components/DismissKeyboard';
 import { TransactionListItem } from '../components/TransactionListItem';
-import { categoriesActions, useCategoriesContext } from '../context/Categories';
+import { useCategoriesContext } from '../context/Categories';
 import { useUserContext, userActions } from '../context/User';
 import AddTransactionModal from '../modals/AddTransactionModal';
 import { colors } from '../utils/colors';
@@ -23,7 +23,6 @@ import {
   updateTransactionForUser,
   transferPlaidTransaction,
   deleteTransaction,
-  getCategories,
 } from '../utils/plaidApi';
 import { mapPlaidCategory } from '../utils/plaidCategoryMapper';
 
@@ -46,7 +45,6 @@ export default function Transactions() {
   } = useUserContext();
   const {
     state: { categories },
-    dispatch: dispatchCategoriesAction,
   } = useCategoriesContext();
   const { transactions, plaidTransactions } = user;
   const [refreshing] = useState(false);
@@ -54,12 +52,6 @@ export default function Transactions() {
   const [transactionSections, setTransactionSections] = useState([]);
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
     useState(false);
-
-  useEffect(() => {
-    getCategories().then((categories) => {
-      dispatchCategoriesAction(categoriesActions.set(categories));
-    });
-  }, []);
 
   const onRefresh = useCallback(() => {}, []);
 
@@ -114,8 +106,8 @@ export default function Transactions() {
       new Date(t.date).getTime(),
     ).reverse();
     const groupedTransactions = _.groupBy(sortedTransactions, (t) => {
-      const tDate = moment.utc(t.date);
-      const now = moment.utc();
+      const tDate = moment(t.date);
+      const now = moment();
       if (tDate.isAfter(now)) {
         return 'Upcoming';
       }
@@ -217,16 +209,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 2,
   },
-  addButtonWrapper: {
-    position: 'absolute',
-    bottom: 40,
-    right: 0,
-  },
   addButton: {
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     borderTopLeftRadius: 35,
     borderBottomLeftRadius: 35,
+  },
+  addButtonWrapper: {
+    position: 'absolute',
+    bottom: 40,
+    right: 0,
   },
   section: {
     backgroundColor: colors.dimmed.blue,

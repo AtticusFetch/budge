@@ -16,7 +16,7 @@ export default function AddTransactionModal(props) {
     transaction?.amount ? numbro(initialAmount).format({ mantissa: 0 }) : '',
   );
   const [note, setNote] = useState(transaction?.note || '');
-  const [date, setDate] = useState(moment.utc(transaction?.date));
+  const [date, setDate] = useState(moment(transaction?.date));
   const [rememberCheckboxVisible, setRememberCheckboxVisible] = useState(true);
   const [splitWith, setSplitWith] = useState(transaction?.splitWith || []);
   const [tips, setTips] = useState(transaction?.tip || null);
@@ -101,7 +101,7 @@ export default function AddTransactionModal(props) {
       setCategory(transaction?.category);
       setNote(transaction?.note);
       if (transaction?.date) {
-        setDate(moment.utc(transaction?.date));
+        setDate(moment(transaction?.date));
       }
       setSplitWith(transaction?.splitWith);
       setTips(transaction?.tips);
