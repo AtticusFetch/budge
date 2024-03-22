@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../../utils/colors';
-import { FREQUENCY_TYPES } from '../../utils/getFrequencyMultiplier';
+import { FREQUENCY_TYPES } from '../../utils/constants';
 import { globalStyles } from '../../utils/globalStyles';
 import { LabeledCheckbox } from '../LabeledCheckbox';
 

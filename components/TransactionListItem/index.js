@@ -1,10 +1,10 @@
 import moment from 'moment';
-import numbro from 'numbro';
 import { useCallback, useEffect, useState } from 'react';
 import { ActionSheetIOS, StyleSheet, Text, View } from 'react-native';
 
 import { useCategoriesContext } from '../../context/Categories';
 import { colors } from '../../utils/colors';
+import { formatCurrency } from '../../utils/formatCurrency';
 import { mapPlaidCategory } from '../../utils/plaidCategoryMapper';
 import { ExpandableButton } from '../ExpandableButton';
 import { Icon } from '../Icon';
@@ -59,7 +59,7 @@ export const TransactionListItem = (props) => {
 
   const isPositiveFlow = amount <= 0;
   const isUpcoming = moment(date).isAfter(moment());
-  const formattedAmount = numbro(0 - amount).formatCurrency({ mantissa: 2 });
+  const formattedAmount = formatCurrency(0 - amount);
   const onActionSelected = useCallback(async (actionIndex) => {
     switch (actionSheetOptions[actionIndex]) {
       case TRANSACTION_ACTIONS.CANCEL:
@@ -131,18 +131,29 @@ export const TransactionListItem = (props) => {
           style={[styles.transactionWrapper, hasSplit && styles.splitBorder]}
         >
           <Icon color={colors.grey} name={mappedCategory?.icon} size={30} />
-          <Text style={[styles.text, isPositiveFlow && styles.positiveAmount]}>
-            {formattedAmount}
-          </Text>
+          {(note || mappedCategory) && (
+            <View style={[styles.noteContainer]}>
+              {note && (
+                <Text style={[styles.labelText, styles.noteText]}>{note}</Text>
+              )}
+              {!!mappedCategory && (
+                <Text style={[styles.labelText, styles.noteText]}>
+                  {mappedCategory?.name}
+                </Text>
+              )}
+            </View>
+          )}
+          <View style={styles.transactionContainer}>
+            <Text
+              style={[styles.text, isPositiveFlow && styles.positiveAmount]}
+            >
+              {formattedAmount}
+            </Text>
+          </View>
         </View>
       }
       extraContent={
         <View style={styles.extraContainer}>
-          {note && (
-            <View style={[styles.labelContainer, styles.noteContainer]}>
-              <Text style={[styles.labelText, styles.noteText]}>{note}</Text>
-            </View>
-          )}
           {merchant_name && (
             <View style={[styles.labelContainer, styles.noteContainer]}>
               <Text style={[styles.labelText, styles.noteText]}>
@@ -218,7 +229,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
   },
   categoryNameContainer: {
     opacity: 0.5,
@@ -275,6 +287,14 @@ const styles = StyleSheet.create({
   },
   dateContainer: {},
   dateText: {},
-  noteContainer: {},
+  noteContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  transactionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   noteText: {},
 });

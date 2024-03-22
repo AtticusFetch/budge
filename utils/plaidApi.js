@@ -153,10 +153,6 @@ export const exchangeToken = (publicToken, userId) => {
   });
 };
 
-export const setUserBudget = (data) => {
-  return postToApi('budget', data);
-};
-
 export const createBudgetTransaction = (data) => {
   return postToApi('budget/transaction/create', data);
 };

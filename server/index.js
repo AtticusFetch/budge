@@ -26,7 +26,6 @@ const { getTransactionsForMonth } = require('./api/getTransactionsForMonth');
 const { getUserById } = require('./api/getUserById');
 const { postInfo } = require('./api/info');
 const { postUser } = require('./api/postUser');
-const { postUserBudget } = require('./api/postUserBudget');
 const { removeFriend } = require('./api/removeFriend');
 const { sendFriendRequest } = require('./api/sendFriendRequest');
 const { signOutUser } = require('./api/signOutUser');
@@ -81,7 +80,6 @@ app.post('/api/user/transaction/delete', deleteUserTransaction);
 app.post('/api/user/transaction/update', updateUserTransaction);
 app.post('/api/user/transaction/transfer', transferPlaidTransaction);
 
-app.post('/api/budget', postUserBudget);
 app.post('/api/budget/transaction/create', createBudgetTransaction);
 app.post('/api/budget/transaction/update', updateBudgetTransaction);
 app.post('/api/budget/transaction/delete', deleteBudgetTransaction);

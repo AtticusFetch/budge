@@ -11,10 +11,8 @@ import { StageWrapper } from '../components/ModalStageWrapper';
 import { StageTextInput } from '../components/TextInput';
 import { useUserContext, userActions } from '../context/User';
 import { colors } from '../utils/colors';
-import {
-  FREQUENCY_TYPES,
-  getFrequencyMultiplier,
-} from '../utils/getFrequencyMultiplier';
+import { FREQUENCY_TYPES } from '../utils/constants';
+import { getFrequencyMultiplier } from '../utils/getFrequencyMultiplier';
 import { globalStyles } from '../utils/globalStyles';
 import { createCategoryBudget, updateCategoryBudget } from '../utils/plaidApi';
 

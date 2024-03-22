@@ -14,8 +14,8 @@ const remainderLabels = ['Today', 'This Week', 'This Month'];
 export const BudgetRemainder = (props) => {
   const [remainder, setRemainder] = useState([]);
   const { budget, transactions, showBars = false } = props;
-  const max = getMaxSpending(budget);
   useEffect(() => {
+    const max = getMaxSpending(budget);
     const [, totalAmountSpent] = getProgressSpendingForDay(
       moment(),
       budget,

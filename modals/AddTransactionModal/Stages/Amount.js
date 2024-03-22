@@ -160,7 +160,7 @@ export const AmountStage = (props) => {
         <View style={[globalStyles.row, styles.btnRow]}>
           <ColorButton
             colorName="yellow"
-            childrenWrapperStyle={styles.modifierBtnContent}
+            childrenWrapperStyle={styles.categoryBtnContent}
             onPress={onNoteModalShow}
             style={[styles.modifierBtn, styles.noteBtn]}
             text="Note"

@@ -1,7 +1,9 @@
+import numbro from 'numbro';
 import { useCallback, useEffect, useState } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 
 import { CategoryStage } from './AddTransactionModal/Stages/Category';
+import { NoteStage } from './AddTransactionModal/Stages/Note';
 import { ColorButton } from '../components/ColorButton';
 import { DismissKeyboard } from '../components/DismissKeyboard';
 import { FrequencyCheckboxes } from '../components/FrequencyCheckboxes';
@@ -10,21 +12,32 @@ import { LabeledCheckbox } from '../components/LabeledCheckbox';
 import { SplitCheckboxes } from '../components/SplitCheckboxes';
 import { StageTextInput } from '../components/TextInput';
 import { colors } from '../utils/colors';
+import { FREQUENCY_TYPES } from '../utils/constants';
 import { getFrequencyMultiplier } from '../utils/getFrequencyMultiplier';
 
 export const AddBudgetTransactionModal = (props) => {
-  const { transactionToEdit } = props;
+  const { transactionToEdit, notes } = props;
   const [split, setSplit] = useState(transactionToEdit?.split);
   const [frequency, setFrequency] = useState(transactionToEdit?.frequency);
-  const [value, setValue] = useState(transactionToEdit?.value);
+  const [amount, setAmount] = useState(transactionToEdit?.amount);
   const [category, setCategory] = useState(transactionToEdit?.category);
+  const [shouldRememberNote, setShouldRememberNote] = useState(false);
   const [isIncome, setIsIncome] = useState(transactionToEdit?.isIncome);
+  const [note, setNote] = useState(transactionToEdit?.note);
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
+  const [isNoteModalVisible, setIsNoteModalVisible] = useState(false);
   const onInputChange = useCallback((e) => {
-    setValue(e);
+    setAmount(e);
   }, []);
   const onFrequencyChange = useCallback((e) => {
     setFrequency(e);
+  }, []);
+  const onNoteChange = useCallback((e) => {
+    if (typeof e === 'object') {
+      setNote(e.name);
+    } else {
+      setNote(e);
+    }
   }, []);
   const onSplitChange = useCallback((e) => {
     setSplit(e);
@@ -50,11 +63,20 @@ export const AddBudgetTransactionModal = (props) => {
     setCategory(e);
   }, []);
 
+  const onNoteModalClose = useCallback(() => {
+    setIsNoteModalVisible(false);
+  }, []);
+
+  const onNoteModalShow = useCallback(() => {
+    setIsNoteModalVisible(true);
+  }, []);
+
   useEffect(() => {
     if (transactionToEdit) {
-      setValue(transactionToEdit?.value);
+      setAmount(`${numbro(transactionToEdit?.amount).format({ mantissa: 2 })}`);
       setFrequency(transactionToEdit?.frequency);
       setSplit(transactionToEdit?.split);
+      setSplit(transactionToEdit?.note);
       setIsIncome(transactionToEdit?.isIncome);
       setCategory(transactionToEdit?.category);
     }
@@ -64,23 +86,34 @@ export const AddBudgetTransactionModal = (props) => {
     const valueMultiplier = frequency ? getFrequencyMultiplier(frequency) : 1;
     const splitAmount = parseInt(split, 10) || 1;
     const sign = isIncome ? -1 : 1;
-    const weeklyValue = ((value * valueMultiplier) / splitAmount) * sign;
+    const weeklyValue = ((amount * valueMultiplier) / splitAmount) * sign;
     const data = {
       category,
       amount: weeklyValue,
       split,
-      frequency,
-      value,
+      shouldRememberNote,
+      frequency: FREQUENCY_TYPES.weekly,
+      note,
       isIncome,
+      id: transactionToEdit?.id,
     };
     props.onSubmit(data);
     props.onClose();
-    setValue();
+    setAmount();
     setFrequency();
     setSplit();
     setIsIncome(false);
     setCategory();
-  }, [split, frequency, value, isIncome, category]);
+  }, [
+    split,
+    frequency,
+    amount,
+    isIncome,
+    category,
+    note,
+    shouldRememberNote,
+    transactionToEdit,
+  ]);
 
   return (
     <Modal
@@ -93,7 +126,7 @@ export const AddBudgetTransactionModal = (props) => {
         <View style={styles.wrapper}>
           <StageTextInput
             onChange={onInputChange}
-            value={value}
+            value={amount}
             containerStyle={styles.inputContainer}
             inputStyle={styles.input}
             autoFocus
@@ -113,19 +146,24 @@ export const AddBudgetTransactionModal = (props) => {
           />
           <ColorButton
             colorName="yellow"
-            childrenWrapperStyle={styles.modifierBtnContent}
+            childrenWrapperStyle={styles.categoryBtnContent}
             onPress={onCategoryModalShow}
             style={styles.categoryBtn}
-            text="Category"
-          />
-          {category && (
-            <Icon
-              style={styles.categoryIcon}
-              color={colors.grey}
-              name={category?.icon}
-              size={30}
-            />
-          )}
+          >
+            <Icon size={25} style={styles.categoryIcon} name={category?.icon} />
+            <Text style={styles.categoryName}>
+              {category?.name || 'Choose Category'}
+            </Text>
+          </ColorButton>
+          <ColorButton
+            colorName="yellow"
+            childrenWrapperStyle={styles.categoryBtnContent}
+            onPress={onNoteModalShow}
+            style={[styles.modifierBtn, styles.noteBtn]}
+            text="Note"
+          >
+            <Text style={styles.categoryName}>{note || 'Note'}</Text>
+          </ColorButton>
         </View>
         <ColorButton
           colorName="blue"
@@ -151,6 +189,24 @@ export const AddBudgetTransactionModal = (props) => {
           category={category}
         />
       </Modal>
+      <Modal
+        animationType="slide"
+        visible={isNoteModalVisible}
+        transparent
+        onRequestClose={onNoteModalClose}
+      >
+        <NoteStage
+          stageProps={{
+            onCancel: onNoteModalClose,
+            cancelLabel: 'Done',
+          }}
+          rememberCheckboxVisible
+          setShouldRememberNote={setShouldRememberNote}
+          onChange={onNoteChange}
+          notes={notes}
+          note={note}
+        />
+      </Modal>
     </Modal>
   );
 };
@@ -165,6 +221,23 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
     backgroundColor: 'white',
+  },
+  categoryBtn: {
+    height: 40,
+  },
+  categoryBtnContent: {
+    borderWidth: 0,
+    padding: 0,
+    backgroundColor: colors.seeThrough.grey,
+  },
+  modifierBtnContent: {
+    padding: 0,
+  },
+  categoryIcon: {
+    marginRight: 10,
+  },
+  categoryName: {
+    fontSize: 15,
   },
   contentWrapepr: {
     paddingBottom: '10%',
@@ -184,16 +257,5 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderColor: colors.yellow,
     borderWidth: 2,
-  },
-  categoryBtn: {
-    height: 40,
-    width: '30%',
-    alignSelf: 'center',
-  },
-  categoryIcon: {
-    alignSelf: 'center',
-  },
-  modifierBtnContent: {
-    padding: 0,
   },
 });

@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 20,
-    marginBottom: 30,
+    marginBottom: 10,
     color: colors.grey,
   },
   container: {
@@ -68,7 +68,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 2, height: -2 },
     shadowOpacity: 0.5,
     shadowRadius: 2,
-    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     padding: 30,

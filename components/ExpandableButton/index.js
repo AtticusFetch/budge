@@ -28,7 +28,7 @@ export const ExpandableButton = (props) => {
     <ColorButton
       onPress={onPress}
       colorName="blue"
-      size={expanded ? 'thick' : ''}
+      size={expanded ? 'thick' : 'slim'}
       style={[styles.button, expanded && styles.expandedStyle, style]}
       childrenWrapperStyle={[
         styles.itemContainer,
@@ -91,10 +91,6 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingLeft: 10,
-    paddingRight: 20,
   },
   extraContent: {
     flex: 1,

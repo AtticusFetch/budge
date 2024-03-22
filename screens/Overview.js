@@ -48,18 +48,20 @@ export default function Overview({ navigation }) {
           categories={categories}
           chartConfig={chartConfig}
         />
-        <ProgressSpending
-          transactions={transactions}
-          budget={budget}
-          slim={false}
-          extraDays={
-            daysPassed &&
-            new Array(daysPassed)
-              .fill({})
-              .map((i, index) => moment().subtract(index + 1, 'day'))
-          }
-          chartConfig={chartConfig}
-        />
+        {!!user.budget && (
+          <ProgressSpending
+            transactions={transactions}
+            budget={budget}
+            slim={false}
+            extraDays={
+              daysPassed &&
+              new Array(daysPassed)
+                .fill({})
+                .map((i, index) => moment().subtract(index + 1, 'day'))
+            }
+            chartConfig={chartConfig}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );

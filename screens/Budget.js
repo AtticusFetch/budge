@@ -8,12 +8,10 @@ import { ColorButton } from '../components/ColorButton';
 import { useCategoriesContext } from '../context/Categories';
 import { useUserContext, userActions } from '../context/User';
 import { AddBudgetTransactionModal } from '../modals/AddBudgetTransactionModal';
-import { SetupBudgetModal } from '../modals/SetupBudgetModal';
 import { colors } from '../utils/colors';
 import {
   createBudgetTransaction,
   deleteBudgetTransaction,
-  setUserBudget,
   updateBudgetTransaction,
 } from '../utils/plaidApi';
 
@@ -25,20 +23,10 @@ export default function Budget(props) {
   const {
     state: { categories },
   } = useCategoriesContext();
-  const [isSetupBudgetModalVisible, setIsSetupBudgetModalVisible] =
-    useState(false);
   const [transactionToEdit, setTransactionToEdit] = useState();
 
   const [addBudgetTransactionVisible, setAddBudgetTransactionVisible] =
     useState(false);
-
-  const closeSetupBudgetModal = useCallback(() => {
-    setIsSetupBudgetModalVisible(false);
-  }, []);
-
-  const showSetupBudgetModal = useCallback(() => {
-    setIsSetupBudgetModalVisible(true);
-  }, []);
 
   const closeAddBudgetTransactionModal = useCallback(() => {
     setTransactionToEdit();
@@ -49,30 +37,22 @@ export default function Budget(props) {
     setAddBudgetTransactionVisible(true);
   }, []);
 
-  const onSubmitBudget = useCallback(async (budgetData) => {
-    LayoutAnimation.configureNext({
-      duration: 200,
-      update: { type: 'spring', springDamping: 0.4 },
-      create: { type: 'easeInEaseOut', property: 'opacity' },
-    });
-    const updatedUser = await setUserBudget({
-      userId: user.id,
-      budget: budgetData,
-    });
-    dispatch(userActions.update(updatedUser));
-    closeSetupBudgetModal();
-  }, []);
-
   const onCreateTransaction = useCallback(async (transaction) => {
     LayoutAnimation.configureNext({
       duration: 200,
       update: { type: 'spring', springDamping: 0.4 },
       create: { type: 'easeInEaseOut', property: 'opacity' },
     });
-    const updatedUser = await createBudgetTransaction({
-      userId: user.id,
+    const data = {
       transaction,
-    });
+      userId: user.id,
+    };
+    let updatedUser;
+    if (transaction.id) {
+      updatedUser = await updateBudgetTransaction(data);
+    } else {
+      updatedUser = await createBudgetTransaction(data);
+    }
     dispatch(userActions.update(updatedUser));
   }, []);
 
@@ -81,12 +61,8 @@ export default function Budget(props) {
     showAddBudgetTransactionModal();
   }, []);
 
-  const onSubmitEdit = useCallback(async (transaction) => {
-    const updatedUser = await updateBudgetTransaction({
-      userId: user.id,
-      transaction,
-    });
-    dispatch(userActions.update(updatedUser));
+  const onTransactionPaid = useCallback((transaction) => {
+    onCreateTransaction(transaction);
   }, []);
 
   const onDeleteTransaction = useCallback(async (transactionId) => {
@@ -102,41 +78,33 @@ export default function Budget(props) {
       {user?.budget ? (
         <BudgetInfo
           budget={user.budget}
-          onSubmitEdit={onSubmitEdit}
           onDeleteTransaction={onDeleteTransaction}
           onEditCustomTransaction={onEditCustomTransaction}
+          onTransactionPaid={onTransactionPaid}
         />
       ) : (
         <View style={styles.noBudgetContainer}>
-          <Text style={styles.noBudgetText}>No budget setup yet</Text>
-          <ColorButton
-            onPress={showSetupBudgetModal}
-            text="Setup Monthly Budget"
-          />
+          <Text style={styles.noBudgetText}>No budget setup yet.</Text>
+          <Text style={styles.noBudgetText}>
+            Start by adding first expense/income.
+          </Text>
         </View>
       )}
-      <SetupBudgetModal
-        onClose={closeSetupBudgetModal}
-        onRequestClose={closeSetupBudgetModal}
-        visible={isSetupBudgetModalVisible}
-        onSubmit={onSubmitBudget}
-      />
-      {!!user.budget && (
-        <View style={styles.addButtonWrapper}>
-          <ColorButton
-            style={styles.addButtonContainer}
-            childrenWrapperStyle={styles.addButton}
-            onPress={showAddBudgetTransactionModal}
-            colorName="blue"
-            type="fill"
-          >
-            <Feather color="white" name="plus" size={30} />
-          </ColorButton>
-        </View>
-      )}
+      <View style={styles.addButtonWrapper}>
+        <ColorButton
+          style={styles.addButtonContainer}
+          childrenWrapperStyle={styles.addButton}
+          onPress={showAddBudgetTransactionModal}
+          colorName="blue"
+          type="fill"
+        >
+          <Feather color="white" name="plus" size={30} />
+        </ColorButton>
+      </View>
       <AddBudgetTransactionModal
         visible={addBudgetTransactionVisible}
         onClose={closeAddBudgetTransactionModal}
+        notes={user.personalNotes}
         transactionToEdit={transactionToEdit}
         userCategories={user.categories}
         onSubmit={onCreateTransaction}
@@ -157,7 +125,7 @@ const styles = StyleSheet.create({
   noBudgetContainer: {
     flex: 1,
     width: '100%',
-    justifyContent: 'space-between',
+    justifyContent: 'space-aroung',
     paddingTop: '50%',
   },
   noBudgetText: {

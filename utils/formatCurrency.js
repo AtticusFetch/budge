@@ -1,4 +1,4 @@
 import numbro from 'numbro';
 
-export const formatCurrency = (amount) =>
-  numbro(amount || 0).formatCurrency({ mantissa: 2 });
+export const formatCurrency = (amount, mantissa = 0) =>
+  numbro(amount || 0).formatCurrency({ mantissa, thousandSeparated: true });

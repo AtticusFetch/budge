@@ -1,11 +1,4 @@
-import { WEEKS_IN_MONTH, WEEKS_IN_YEAR } from './constants';
-
-export const FREQUENCY_TYPES = {
-  annual: 'annual',
-  monthly: 'monthly',
-  semiMonthly: 'semiMonthly',
-  weekly: 'weekly',
-};
+import { FREQUENCY_TYPES, WEEKS_IN_MONTH, WEEKS_IN_YEAR } from './constants';
 
 export const getFrequencyMultiplier = (frequency) => {
   let weeklyMultiplier = 1;
