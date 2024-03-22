@@ -1,12 +1,26 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  ActionSheetIOS,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { colors } from '../../utils/colors';
 import { ProgressSpending } from '../Charts/ProgressSpending';
 import { Icon } from '../Icon';
 
+const CATEGORY_ACTIONS = {
+  CANCEL: 'Cancel',
+  DELETE: 'Delete',
+  EDIT: 'Edit',
+};
+
+const actionSheetOptions = Object.values(CATEGORY_ACTIONS);
+
 export const CategoryBudgetListItem = (props) => {
-  const { transactions, categoryBudget, chartConfig } = props;
+  const { transactions, categoryBudget, chartConfig, onEdit, onDelete } = props;
   const [relevantTransactions, setRelevantTransactions] = useState([]);
 
   useEffect(() => {
@@ -15,8 +29,32 @@ export const CategoryBudgetListItem = (props) => {
     );
   }, [transactions]);
 
+  const onActionSelected = useCallback(async (actionIndex) => {
+    switch (actionSheetOptions[actionIndex]) {
+      case CATEGORY_ACTIONS.CANCEL:
+        break;
+      case CATEGORY_ACTIONS.DELETE:
+        await onDelete(categoryBudget);
+        break;
+      case CATEGORY_ACTIONS.EDIT:
+        await onEdit(categoryBudget);
+        break;
+    }
+  }, []);
+
+  const onLongPress = useCallback(() => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: actionSheetOptions,
+        destructiveButtonIndex: 1,
+        cancelButtonIndex: 0,
+      },
+      onActionSelected,
+    );
+  }, []);
+
   return (
-    <View style={styles.container}>
+    <Pressable onLongPress={onLongPress} style={styles.container}>
       <ProgressSpending
         transactions={relevantTransactions}
         prependChild={
@@ -45,7 +83,7 @@ export const CategoryBudgetListItem = (props) => {
         slim={false}
         chartConfig={chartConfig}
       />
-    </View>
+    </Pressable>
   );
 };
 

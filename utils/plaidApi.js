@@ -173,6 +173,14 @@ export const createCategoryBudget = (data) => {
   return postToApi('budget/category/create', data);
 };
 
+export const updateCategoryBudget = (data) => {
+  return postToApi('budget/category/update', data);
+};
+
+export const deleteCategoryBudget = (data) => {
+  return postToApi('budget/category/delete', data);
+};
+
 export const updateUser = (data) => {
   return postToApi('user', data);
 };

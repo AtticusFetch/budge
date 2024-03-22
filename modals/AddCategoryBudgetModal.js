@@ -1,5 +1,5 @@
 import numbro from 'numbro';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
 
 import { CategoryStage } from './AddTransactionModal/Stages/Category';
@@ -16,10 +16,10 @@ import {
   getFrequencyMultiplier,
 } from '../utils/getFrequencyMultiplier';
 import { globalStyles } from '../utils/globalStyles';
-import { createCategoryBudget } from '../utils/plaidApi';
+import { createCategoryBudget, updateCategoryBudget } from '../utils/plaidApi';
 
 export const AddCategoryBudgetModal = (props) => {
-  const { visible, onRequestClose, categories } = props;
+  const { visible, onRequestClose, categories, selectedCategory } = props;
   const {
     state: { user = {} },
     dispatch,
@@ -57,18 +57,43 @@ export const AddCategoryBudgetModal = (props) => {
     setFrequency();
   });
 
+  useEffect(() => {
+    if (selectedCategory) {
+      let finalAmount = selectedCategory.amount;
+      if (selectedCategory.frequency !== FREQUENCY_TYPES.weekly) {
+        const multiplier = getFrequencyMultiplier(selectedCategory.frequency);
+        finalAmount = parseFloat(selectedCategory.amount) / multiplier;
+      }
+      setAmount(`${finalAmount}`);
+      setCategory(selectedCategory.category);
+      setFrequency(selectedCategory.frequency);
+    }
+  }, [selectedCategory]);
+
   const onSubmmit = useCallback(async () => {
     let finalAmount = amount;
     if (frequency !== FREQUENCY_TYPES.weekly) {
       const multiplier = getFrequencyMultiplier(frequency);
       finalAmount = parseFloat(amount) * multiplier;
     }
-    const data = {
+    const budgetData = {
       amount: finalAmount,
+      frequency,
       category,
+      id: selectedCategory?.id,
+    };
+
+    const payload = {
+      categoryBudget: budgetData,
       userId: user.id,
     };
-    const updatedUser = await createCategoryBudget(data);
+
+    let updatedUser;
+    if (selectedCategory?.id) {
+      updatedUser = await updateCategoryBudget(payload);
+    } else {
+      updatedUser = await createCategoryBudget(payload);
+    }
     if (updatedUser.error) {
       console.error(updatedUser.error);
       return;
@@ -120,7 +145,9 @@ export const AddCategoryBudgetModal = (props) => {
             </ColorButton>
           </View>
           <FrequencyCheckboxes
-            savedFrequency={FREQUENCY_TYPES.monthly}
+            savedFrequency={
+              selectedCategory?.frequency || FREQUENCY_TYPES.monthly
+            }
             required
             onChange={onFrequencyChange}
           />

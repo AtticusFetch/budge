@@ -10,9 +10,10 @@ import {
 } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
-import { useUserContext } from '../../context/User';
+import { useUserContext, userActions } from '../../context/User';
 import { AddCategoryBudgetModal } from '../../modals/AddCategoryBudgetModal';
 import { colors } from '../../utils/colors';
+import { deleteCategoryBudget } from '../../utils/plaidApi';
 import { CategoryBudgetListItem } from '../CategoryBudgetListItem';
 import { ColorButton } from '../ColorButton';
 import { DatePicker } from '../DatePicker';
@@ -23,11 +24,13 @@ export const CategorySpending = (props) => {
   const { transactions, chartConfig, categories } = props;
   const {
     state: { user = {} },
+    dispatch,
   } = useUserContext();
   const [categorySpending, setCategorySpending] = useState([]);
   const [categoryBudgetModalVisible, setCategoryBudgetModalVisible] =
     useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState('month');
+  const [selectedCategory, setSelectedCategory] = useState();
   const start = moment().startOf('month');
   const end = moment().endOf('month');
   const [dateFrom, setDateFrom] = useState(start.toDate());
@@ -36,6 +39,7 @@ export const CategorySpending = (props) => {
 
   const hideCategoryBudgetModal = useCallback(() => {
     setCategoryBudgetModalVisible(false);
+    setSelectedCategory();
   });
 
   const showCategoryBudgetModal = useCallback(() => {
@@ -108,6 +112,19 @@ export const CategorySpending = (props) => {
     setSelectedDateRange('custom');
   }, []);
 
+  const onBudgetEdit = useCallback((category) => {
+    setSelectedCategory(category);
+    showCategoryBudgetModal();
+  }, []);
+
+  const onBudgetDelete = useCallback(async (category) => {
+    const updatedUser = await deleteCategoryBudget({
+      categoryBudgetId: category.id,
+      userId: user.id,
+    });
+    dispatch(userActions.update(updatedUser));
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Spending By Category</Text>
@@ -178,6 +195,7 @@ export const CategorySpending = (props) => {
         <Icon color="white" name="plus" size={20} />
       </ColorButton>
       <AddCategoryBudgetModal
+        selectedCategory={selectedCategory}
         visible={categoryBudgetModalVisible}
         onRequestClose={hideCategoryBudgetModal}
         categories={categories}
@@ -188,6 +206,8 @@ export const CategorySpending = (props) => {
           transactions={transactions}
           categoryBudget={categoryBudget}
           chartConfig={chartConfig}
+          onEdit={onBudgetEdit}
+          onDelete={onBudgetDelete}
         />
       ))}
     </View>
