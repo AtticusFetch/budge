@@ -1,5 +1,6 @@
-import _ from 'lodash';
+import { groupBy, sortBy, sumBy } from 'lodash';
 import moment from 'moment';
+import numbro from 'numbro';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Dimensions,
@@ -13,6 +14,7 @@ import { PieChart } from 'react-native-chart-kit';
 import { useUserContext, userActions } from '../../context/User';
 import { AddCategoryBudgetModal } from '../../modals/AddCategoryBudgetModal';
 import { colors } from '../../utils/colors';
+import { formatCurrency } from '../../utils/formatCurrency';
 import { deleteCategoryBudget } from '../../utils/plaidApi';
 import { CategoryBudgetListItem } from '../CategoryBudgetListItem';
 import { ColorButton } from '../ColorButton';
@@ -55,22 +57,25 @@ export const CategorySpending = (props) => {
     const timedTransactions = transactions.filter((t) =>
       moment(t.date).isBetween(...dateRange),
     );
-    const groupedTransactions = _.groupBy(timedTransactions, 'category.name');
+    const groupedTransactions = groupBy(timedTransactions, 'category.name');
     const spending = Object.keys(groupedTransactions).map(
       (categoryName, index) => {
         // TODO Need more random colors
+        const totalFloat = sumBy(groupedTransactions[categoryName], (t) =>
+          parseFloat(t.amount),
+        );
+        const totalFormatted = numbro(totalFloat).format({ mantissa: 2 });
+        const total = numbro.unformat(totalFormatted);
         return {
           name: categoryName !== 'undefined' ? categoryName : 'Unknown',
           color: colors[colorRoulette[index]],
-          legendFontColor: '#7F7F7F',
+          legendFontColor: colors.grey,
           legendFontSize: 15,
-          total: _.sumBy(groupedTransactions[categoryName], (t) =>
-            parseFloat(t.amount),
-          ),
+          total,
         };
       },
     );
-    setCategorySpending(spending);
+    setCategorySpending(sortBy(spending, 'total').reverse());
   }, [transactions, dateRange]);
 
   useEffect(() => {
@@ -171,19 +176,29 @@ export const CategorySpending = (props) => {
         )}
         <PieChart
           data={categorySpending}
-          width={Dimensions.get('screen').width - 40}
-          height={220}
+          width={Dimensions.get('screen').width - 28}
+          height={300}
           chartConfig={{
             ...chartConfig,
           }}
           style={{
             marginTop: 8,
-            marginBottom: 20,
-            borderRadius: 16,
           }}
+          center={[Dimensions.get('screen').width / 2 - 110, 0]}
           accessor="total"
+          hasLegend={false}
+          absolute
           backgroundColor="white"
         />
+        <View style={styles.chartLegend}>
+          {categorySpending.map(({ color, total, name }) => (
+            <View style={styles.legendItem}>
+              <View style={[styles.legendCircle, { backgroundColor: color }]} />
+              <Text style={[styles.legendText]}>{name}</Text>
+              <Text style={[styles.legendText]}>{formatCurrency(total)}</Text>
+            </View>
+          ))}
+        </View>
       </View>
       <ColorButton
         style={styles.addButtonContainer}
@@ -231,6 +246,28 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     maxWidth: '100%',
     padding: 10,
+  },
+  chartLegend: {
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 10,
+  },
+  legendText: {
+    color: colors.grey,
+    marginHorizontal: 5,
+  },
+  legendCircle: {
+    width: 15,
+    height: 15,
+    marginRight: 5,
+    borderRadius: 100,
   },
   header: {
     fontSize: 20,

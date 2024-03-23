@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   section: {
-    backgroundColor: colors.dimmed.blue,
+    backgroundColor: colors.blue,
     width: '50%',
     paddingVertical: 5,
     borderRadius: 15,
