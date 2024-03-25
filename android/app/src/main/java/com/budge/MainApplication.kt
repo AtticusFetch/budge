@@ -1,4 +1,4 @@
-package com.budge
+package com.ibudge
 
 import android.app.Application
 import android.content.res.Configuration

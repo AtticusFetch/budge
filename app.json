@@ -14,14 +14,14 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.budge"
+      "bundleIdentifier": "com.ibudge"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.budge"
+      "package": "com.ibudge"
     },
     "web": {
       "favicon": "./assets/favicon.png"

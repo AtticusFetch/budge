@@ -1,0 +1,22 @@
+{
+  "cli": {
+    "version": ">= 7.6.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_SERVER_BASE": "https://crw3iayqbx.us-east-2.awsapprunner.com",
+        "APP_NAME": "Budge"
+      }
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}
