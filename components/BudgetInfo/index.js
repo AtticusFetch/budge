@@ -19,6 +19,24 @@ const TIME_FRAMES = {
   [FREQUENCY_TYPES.annual]: 'Year',
 };
 
+const SIZE_SORTED_FRAMES = Object.values(TIME_FRAMES).reverse();
+
+const isTransactionPaid = (transaction, timeFrame) => {
+  let isPaid = false;
+  const now = moment();
+  const relevantPeriods = SIZE_SORTED_FRAMES.slice(
+    0,
+    SIZE_SORTED_FRAMES.indexOf(TIME_FRAMES[timeFrame]) + 1,
+  );
+  relevantPeriods.forEach((period) => {
+    if (!transaction.lastChecked?.[period]) {
+      return;
+    }
+    isPaid = moment(transaction.lastChecked[period]).isSame(now, period);
+  });
+  return isPaid;
+};
+
 export const BudgetInfo = (props) => {
   const { dispatch } = useLoadingContext();
   const { budget } = props;
@@ -138,13 +156,7 @@ export const BudgetInfo = (props) => {
                   fillColor={colors.blue}
                   unfillColor="white"
                   style={styles.checkbox}
-                  isChecked={
-                    transaction.item.lastChecked?.[TIME_FRAMES[timeFrame]]
-                      ? moment(
-                          transaction.item.lastChecked[TIME_FRAMES[timeFrame]],
-                        ).isSame(moment(), TIME_FRAMES[timeFrame].toLowerCase())
-                      : false
-                  }
+                  isChecked={isTransactionPaid(transaction.item, timeFrame)}
                   onPress={() => onBudgetPaid(transaction.item)}
                   disableBuiltInState
                 />
