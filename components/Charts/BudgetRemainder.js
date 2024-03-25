@@ -22,13 +22,13 @@ export const BudgetRemainder = (props) => {
       transactions,
     );
     const remainderSet = totalAmountSpent
-      .map((v, i) => max[i] - v)
+      ?.map((v, i) => max[i] - v)
       .map((v, i) => [v, v / max[i]]);
     setRemainder(remainderSet);
   }, [budget, transactions]);
   return (
     <View style={[styles.container, props.style]}>
-      {remainder.map(([amount, percent], i) => (
+      {remainder?.map(([amount, percent], i) => (
         <View key={i} style={styles.progressWrapper}>
           <Text
             style={[

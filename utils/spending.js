@@ -12,6 +12,7 @@ export const getMaxSpending = (budget = []) => {
 };
 
 export const getProgressSpendingForDay = (day, budget = [], transactions) => {
+  if (!transactions) return [];
   const today = moment(day);
   const relevantTransactions = transactions.filter((t) =>
     moment(t.date).isSameOrBefore(today),

@@ -51,7 +51,7 @@ export const CategorySpending = (props) => {
 
   useEffect(() => {
     animateLayout();
-    const timedTransactions = transactions.filter((t) =>
+    const timedTransactions = transactions?.filter((t) =>
       moment(t.date).isBetween(...dateRange),
     );
     const groupedTransactions = groupBy(timedTransactions, 'category.name');

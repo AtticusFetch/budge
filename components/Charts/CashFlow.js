@@ -15,6 +15,7 @@ const months = monthsOffset
   .reverse();
 
 const getMonthsTransactions = (transactions) => {
+  if (!transactions) return new Array(6).fill(0);
   return months.map(({ mDate }) => {
     const monthsTransactions = transactions.filter((t) =>
       moment(t.date).isSame(mDate, 'month'),
@@ -24,13 +25,13 @@ const getMonthsTransactions = (transactions) => {
 };
 
 export const CashFlow = (props) => {
-  const { transactions = [] } = props;
+  const { transactions } = props;
   const [expensesSet, setExpensesSet] = useState(new Array(6).fill(0));
   const [incomeSet, setIncomeSet] = useState(new Array(6).fill(0));
 
   useEffect(() => {
-    const outcome = transactions.filter((t) => parseFloat(t.amount) > 0);
-    const income = transactions.filter((t) => parseFloat(t.amount) <= 0);
+    const outcome = transactions?.filter((t) => parseFloat(t.amount) > 0);
+    const income = transactions?.filter((t) => parseFloat(t.amount) <= 0);
     const expensesData = getMonthsTransactions(outcome);
     const incomeData = getMonthsTransactions(income).map((t) => t * -1);
     setExpensesSet(expensesData);
@@ -39,45 +40,47 @@ export const CashFlow = (props) => {
 
   return (
     <View style={styles.container}>
-      <LineChart
-        data={{
-          labels: months.map((m) => m.label),
-          datasets: [
-            {
-              data: incomeSet,
-              color: () => colors.green,
+      {(!!expensesSet?.length || !!incomeSet?.length) && (
+        <LineChart
+          data={{
+            labels: months.map((m) => m.label),
+            datasets: [
+              {
+                data: incomeSet,
+                color: () => colors.green,
+              },
+              {
+                data: expensesSet,
+                color: () => colors.orange,
+              },
+            ],
+          }}
+          width={Dimensions.get('window').width * 0.95} // from react-native
+          height={220}
+          yAxisLabel="$"
+          chartConfig={{
+            backgroundColor: colors.grey,
+            backgroundGradientFrom: colors.grey,
+            backgroundGradientTo: colors.grey,
+            decimalPlaces: 0, // optional, defaults to 2dp
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16,
             },
-            {
-              data: expensesSet,
-              color: () => colors.orange,
+            propsForDots: {
+              r: '6',
             },
-          ],
-        }}
-        width={Dimensions.get('window').width * 0.95} // from react-native
-        height={220}
-        yAxisLabel="$"
-        chartConfig={{
-          backgroundColor: colors.grey,
-          backgroundGradientFrom: colors.grey,
-          backgroundGradientTo: colors.grey,
-          decimalPlaces: 0, // optional, defaults to 2dp
-          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          style: {
+          }}
+          bezier
+          style={{
+            marginVertical: 8,
             borderRadius: 16,
-          },
-          propsForDots: {
-            r: '6',
-          },
-        }}
-        bezier
-        style={{
-          marginVertical: 8,
-          borderRadius: 16,
-          paddingVertical: 10,
-          backgroundColor: colors.grey,
-        }}
-      />
+            paddingVertical: 10,
+            backgroundColor: colors.grey,
+          }}
+        />
+      )}
     </View>
   );
 };

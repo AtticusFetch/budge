@@ -29,7 +29,7 @@ export default function Overview({ navigation }) {
   }, []);
 
   useEffect(() => {
-    setExpenses(transactions.filter((t) => parseFloat(t.amount) > 0));
+    setExpenses(transactions?.filter((t) => parseFloat(t.amount) > 0));
   }, [transactions]);
 
   const chartConfig = {

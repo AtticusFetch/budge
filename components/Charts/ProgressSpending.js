@@ -80,6 +80,8 @@ export const ProgressSpending = (props) => {
     [pastProgressSpending],
   );
 
+  console.log('progressSpending', progressSpending);
+
   return (
     <View style={[styles.container, style]}>
       {prependChild}
@@ -90,7 +92,7 @@ export const ProgressSpending = (props) => {
           transactions={transactions}
           budget={budget}
         />
-        {!compact && (
+        {!compact && !!progressSpending?.length && (
           <ProgressChart
             data={{
               labels: ['Day', 'Week', 'Month'],
