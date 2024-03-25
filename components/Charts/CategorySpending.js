@@ -2,17 +2,12 @@ import { groupBy, sortBy, sumBy } from 'lodash';
 import moment from 'moment';
 import numbro from 'numbro';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  Dimensions,
-  LayoutAnimation,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 import { useUserContext, userActions } from '../../context/User';
 import { AddCategoryBudgetModal } from '../../modals/AddCategoryBudgetModal';
+import { animateLayout } from '../../utils/animations';
 import { colors } from '../../utils/colors';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { deleteCategoryBudget } from '../../utils/plaidApi';
@@ -38,6 +33,7 @@ export const CategorySpending = (props) => {
   const [dateFrom, setDateFrom] = useState(start.toDate());
   const [dateTo, setDateTo] = useState(end.toDate());
   const [dateRange, setDateRange] = useState([start, end]);
+  const [expanded, setExpanded] = useState(false);
 
   const hideCategoryBudgetModal = useCallback(() => {
     setCategoryBudgetModalVisible(false);
@@ -48,19 +44,19 @@ export const CategorySpending = (props) => {
     setCategoryBudgetModalVisible(true);
   });
 
+  const toggleExpanded = useCallback(() => {
+    animateLayout();
+    setExpanded(!expanded);
+  }, [expanded]);
+
   useEffect(() => {
-    LayoutAnimation.configureNext({
-      duration: 700,
-      update: { type: 'spring', springDamping: 0.4 },
-      create: { type: 'linear', property: 'opacity' },
-    });
+    animateLayout();
     const timedTransactions = transactions.filter((t) =>
       moment(t.date).isBetween(...dateRange),
     );
     const groupedTransactions = groupBy(timedTransactions, 'category.name');
     const spending = Object.keys(groupedTransactions).map(
       (categoryName, index) => {
-        // TODO Need more random colors
         const totalFloat = sumBy(groupedTransactions[categoryName], (t) =>
           parseFloat(t.amount),
         );
@@ -79,11 +75,7 @@ export const CategorySpending = (props) => {
   }, [transactions, dateRange]);
 
   useEffect(() => {
-    LayoutAnimation.configureNext({
-      duration: 700,
-      update: { type: 'spring', springDamping: 0.4 },
-      create: { type: 'linear', property: 'opacity' },
-    });
+    animateLayout();
   }, [user.categoryBudget]);
 
   useEffect(() => {
@@ -109,11 +101,7 @@ export const CategorySpending = (props) => {
   }, []);
 
   const onCustomRangePress = useCallback(() => {
-    LayoutAnimation.configureNext({
-      duration: 700,
-      update: { type: 'spring', springDamping: 0.4 },
-      create: { type: 'linear', property: 'opacity' },
-    });
+    animateLayout();
     setSelectedDateRange('custom');
   }, []);
 
@@ -190,15 +178,31 @@ export const CategorySpending = (props) => {
           absolute
           backgroundColor="white"
         />
-        <View style={styles.chartLegend}>
-          {categorySpending.map(({ color, total, name }) => (
-            <View style={styles.legendItem}>
-              <View style={[styles.legendCircle, { backgroundColor: color }]} />
-              <Text style={[styles.legendText]}>{name}</Text>
-              <Text style={[styles.legendText]}>{formatCurrency(total)}</Text>
-            </View>
-          ))}
-        </View>
+        <ColorButton
+          style={[
+            styles.expandButtonContainer,
+            expanded && styles.expandedContainer,
+          ]}
+          childrenWrapperStyle={styles.expandButton}
+          colorName="blue"
+          onPress={toggleExpanded}
+          type="fill"
+        >
+          <Icon color="white" name="chevron-down" size={20} />
+        </ColorButton>
+        {expanded && (
+          <Animated.View style={[styles.chartLegend]}>
+            {categorySpending.map(({ color, total, name }) => (
+              <View key={`${total}-${name}`} style={styles.legendItem}>
+                <View
+                  style={[styles.legendCircle, { backgroundColor: color }]}
+                />
+                <Text style={[styles.legendText]}>{name}</Text>
+                <Text style={[styles.legendText]}>{formatCurrency(total)}</Text>
+              </View>
+            ))}
+          </Animated.View>
+        )}
       </View>
       <ColorButton
         style={styles.addButtonContainer}
@@ -255,6 +259,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 16,
   },
   legendItem: {
+    width: '40%',
     flexDirection: 'row',
     alignItems: 'center',
     margin: 10,
@@ -302,5 +307,22 @@ const styles = StyleSheet.create({
   addButton: {
     borderRadius: 35,
     padding: 0,
+  },
+  expandButtonContainer: {
+    width: 40,
+    height: 20,
+    alignSelf: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.blue,
+    shadowColor: colors.grey,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+  },
+  expandButton: {
+    padding: 0,
+  },
+  expandedContainer: {
+    transform: [{ rotate: '180deg' }],
   },
 });

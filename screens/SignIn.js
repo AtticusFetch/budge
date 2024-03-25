@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 import * as Keychain from 'react-native-keychain';
 
 import { ColorButton } from '../components/ColorButton';
+import { setLoadingAction, useLoadingContext } from '../context/Loading';
 import { useUserContext, userActions } from '../context/User';
 import SignInModal from '../modals/SignInModal';
 import SignUpModal from '../modals/SignUpModal';
@@ -11,17 +12,17 @@ import {
   getUserSession,
   saveUserSession,
 } from '../utils/asyncStorage';
-import { colors } from '../utils/colors';
 import { authUser, getUserById, verifyUserSession } from '../utils/plaidApi';
 
 export default function SignIn({ navigation, route }) {
-  const { dispatch } = useUserContext();
-  const [isLoading, setIsLoading] = useState(true);
+  const { dispatch: dispatchUser } = useUserContext();
+  const { dispatch } = useLoadingContext();
   const [isSignUpVisible, setisSignUpVisible] = useState(false);
   const [isSignInVisible, setisSignInVisible] = useState(false);
 
   useEffect(() => {
     const getSession = async () => {
+      setLoadingAction(dispatch, true);
       const session = await getUserSession();
       let isValidSession;
       if (session) {
@@ -39,12 +40,13 @@ export default function SignIn({ navigation, route }) {
           ...userInfo,
           ...user,
         });
-        dispatch(userActions.set(user));
+        dispatchUser(userActions.set(user));
         navigation.navigate('Home');
+        setLoadingAction(dispatch, false);
       } else {
         clearUserSession();
         await Keychain.resetGenericPassword();
-        setIsLoading(false);
+        setLoadingAction(dispatch, false);
       }
     };
     getSession();
@@ -62,23 +64,13 @@ export default function SignIn({ navigation, route }) {
   }, []);
 
   return (
-    <View style={[styles.container, isLoading && styles.loadingContainer]}>
-      {isLoading ? (
-        <ActivityIndicator size="large" color={colors.orange} />
-      ) : (
-        <>
-          <ColorButton
-            onPress={showSignUpModal}
-            text="Sign Up"
-            colorName="blue"
-          />
-          <ColorButton
-            onPress={showSignInModal}
-            text="Sign In"
-            colorName="orange"
-          />
-        </>
-      )}
+    <View style={[styles.container]}>
+      <ColorButton onPress={showSignUpModal} text="Sign Up" colorName="blue" />
+      <ColorButton
+        onPress={showSignInModal}
+        text="Sign In"
+        colorName="orange"
+      />
       <Modal
         animationType="slide"
         visible={isSignUpVisible}

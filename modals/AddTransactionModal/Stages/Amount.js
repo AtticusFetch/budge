@@ -145,7 +145,7 @@ export const AmountStage = (props) => {
             style={[styles.modifierBtn, styles.categoryBtn]}
           >
             <Icon
-              size={15}
+              size={25}
               style={styles.categoryIcon}
               name={props.category?.icon}
             />

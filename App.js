@@ -2,12 +2,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { LoadingOverlay } from './components/LoadingOverlay';
 import { BudgetTabBtn } from './components/TabButtons/Budget';
 import { FriendsTabBtn } from './components/TabButtons/Friends';
 import { OverviewTabBtn } from './components/TabButtons/Overview';
 import { SettingsTabBtn } from './components/TabButtons/Settings';
 import { TransactionsTabBtn } from './components/TabButtons/Transactions';
 import { CategoriesProvider } from './context/Categories';
+import { LoadingProvider } from './context/Loading';
 import { TransactionsProvider } from './context/Transactions';
 import { UserProvider } from './context/User';
 import Budget from './screens/Budget';
@@ -73,27 +75,30 @@ const HomeStackTabs = () => (
 
 export default function App() {
   return (
-    <UserProvider>
-      <CategoriesProvider>
-        <TransactionsProvider>
-          <NavigationContainer>
-            <Stack.Navigator
-              screenOptions={defaultOptions}
-              initialRouteName="SignIn"
-            >
-              <Stack.Screen name="Sign In" component={SignIn} />
-              <Stack.Screen
-                options={{
-                  headerBackVisible: false,
-                  headerShown: false,
-                }}
-                name="Home"
-                component={HomeStackTabs}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </TransactionsProvider>
-      </CategoriesProvider>
-    </UserProvider>
+    <LoadingProvider>
+      <UserProvider>
+        <CategoriesProvider>
+          <TransactionsProvider>
+            <LoadingOverlay />
+            <NavigationContainer>
+              <Stack.Navigator
+                screenOptions={defaultOptions}
+                initialRouteName="SignIn"
+              >
+                <Stack.Screen name="Sign In" component={SignIn} />
+                <Stack.Screen
+                  options={{
+                    headerBackVisible: false,
+                    headerShown: false,
+                  }}
+                  name="Home"
+                  component={HomeStackTabs}
+                />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </TransactionsProvider>
+        </CategoriesProvider>
+      </UserProvider>
+    </LoadingProvider>
   );
 }

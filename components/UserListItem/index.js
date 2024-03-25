@@ -12,6 +12,9 @@ export const colorRoulette = [
   'rouge',
   'beige',
   'red',
+  'mint',
+  'brown',
+  'coffeePot',
 ];
 
 export const UserListItem = (props) => {

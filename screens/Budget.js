@@ -61,8 +61,8 @@ export default function Budget(props) {
     showAddBudgetTransactionModal();
   }, []);
 
-  const onTransactionPaid = useCallback((transaction) => {
-    onCreateTransaction(transaction);
+  const onTransactionPaid = useCallback(async (transaction) => {
+    await onCreateTransaction(transaction);
   }, []);
 
   const onDeleteTransaction = useCallback(async (transactionId) => {

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 
+import { setLoadingAction, useLoadingContext } from '../../context/Loading';
 import { colors } from '../../utils/colors';
 import { FREQUENCY_TYPES } from '../../utils/constants';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -19,6 +20,7 @@ const TIME_FRAMES = {
 };
 
 export const BudgetInfo = (props) => {
+  const { dispatch } = useLoadingContext();
   const { budget } = props;
   const [totalIncome, setTotalIncome] = useState('');
   const [totalOutcome, setTotalOutcome] = useState('');
@@ -64,6 +66,7 @@ export const BudgetInfo = (props) => {
 
   const onBudgetPaid = useCallback(
     async (transaction) => {
+      setLoadingAction(dispatch, true);
       const paidTransaction = {
         ...transaction,
         lastChecked: {
@@ -71,9 +74,10 @@ export const BudgetInfo = (props) => {
           [TIME_FRAMES[timeFrame]]: moment().toDate(),
         },
       };
-      props.onTransactionPaid(paidTransaction);
+      await props.onTransactionPaid(paidTransaction);
+      setLoadingAction(dispatch, false);
     },
-    [timeFrame],
+    [timeFrame, dispatch],
   );
 
   const formattedIncome = formatCurrency(totalIncome, 0);

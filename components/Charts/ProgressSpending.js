@@ -4,8 +4,11 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { ProgressChart } from 'react-native-chart-kit';
 
 import { BudgetRemainder } from './BudgetRemainder';
+import { animateLayout } from '../../utils/animations';
 import { addOpacityToColor, colors } from '../../utils/colors';
 import { getProgressSpendingForDay } from '../../utils/spending';
+import { ColorButton } from '../ColorButton';
+import { Icon } from '../Icon';
 
 export const ProgressSpending = (props) => {
   const {
@@ -23,6 +26,7 @@ export const ProgressSpending = (props) => {
   } = props;
   const [progressSpending, setProgressSpending] = useState([]);
   const [pastProgressSpending, setPastProgressSpending] = useState([]);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const [spending] = getProgressSpendingForDay(
@@ -37,6 +41,11 @@ export const ProgressSpending = (props) => {
     setProgressSpending(spending);
   }, [budget, transactions, extraDays]);
 
+  const toggleExpanded = useCallback(() => {
+    animateLayout();
+    setExpanded(!expanded);
+  }, [expanded]);
+
   const getChartColor = useCallback(
     (opacity = 1, index) => {
       if (typeof index === 'undefined') {
@@ -46,7 +55,7 @@ export const ProgressSpending = (props) => {
       if (progressSpending[index] >= 0.5) {
         progreseColor = 'yellow';
       }
-      if (progressSpending[index] === 1) {
+      if (progressSpending[index] >= 0.99) {
         progreseColor = 'red';
       }
       return addOpacityToColor(progreseColor, opacity * 1.5);
@@ -63,7 +72,7 @@ export const ProgressSpending = (props) => {
       if (pastProgressSpending[globalIndex][index] >= 0.5) {
         progreseColor = 'yellow';
       }
-      if (pastProgressSpending[globalIndex][index] === 1) {
+      if (pastProgressSpending[globalIndex][index] >= 0.99) {
         progreseColor = 'red';
       }
       return addOpacityToColor(progreseColor, opacity * 1.5);
@@ -105,31 +114,47 @@ export const ProgressSpending = (props) => {
         )}
       </View>
       {pastProgressSpending && (
-        <View style={styles.historyContainer}>
-          {pastProgressSpending.map((s, globalIndex) => (
-            <View key={globalIndex} style={styles.pastProgressContainer}>
-              <Text style={styles.pastProgressLabel}>
-                {extraDays[globalIndex].format('ddd DD')}
-              </Text>
-              <ProgressChart
-                data={{
-                  data: s,
-                }}
-                width={90}
-                height={120}
-                strokeWidth={8}
-                radius={15}
-                hideLegend
-                chartConfig={{
-                  ...chartConfig,
-                  color: (opacity, index) =>
-                    getExtraChartColor(opacity, index, globalIndex),
-                }}
-                style={{}}
-              />
+        <>
+          <ColorButton
+            style={[
+              styles.expandButtonContainer,
+              expanded && styles.expandedContainer,
+            ]}
+            childrenWrapperStyle={styles.expandButton}
+            colorName="yellow"
+            onPress={toggleExpanded}
+            type="fill"
+          >
+            <Icon color="white" name="chevron-down" size={20} />
+          </ColorButton>
+          {expanded && (
+            <View style={styles.historyContainer}>
+              {pastProgressSpending.map((s, globalIndex) => (
+                <View key={globalIndex} style={styles.pastProgressContainer}>
+                  <Text style={styles.pastProgressLabel}>
+                    {extraDays[globalIndex].format('ddd DD')}
+                  </Text>
+                  <ProgressChart
+                    data={{
+                      data: s,
+                    }}
+                    width={90}
+                    height={120}
+                    strokeWidth={8}
+                    radius={15}
+                    hideLegend
+                    chartConfig={{
+                      ...chartConfig,
+                      color: (opacity, index) =>
+                        getExtraChartColor(opacity, index, globalIndex),
+                    }}
+                    style={{}}
+                  />
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
+          )}
+        </>
       )}
     </View>
   );
@@ -169,5 +194,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 15,
     textAlign: 'center',
+  },
+  expandButtonContainer: {
+    width: 40,
+    height: 20,
+    alignSelf: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.yellow,
+    shadowColor: colors.grey,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+  },
+  expandButton: {
+    padding: 0,
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  expandedContainer: {
+    transform: [{ rotate: '180deg' }],
   },
 });

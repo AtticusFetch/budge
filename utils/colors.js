@@ -14,6 +14,9 @@ export const colors = {
   beige: 'rgb(217, 215, 194)',
   lightPink: 'rgb(247, 198, 194)',
   pink: 'rgb(255, 62, 165)',
+  mint: 'rgb(180, 248, 200)',
+  brown: 'rgb(164, 92, 64)',
+  coffeePot: 'rgb(103, 89, 94)',
   seeThrough: {
     orange: 'rgba(254, 138, 113, 0.1)',
     grey: 'rgba(74, 78, 77, 0.1)',
