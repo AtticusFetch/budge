@@ -30,8 +30,8 @@ export const CategorySpending = (props) => {
   const [selectedCategory, setSelectedCategory] = useState();
   const start = moment().startOf('month');
   const end = moment().endOf('month');
-  const [dateFrom, setDateFrom] = useState(start.toDate());
-  const [dateTo, setDateTo] = useState(end.toDate());
+  const [dateFrom, setDateFrom] = useState(start);
+  const [dateTo, setDateTo] = useState(end);
   const [dateRange, setDateRange] = useState([start, end]);
   const [expanded, setExpanded] = useState(false);
 

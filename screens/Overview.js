@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 
 import { CashFlow } from '../components/Charts/CashFlow';
@@ -20,11 +20,17 @@ export default function Overview({ navigation }) {
     dispatch: dispatchCategoriesAction,
   } = useCategoriesContext();
 
+  const [expenses, setExpenses] = useState([]);
+
   useEffect(() => {
     getCategories().then((categories) => {
       dispatchCategoriesAction(categoriesActions.set(categories));
     });
   }, []);
+
+  useEffect(() => {
+    setExpenses(transactions.filter((t) => parseFloat(t.amount) > 0));
+  }, [transactions]);
 
   const chartConfig = {
     backgroundColor: colors.yellow,
@@ -45,13 +51,13 @@ export default function Overview({ navigation }) {
         contentContainerStyle={styles.contentWrapper}
       >
         <CategorySpending
-          transactions={transactions}
+          transactions={expenses}
           categories={categories}
           chartConfig={chartConfig}
         />
         {!!user.budget && (
           <ProgressSpending
-            transactions={transactions}
+            transactions={expenses}
             budget={budget}
             slim={false}
             extraDays={
