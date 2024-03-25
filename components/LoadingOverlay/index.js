@@ -12,14 +12,18 @@ export const LoadingOverlay = (props) => {
   const rotationDegree = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.loop(
-      Animated.timing(rotationDegree, {
-        toValue: 360,
-        duration: 1000,
-        easing: Easing.elastic(),
-        useNativeDriver: true,
-      }),
-    ).start();
+    if (!loading) {
+      rotationDegree.resetAnimation();
+    } else {
+      Animated.loop(
+        Animated.timing(rotationDegree, {
+          toValue: 360,
+          duration: 1000,
+          easing: Easing.ease,
+          useNativeDriver: true,
+        }),
+      ).start();
+    }
   }, [rotationDegree, loading]);
   return loading ? (
     <View style={styles.container}>

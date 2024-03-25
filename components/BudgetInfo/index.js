@@ -67,11 +67,13 @@ export const BudgetInfo = (props) => {
   const onBudgetPaid = useCallback(
     async (transaction) => {
       setLoadingAction(dispatch, true);
+      const key = TIME_FRAMES[timeFrame];
+      const newValue = transaction.lastChecked[key] ? null : moment().toDate();
       const paidTransaction = {
         ...transaction,
         lastChecked: {
           ...transaction.lastChecked,
-          [TIME_FRAMES[timeFrame]]: moment().toDate(),
+          [key]: newValue,
         },
       };
       await props.onTransactionPaid(paidTransaction);
