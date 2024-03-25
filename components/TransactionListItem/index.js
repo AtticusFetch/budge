@@ -14,6 +14,7 @@ const TRANSACTION_ACTIONS = {
   CANCEL: 'Cancel',
   DELETE: 'Delete',
   EDIT: 'Edit',
+  LINK: 'Link to a Budget',
 };
 
 const PLAID_TRANSACTION_ACTIONS = {
@@ -37,6 +38,7 @@ export const TransactionListItem = (props) => {
     style,
     onIgnore,
     onTransfer,
+    onLink,
     showCheckbox,
     selected,
     onSelect,
@@ -77,6 +79,9 @@ export const TransactionListItem = (props) => {
         break;
       case TRANSACTION_ACTIONS.EDIT:
         await onEdit(transactionData);
+        break;
+      case TRANSACTION_ACTIONS.LINK:
+        await onLink(transactionData);
         break;
     }
   }, []);

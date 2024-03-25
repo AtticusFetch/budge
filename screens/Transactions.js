@@ -122,6 +122,8 @@ export default function Transactions() {
     [selectedTransactions],
   );
 
+  const onLinkTransaction = useCallback((transaction) => {}, []);
+
   const onTransferConfirm = useCallback(async () => {
     setLoadingAction(dispatchLoadingState, true);
     const transactionsToTransform = intersectionWith(
@@ -206,6 +208,7 @@ export default function Transactions() {
               onTransfer={onTransferTransaction}
               onIgnore={onIgnoreTransaction}
               showCheckbox={selectionMode}
+              onLink={onLinkTransaction}
               selected={selectedTransactions.includes(
                 item.id || item.transaction_id,
               )}
