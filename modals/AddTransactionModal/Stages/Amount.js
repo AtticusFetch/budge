@@ -7,6 +7,7 @@ import { NoteStage } from './Note';
 import { ColorButton } from '../../../components/ColorButton';
 import { DatePicker } from '../../../components/DatePicker';
 import { Icon } from '../../../components/Icon';
+import { LabeledCheckbox } from '../../../components/LabeledCheckbox';
 import { StageWrapper } from '../../../components/ModalStageWrapper';
 import { StageTextInput } from '../../../components/TextInput';
 import { colors } from '../../../utils/colors';
@@ -165,6 +166,12 @@ export const AmountStage = (props) => {
             style={[styles.modifierBtn, styles.noteBtn]}
             text="Note"
           />
+          <LabeledCheckbox
+            onPress={props.onIncomeCheckboxPress}
+            isChecked={props.isIncome}
+            style={styles.checkbox}
+            label="Income"
+          />
         </View>
       </View>
       <Modal
@@ -259,6 +266,19 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     padding: 0,
     backgroundColor: colors.seeThrough.grey,
+  },
+  checkbox: {
+    flex: 0,
+    borderWidth: 1,
+    marginHorizontal: 0,
+    marginBottom: 0,
+    padding: 0,
+    paddingHorizontal: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: colors.green,
+    height: 40,
+    alignSelf: 'center',
   },
   textContainer: {
     justifyContent: 'center',

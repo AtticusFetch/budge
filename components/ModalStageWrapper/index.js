@@ -4,11 +4,13 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 
 import { colors } from '../../utils/colors';
 import { ColorButton } from '../ColorButton';
+import { Icon } from '../Icon';
 
 export const StageWrapper = ({
   children,
@@ -31,6 +33,11 @@ export const StageWrapper = ({
         style={[styles.container, contentWrapperStyle]}
         behavior="padding"
       >
+        {!!onCancel && (
+          <TouchableOpacity style={styles.closeIcon} onPress={onCancel}>
+            <Icon name="x" size={30} color={colors.grey} />
+          </TouchableOpacity>
+        )}
         {!!header && <Text style={styles.header}>{header}</Text>}
         {children}
         <View style={styles.buttonsWrapper}>
@@ -73,10 +80,21 @@ const styles = StyleSheet.create({
     padding: 30,
     borderWidth: 1,
     borderColor: colors.blue,
-    borderRadius: 55,
+    borderRadius: 30,
   },
   buttonsWrapper: {
     width: '100%',
     paddingBottom: 40,
+  },
+  closeIcon: {
+    position: 'absolute',
+    alignSelf: 'flex-end',
+    backgroundColor: colors.seeThrough.grey,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: colors.grey,
+    top: 15,
+    right: 5,
+    padding: 5,
   },
 });

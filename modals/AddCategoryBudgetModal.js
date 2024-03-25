@@ -108,7 +108,7 @@ export const AddCategoryBudgetModal = (props) => {
       transparent
       onRequestClose={onRequestClose}
     >
-      <DismissKeyboard>
+      <DismissKeyboard style={styles.container}>
         <StageWrapper
           submitLabel="Create"
           onSubmitStage={onSubmmit}
@@ -169,6 +169,14 @@ export const AddCategoryBudgetModal = (props) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    borderColor: 'green',
+    width: '100%',
+  },
   contentWrapperStyle: {
     flex: 0.55,
   },

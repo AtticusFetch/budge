@@ -32,6 +32,7 @@ export default function AddFriendModal(props) {
           onChange={onInputChange}
           value={username}
           hasError={hasError}
+          containerStyle={styles.inputContainer}
           autoFocus
           placeholder="Username"
           keyboardType="default"
@@ -52,5 +53,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
+  },
+  inputContainer: {
+    marginBottom: 30,
   },
 });

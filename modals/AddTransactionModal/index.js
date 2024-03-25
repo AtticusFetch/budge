@@ -15,6 +15,7 @@ export default function AddTransactionModal(props) {
   const [amount, setAmount] = useState(
     transaction?.amount ? numbro(initialAmount).format({ mantissa: 0 }) : '',
   );
+  const [isIncome, setIsIncome] = useState(transaction?.isIncome);
   const [note, setNote] = useState(transaction?.note || '');
   const [date, setDate] = useState(moment(transaction?.date));
   const [rememberCheckboxVisible, setRememberCheckboxVisible] = useState(true);
@@ -51,6 +52,7 @@ export default function AddTransactionModal(props) {
       date,
       tips,
       splitWith,
+      isIncome,
       shouldRememberNote,
     });
   }, [
@@ -59,6 +61,7 @@ export default function AddTransactionModal(props) {
     note,
     shouldRememberNote,
     tips,
+    isIncome,
     transaction,
     splitWith,
   ]);
@@ -74,6 +77,10 @@ export default function AddTransactionModal(props) {
   const onCategoryChange = useCallback((e) => {
     setCategory(e);
   }, []);
+
+  const onIncomeCheckboxPress = useCallback(() => {
+    setIsIncome(!isIncome);
+  }, [isIncome]);
 
   const onNoteChange = useCallback(
     (e) => {
@@ -99,6 +106,7 @@ export default function AddTransactionModal(props) {
     if (transaction) {
       setAmount(`${transaction?.amount}`);
       setCategory(transaction?.category);
+      setIsIncome(transaction?.isIncome);
       setNote(transaction?.note);
       if (transaction?.date) {
         setDate(moment(transaction?.date));
@@ -120,6 +128,7 @@ export default function AddTransactionModal(props) {
       <AmountStage
         rememberCheckboxVisible={rememberCheckboxVisible}
         setShouldRememberNote={setShouldRememberNote}
+        onIncomeCheckboxPress={onIncomeCheckboxPress}
         onCategoryChange={onCategoryChange}
         userCategories={userCategories}
         categories={props.categories}
@@ -130,6 +139,7 @@ export default function AddTransactionModal(props) {
         stageProps={stageProps}
         friends={props.friends}
         splitWith={splitWith}
+        isIncome={isIncome}
         notes={props.notes}
         category={category}
         setTips={setTips}

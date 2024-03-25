@@ -30,6 +30,9 @@ const addTransaction = async (transaction, userId, key = 'transactions') => {
   if (transaction.splitWith?.length) {
     transactionAmount = transactionAmount / (transaction.splitWith?.length + 1);
   }
+  if (transaction.isIncome) {
+    transactionAmount *= -1;
+  }
   if (transaction.shouldRememberNote) {
     const noteItem = {
       name: transaction.note,

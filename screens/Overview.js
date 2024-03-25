@@ -2,6 +2,7 @@ import moment from 'moment';
 import { useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 
+import { CashFlow } from '../components/Charts/CashFlow';
 import { CategorySpending } from '../components/Charts/CategorySpending';
 import { ProgressSpending } from '../components/Charts/ProgressSpending';
 import { categoriesActions, useCategoriesContext } from '../context/Categories';
@@ -62,6 +63,7 @@ export default function Overview({ navigation }) {
             chartConfig={chartConfig}
           />
         )}
+        <CashFlow transactions={transactions} />
       </ScrollView>
     </SafeAreaView>
   );
