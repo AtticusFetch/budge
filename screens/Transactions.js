@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { concat, intersectionWith, without } from 'lodash';
 import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -15,8 +15,10 @@ import { ColorButton } from '../components/ColorButton';
 import { DismissKeyboard } from '../components/DismissKeyboard';
 import { TransactionListItem } from '../components/TransactionListItem';
 import { useCategoriesContext } from '../context/Categories';
+import { setLoadingAction, useLoadingContext } from '../context/Loading';
 import { useUserContext, userActions } from '../context/User';
 import AddTransactionModal from '../modals/AddTransactionModal';
+import { animateLayout } from '../utils/animations';
 import { colors } from '../utils/colors';
 import {
   createTransactionForUser,
@@ -25,6 +27,16 @@ import {
   deleteTransaction,
 } from '../utils/plaidApi';
 import { mapPlaidCategory } from '../utils/plaidCategoryMapper';
+
+const createPlaidTransformFunction = (categories) => (plaidTransaction) => ({
+  ...plaidTransaction,
+  transformedPlaid: true,
+  id: plaidTransaction.transaction_id,
+  category: mapPlaidCategory(
+    plaidTransaction.personal_finance_category,
+    categories,
+  ),
+});
 
 const transformPlaidTransaction = (plaidTransaction, categories) => {
   return {
@@ -46,8 +58,11 @@ export default function Transactions() {
   const {
     state: { categories },
   } = useCategoriesContext();
+  const { dispatch: dispatchLoadingState } = useLoadingContext();
   const { transactions, plaidTransactions } = user;
   const [refreshing] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedTransactions, setSelectedTransactions] = useState([]);
   const [transaction, setTransaction] = useState();
   const [transactionSections, setTransactionSections] = useState([]);
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
@@ -59,6 +74,14 @@ export default function Transactions() {
     setTransaction();
     setisAddTransactionModalVisible(true);
   }, []);
+
+  const onTransferPress = useCallback(() => {
+    animateLayout();
+    setSelectionMode(!selectionMode);
+    if (selectionMode) {
+      setSelectedTransactions([]);
+    }
+  }, [selectionMode]);
 
   const onAddTransactionClose = useCallback(() => {
     setisAddTransactionModalVisible(false);
@@ -87,6 +110,43 @@ export default function Transactions() {
     setisAddTransactionModalVisible(true);
   }, []);
 
+  const onTransactionSelect = useCallback(
+    (transaction) => {
+      const transactionId = transaction.id || transaction.transaction_id;
+      if (!selectedTransactions.includes(transactionId)) {
+        setSelectedTransactions([...selectedTransactions, transactionId]);
+      } else {
+        setSelectedTransactions(without(selectedTransactions, transactionId));
+      }
+    },
+    [selectedTransactions],
+  );
+
+  const onTransferConfirm = useCallback(async () => {
+    setLoadingAction(dispatchLoadingState, true);
+    const transactionsToTransform = intersectionWith(
+      plaidTransactions,
+      selectedTransactions,
+      (t, id) => id === t.transaction_id,
+    );
+    const transformFn = createPlaidTransformFunction(categories);
+    const transformed = transactionsToTransform.map(transformFn);
+    try {
+      for (const tToTransform of transformed) {
+        const updatedUser = await transferPlaidTransaction(
+          tToTransform,
+          user.id,
+        );
+        dispatch(userActions.update(updatedUser));
+      }
+    } catch (e) {
+      console.error(e);
+      setLoadingAction(dispatchLoadingState, false);
+    }
+    setSelectedTransactions([]);
+    setLoadingAction(dispatchLoadingState, false);
+  }, [selectedTransactions, plaidTransactions, categories, user]);
+
   const onTransferTransaction = useCallback(
     async (plaidTransaction) => {
       const transformed = transformPlaidTransaction(
@@ -101,7 +161,9 @@ export default function Transactions() {
   const onIgnoreTransaction = useCallback(async (plaidTransaction) => {}, []);
 
   useEffect(() => {
-    const allTransactions = transactions?.concat(plaidTransactions || []) || [];
+    const allTransactions = concat([], transactions, plaidTransactions).filter(
+      (v) => !!v,
+    );
     const sortedTransactions = _.sortBy(allTransactions, (t) =>
       new Date(t.date).getTime(),
     ).reverse();
@@ -143,6 +205,11 @@ export default function Transactions() {
               {...item}
               onTransfer={onTransferTransaction}
               onIgnore={onIgnoreTransaction}
+              showCheckbox={selectionMode}
+              selected={selectedTransactions.includes(
+                item.id || item.transaction_id,
+              )}
+              onSelect={onTransactionSelect}
               onDelete={onDeleteTransaction}
               onEdit={onEditTransaction}
             />
@@ -155,10 +222,10 @@ export default function Transactions() {
         )}
         keyExtractor={(t) => t?.id || t?.transaction_id || t?.amount}
       />
-      <View style={styles.addButtonWrapper}>
+      <View style={[styles.globalSideButtonWrapper, styles.addButtonWrapper]}>
         <ColorButton
-          style={styles.addButtonContainer}
-          childrenWrapperStyle={styles.addButton}
+          style={[styles.gloablButtonContainer, styles.addButtonContainer]}
+          childrenWrapperStyle={[styles.globalSideButton, styles.addButton]}
           colorName="blue"
           type="fill"
           onPress={onAddTransactionPress}
@@ -166,6 +233,52 @@ export default function Transactions() {
           <Icon color="white" name="plus" size={30} />
         </ColorButton>
       </View>
+      <View
+        style={[styles.globalSideButtonWrapper, styles.transferButtonWrapper]}
+      >
+        <ColorButton
+          style={[styles.gloablButtonContainer, styles.transferButtonContainer]}
+          childrenWrapperStyle={[
+            styles.globalSideButton,
+            styles.transferButton,
+          ]}
+          colorName="grey"
+          type="fill"
+          onPress={onTransferPress}
+        >
+          <Icon
+            color={colors.orange}
+            name={selectionMode ? 'list' : 'check-circle'}
+            size={32}
+          />
+        </ColorButton>
+      </View>
+      {!!selectedTransactions?.length && (
+        <View
+          style={[
+            styles.globalSideButtonWrapper,
+            styles.selectionButtonWrapper,
+          ]}
+        >
+          <ColorButton
+            style={[
+              styles.gloablButtonContainer,
+              styles.selectionButtonContainer,
+            ]}
+            childrenWrapperStyle={[
+              styles.globalSideButton,
+              styles.selectionButton,
+            ]}
+            colorName="grey"
+            type="fill"
+            onPress={onTransferConfirm}
+          >
+            <Text style={styles.btnLabel}>
+              Transfer {selectedTransactions.length} transactions
+            </Text>
+          </ColorButton>
+        </View>
+      )}
       <Modal
         animationType="slide"
         visible={isAddTransactionModalVisible}
@@ -199,7 +312,11 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 20,
   },
-  addButtonContainer: {
+  btnLabel: {
+    fontWeight: '600',
+    color: 'white',
+  },
+  gloablButtonContainer: {
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     borderTopLeftRadius: 35,
@@ -209,16 +326,31 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 2,
   },
-  addButton: {
+  globalSideButton: {
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     borderTopLeftRadius: 35,
     borderBottomLeftRadius: 35,
   },
-  addButtonWrapper: {
+  globalSideButtonWrapper: {
     position: 'absolute',
     bottom: 40,
     right: 0,
+  },
+  addButtonContainer: {},
+  addButton: {},
+  addButtonWrapper: {},
+  transferButtonContainer: {},
+  transferButton: {
+    padding: 10,
+  },
+  transferButtonWrapper: {
+    bottom: 120,
+  },
+  selectionButtonContainer: {},
+  selectionButton: {},
+  selectionButtonWrapper: {
+    bottom: 200,
   },
   section: {
     backgroundColor: colors.blue,

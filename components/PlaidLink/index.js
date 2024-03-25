@@ -6,15 +6,19 @@ import {
   usePlaidEmitter,
 } from 'react-native-plaid-link-sdk';
 
+import { useUserContext } from '../../context/User';
 import { createLinkToken, exchangeToken } from '../../utils/plaidApi';
 import { ColorButton } from '../ColorButton';
 
 export const PlaidLink = (props) => {
   const [linkToken, setLinkToken] = useState(null);
+  const {
+    state: { user },
+  } = useUserContext();
   usePlaidEmitter((event) => {});
 
   useEffect(() => {
-    createLinkToken().then((data) => {
+    createLinkToken(user.id).then((data) => {
       setLinkToken(data.link_token);
     });
   }, []);
@@ -32,7 +36,7 @@ export const PlaidLink = (props) => {
     openLink({
       tokenConfig: {
         token: linkToken,
-        logLevel: LinkLogLevel.ERROR,
+        logLevel: LinkLogLevel.DEBUG,
         noLoadingState: false,
       },
       onSuccess,

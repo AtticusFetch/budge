@@ -19,7 +19,7 @@ export const CategoryStage = (props) => {
     dispatch,
     state: { user },
   } = useUserContext();
-  const { userCategories = [] } = props;
+  const { userCategories } = props;
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
   const [categories, setCategories] = useState([]);
   const onCategoryModalClose = useCallback(() => {
@@ -47,7 +47,10 @@ export const CategoryStage = (props) => {
   }, []);
 
   useEffect(() => {
-    const allCategories = [...props.categories, ...userCategories];
+    let allCategories = props.categories;
+    if (userCategories?.length) {
+      allCategories = [...props.categories, ...userCategories];
+    }
     const sorted = _.sortBy(allCategories, 'name');
     sorted.unshift(addNewCategory);
     setCategories(sorted);

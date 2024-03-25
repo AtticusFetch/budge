@@ -205,6 +205,7 @@ export const AmountStage = (props) => {
         onRequestClose={onCategoryModalClose}
       >
         <CategoryStage
+          onCancel={onCategoryModalClose}
           onChange={onCategoryChange}
           userCategories={props.userCategories}
           categories={props.categories}

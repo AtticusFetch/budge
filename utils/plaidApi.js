@@ -13,8 +13,8 @@ const postToApi = (url, body = {}) => {
   });
 };
 
-export const createLinkToken = () => {
-  return postToApi('create_link_token');
+export const createLinkToken = (userId) => {
+  return postToApi('create_link_token', { userId });
 };
 
 export const getPlaidTransactions = (userId) => {

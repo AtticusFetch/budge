@@ -12,6 +12,7 @@ import {
 import { ColorButton } from '../components/ColorButton';
 import { PlaidItem } from '../components/PlaidItem';
 import { PlaidLink } from '../components/PlaidLink';
+import { setLoadingAction, useLoadingContext } from '../context/Loading';
 import { useUserContext, userActions } from '../context/User';
 import { clearUserSession } from '../utils/asyncStorage';
 import { colors } from '../utils/colors';
@@ -22,6 +23,7 @@ export default function Settings(props) {
     state: { user },
     dispatch: dispatchUserAction,
   } = useUserContext();
+  const { dispatch } = useLoadingContext();
   const [isLoading] = useState(false);
 
   const signOut = useCallback(async () => {
@@ -36,7 +38,9 @@ export default function Settings(props) {
   }, []);
 
   const fetchTransactions = useCallback(async () => {
+    setLoadingAction(dispatch, true);
     const updatedUser = await getPlaidTransactionUpdates(user.id);
+    setLoadingAction(dispatch, false);
     dispatchUserAction(userActions.update(updatedUser));
   }, []);
 

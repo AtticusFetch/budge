@@ -10,7 +10,11 @@ export const LabeledCheckbox = (props) => (
     unfillColor="white"
     style={[styles.checkbox, props.style]}
     isChecked={props.isChecked}
-    textComponent={<Text style={styles.checkboxLabel}>{props.label}</Text>}
+    textComponent={
+      <Text style={[styles.checkboxLabel, props.labelStyle]}>
+        {props.label}
+      </Text>
+    }
     onPress={props.onPress}
     disableBuiltInState
   />
@@ -21,8 +25,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   checkbox: {
-    marginBottom: 5,
     flex: 1,
+    marginBottom: 5,
     borderWidth: 1,
     padding: 10,
     borderColor: colors.blue,

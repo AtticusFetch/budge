@@ -80,8 +80,6 @@ export const ProgressSpending = (props) => {
     [pastProgressSpending],
   );
 
-  console.log('progressSpending', progressSpending);
-
   return (
     <View style={[styles.container, style]}>
       {prependChild}

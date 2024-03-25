@@ -8,6 +8,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { mapPlaidCategory } from '../../utils/plaidCategoryMapper';
 import { ExpandableButton } from '../ExpandableButton';
 import { Icon } from '../Icon';
+import { LabeledCheckbox } from '../LabeledCheckbox';
 
 const TRANSACTION_ACTIONS = {
   CANCEL: 'Cancel',
@@ -36,6 +37,9 @@ export const TransactionListItem = (props) => {
     style,
     onIgnore,
     onTransfer,
+    showCheckbox,
+    selected,
+    onSelect,
     ...transactionData
   } = props;
   const {
@@ -56,6 +60,10 @@ export const TransactionListItem = (props) => {
       );
     }
   }, [personal_finance_category, categories]);
+
+  const onTransactionSelect = useCallback(() => {
+    onSelect(transactionData);
+  }, [onSelect, transactionData]);
 
   const isPositiveFlow = amount <= 0;
   const isUpcoming = moment(date).isAfter(moment());
@@ -109,6 +117,7 @@ export const TransactionListItem = (props) => {
   const isPlaidTransaction =
     !transactionData.transformedPlaid && !!transactionData.transaction_id;
 
+  const checkBoxVisible = showCheckbox && isPlaidTransaction;
   return (
     <ExpandableButton
       onLongPress={
@@ -128,8 +137,20 @@ export const TransactionListItem = (props) => {
       roundDirection={roundDirection || (isPlaidTransaction ? 'left' : 'right')}
       mainContent={
         <View
-          style={[styles.transactionWrapper, hasSplit && styles.splitBorder]}
+          style={[
+            styles.transactionWrapper,
+            hasSplit && styles.splitBorder,
+            checkBoxVisible && styles.wrapperWithCheckbox,
+          ]}
         >
+          {checkBoxVisible && (
+            <LabeledCheckbox
+              isChecked={selected}
+              onPress={onTransactionSelect}
+              style={styles.checkbox}
+              labelStyle={styles.checkboxLabel}
+            />
+          )}
           <Icon color={colors.grey} name={mappedCategory?.icon} size={30} />
           {(note || mappedCategory) && (
             <View style={[styles.noteContainer]}>
@@ -206,6 +227,18 @@ const styles = StyleSheet.create({
   btnStyle: {
     paddingBottom: 0,
   },
+  wrapperWithCheckbox: {
+    paddingLeft: 40,
+  },
+  checkbox: {
+    padding: 0,
+    flex: 0,
+    position: 'absolute',
+    left: 0,
+    height: '100%',
+    borderWidth: 0,
+  },
+  checkboxLabel: {},
   extraContainer: {
     justifyContent: 'center',
     flex: 1,
@@ -288,6 +321,7 @@ const styles = StyleSheet.create({
   dateContainer: {},
   dateText: {},
   noteContainer: {
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',

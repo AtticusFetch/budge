@@ -100,10 +100,12 @@ const deleteTransaction = async (
   const transactionToRemove = removingUser?.[key]?.find(
     (r) => (r.id || r.transaction_id) === transactionId,
   );
-  transactionToRemove.splitWith?.forEach(async (splitterId) => {
-    const splitter = await getDBUserById(splitterId);
-    await deleteUserTransactionById(splitter?.Item, transactionId, key);
-  });
+  if (transactionToRemove.splitWith) {
+    for (const splitterId of transactionToRemove.splitWith) {
+      const splitter = await getDBUserById(splitterId);
+      await deleteUserTransactionById(splitter?.Item, transactionId, key);
+    }
+  }
 
   const result = await deleteUserTransactionById(
     removingUser,
