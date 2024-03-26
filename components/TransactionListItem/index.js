@@ -18,6 +18,7 @@ const TRANSACTION_ACTIONS = {
   DELETE: 'Delete',
   EDIT: 'Edit',
   LINK: 'Link To Budget',
+  CHANGE_CATEGORY: 'Change Category',
 };
 
 const PLAID_TRANSACTION_ACTIONS = {
@@ -37,12 +38,13 @@ export const TransactionListItem = (props) => {
   const {
     onDelete,
     onEdit,
+    onChangeCategory,
     roundDirection,
     style,
     onIgnore,
     onTransfer,
     onLink,
-    budgetLinks,
+    manualLinks,
     showCheckbox,
     selected,
     budget,
@@ -62,18 +64,18 @@ export const TransactionListItem = (props) => {
 
   useEffect(() => {
     let mappedCategory;
-    if (budgetLinks) {
+    if (manualLinks) {
       mappedCategory = mapBudgetCategory(
-        budgetLinks,
+        manualLinks,
         transactionData,
-        categories,
         budget,
+        categories,
       );
     } else if (personal_finance_category) {
       mappedCategory = mapPlaidCategory(personal_finance_category, categories);
     }
     mappedCategory && setMappedCategory(mappedCategory);
-  }, [personal_finance_category, categories, budgetLinks]);
+  }, [personal_finance_category, categories, manualLinks, name, categories]);
 
   const onTransactionSelect = useCallback(() => {
     onSelect(transactionData);
@@ -94,6 +96,9 @@ export const TransactionListItem = (props) => {
         break;
       case TRANSACTION_ACTIONS.LINK:
         await onLink(transactionData);
+        break;
+      case TRANSACTION_ACTIONS.CHANGE_CATEGORY:
+        await onChangeCategory(transactionData);
         break;
     }
   }, []);
@@ -135,6 +140,7 @@ export const TransactionListItem = (props) => {
     !transactionData.transformedPlaid && !!transactionData.transaction_id;
 
   const checkBoxVisible = showCheckbox && isPlaidTransaction;
+  const label = mappedCategory.isLinked ? name : note;
   return (
     <ExpandableButton
       onLongPress={
@@ -168,14 +174,24 @@ export const TransactionListItem = (props) => {
               labelStyle={styles.checkboxLabel}
             />
           )}
-          <Icon color={colors.grey} name={mappedCategory?.icon} size={30} />
-          {(note || mappedCategory) && (
+          <Icon
+            color={colors.grey}
+            name={transactionData.category?.icon || mappedCategory?.icon}
+            size={30}
+          />
+          {(label || mappedCategory) && (
             <View style={[styles.noteContainer]}>
-              {note && (
-                <Text style={[styles.labelText, styles.noteText]}>{note}</Text>
+              {label && (
+                <Text style={[styles.labelText, styles.noteText]}>{label}</Text>
               )}
               {!!mappedCategory && (
-                <Text style={[styles.labelText, styles.noteText]}>
+                <Text
+                  style={[
+                    styles.labelText,
+                    styles.noteText,
+                    !!label && !!mappedCategory && styles.labelSmall,
+                  ]}
+                >
                   {mappedCategory?.note || mappedCategory?.name}
                 </Text>
               )}
@@ -244,6 +260,10 @@ const styles = StyleSheet.create({
   },
   wrapperWithCheckbox: {
     paddingLeft: 40,
+  },
+  labelSmall: {
+    fontSize: 10,
+    opacity: 0.7,
   },
   checkbox: {
     padding: 0,

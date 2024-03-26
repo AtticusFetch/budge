@@ -13,6 +13,10 @@ import { ColorButton } from '../components/ColorButton';
 import { PlaidItem } from '../components/PlaidItem';
 import { PlaidLink } from '../components/PlaidLink';
 import { setLoadingAction, useLoadingContext } from '../context/Loading';
+import {
+  addNotificationAction,
+  useNotificationsContext,
+} from '../context/Notifications';
 import { useUserContext, userActions } from '../context/User';
 import { clearUserSession } from '../utils/asyncStorage';
 import { colors } from '../utils/colors';
@@ -24,10 +28,13 @@ export default function Settings(props) {
     dispatch: dispatchUserAction,
   } = useUserContext();
   const { dispatch } = useLoadingContext();
+  const { dispatch: dispatchNotification } = useNotificationsContext();
   const [isLoading] = useState(false);
 
   const signOut = useCallback(async () => {
+    setLoadingAction(dispatch, true);
     await signOutUser(user.username);
+    setLoadingAction(dispatch, false);
     dispatchUserAction(userActions.set({}));
     clearUserSession();
     props.navigation.navigate('Sign In', { signedOut: true });
@@ -40,8 +47,13 @@ export default function Settings(props) {
   const fetchTransactions = useCallback(async () => {
     setLoadingAction(dispatch, true);
     const updatedUser = await getPlaidTransactionUpdates(user.id);
+    addNotificationAction(dispatchNotification, {
+      message: `New transactions: ${updatedUser?.plaidTransactions?.length}`,
+    });
     setLoadingAction(dispatch, false);
-    dispatchUserAction(userActions.update(updatedUser));
+    if (updatedUser?.plaidTransactions?.length) {
+      dispatchUserAction(userActions.update(updatedUser));
+    }
   }, []);
 
   return (

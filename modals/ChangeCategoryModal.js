@@ -7,10 +7,10 @@ import { DismissKeyboard } from '../components/DismissKeyboard';
 import { LabeledCheckbox } from '../components/LabeledCheckbox';
 import { LINK_MODES } from '../server/constants';
 
-export const LinkBudgetModal = (props) => {
-  const { budget, transaction } = props;
+export const ChangeCategoryModal = (props) => {
+  const { categories, transaction } = props;
   const [linkMode, setLinkMode] = useState(LINK_MODES.TRANSACTION);
-  const [selectedBudget, setSelectedBudget] = useState();
+  const [selectedCategory, setSelectedCategory] = useState();
 
   const onTransactionModePress = useCallback(() => {
     setLinkMode(LINK_MODES.TRANSACTION);
@@ -27,7 +27,8 @@ export const LinkBudgetModal = (props) => {
 
   const onSubmit = useCallback(() => {
     const linkData = {
-      budgetId: selectedBudget.id,
+      newCategoryId: selectedCategory.id,
+      linkMode,
     };
     switch (linkMode) {
       case LINK_MODES.TRANSACTION: {
@@ -49,7 +50,7 @@ export const LinkBudgetModal = (props) => {
       }
     }
     props.onSubmit(linkData);
-  }, [linkMode, selectedBudget, transaction]);
+  }, [linkMode, selectedCategory, transaction]);
 
   return (
     <Modal
@@ -61,8 +62,8 @@ export const LinkBudgetModal = (props) => {
       <DismissKeyboard>
         <SafeAreaView style={styles.wrapper}>
           <CategoriesList
-            categories={budget}
-            onSelectedCategoryChange={setSelectedBudget}
+            categories={categories}
+            onSelectedCategoryChange={setSelectedCategory}
             columns={2}
           />
           <LabeledCheckbox
@@ -92,7 +93,7 @@ export const LinkBudgetModal = (props) => {
           <ColorButton
             size="slim"
             colorName="green"
-            text="Link"
+            text="Change"
             onPress={onSubmit}
           />
           <ColorButton
@@ -115,6 +116,7 @@ const styles = StyleSheet.create({
   },
   moadl: {},
   checkbox: {
+    flex: 0,
     padding: 5,
   },
 });

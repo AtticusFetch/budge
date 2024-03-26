@@ -1,12 +1,11 @@
-const { deleteTransaction, addTransaction } = require('../db/utils');
+const { updateTransaction } = require('../db/utils');
 
 const updateUserTransaction = async (request, response) => {
   const { transaction, userId } = request.body;
   let result;
 
   try {
-    await deleteTransaction(transaction.id, userId);
-    result = await addTransaction(transaction, userId);
+    result = updateTransaction(transaction, userId);
   } catch (e) {
     console.error(e);
   }

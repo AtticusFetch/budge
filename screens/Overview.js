@@ -6,9 +6,11 @@ import { CashFlow } from '../components/Charts/CashFlow';
 import { CategorySpending } from '../components/Charts/CategorySpending';
 import { ProgressSpending } from '../components/Charts/ProgressSpending';
 import { categoriesActions, useCategoriesContext } from '../context/Categories';
+import { setLoadingAction, useLoadingContext } from '../context/Loading';
 import { useUserContext } from '../context/User';
 import { colors } from '../utils/colors';
 import { getCategories } from '../utils/plaidApi';
+import { isLinked } from '../utils/plaidCategoryMapper';
 
 export default function Overview({ navigation }) {
   const {
@@ -19,17 +21,26 @@ export default function Overview({ navigation }) {
     state: { categories },
     dispatch: dispatchCategoriesAction,
   } = useCategoriesContext();
+  const { dispatch: dispatchLoading } = useLoadingContext();
 
   const [expenses, setExpenses] = useState([]);
+  const [extraExpenses, setExtraExpenses] = useState([]);
 
   useEffect(() => {
+    setLoadingAction(dispatchLoading, true);
     getCategories().then((categories) => {
+      setLoadingAction(dispatchLoading, false);
       dispatchCategoriesAction(categoriesActions.set(categories));
     });
-  }, []);
+  }, [dispatchLoading]);
 
   useEffect(() => {
-    setExpenses(transactions?.filter((t) => parseFloat(t.amount) > 0));
+    const allExpenses = transactions?.filter((t) => parseFloat(t.amount) > 0);
+    const unLinkedExpenses = allExpenses.filter(
+      (t) => !isLinked(t, user.manualLinks),
+    );
+    setExpenses(allExpenses);
+    setExtraExpenses(unLinkedExpenses);
   }, [transactions]);
 
   const chartConfig = {
@@ -57,7 +68,7 @@ export default function Overview({ navigation }) {
         />
         {!!user.budget && (
           <ProgressSpending
-            transactions={expenses}
+            transactions={extraExpenses}
             budget={budget}
             slim={false}
             extraDays={

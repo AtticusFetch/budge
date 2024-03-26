@@ -43,7 +43,7 @@ const addTransaction = async (transaction, userId, key = 'transactions') => {
   const uniqueTransaction = {
     ...transaction,
     amount: transactionAmount,
-    id: uid(),
+    ...(!transaction.id && { id: uid() }),
   };
   let result;
 
@@ -90,6 +90,19 @@ const deleteUserTransactionById = async (
   return result;
 };
 
+const getUserTransactionById = async (
+  userId,
+  transactionId,
+  key = 'transactions',
+) => {
+  const user = (await getDBUserById(userId))?.Item;
+  const transaction = user?.[key]?.find(
+    (r) => (r.id || r.transaction_id) === transactionId,
+  );
+
+  return transaction;
+};
+
 const deleteTransaction = async (
   transactionId,
   userId,
@@ -97,8 +110,10 @@ const deleteTransaction = async (
 ) => {
   const removingUserDb = await getDBUserById(userId);
   const removingUser = removingUserDb?.Item;
-  const transactionToRemove = removingUser?.[key]?.find(
-    (r) => (r.id || r.transaction_id) === transactionId,
+  const transactionToRemove = getUserTransactionById(
+    userId,
+    transactionId,
+    key,
   );
   if (transactionToRemove.splitWith) {
     for (const splitterId of transactionToRemove.splitWith) {
@@ -116,6 +131,18 @@ const deleteTransaction = async (
   return result.Attributes;
 };
 
+const updateTransaction = async (transaction, userId) => {
+  const deleteResult = await deleteTransaction(transaction.id, userId);
+  const addResult = await addTransaction(transaction, userId);
+
+  return {
+    ...deleteResult,
+    ...addResult,
+  };
+};
+
+module.exports.getUserTransactionById = getUserTransactionById;
+module.exports.updateTransaction = updateTransaction;
 module.exports.addTransaction = addTransaction;
 module.exports.addCategory = addCategory;
 module.exports.deleteTransaction = deleteTransaction;

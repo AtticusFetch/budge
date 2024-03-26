@@ -3,8 +3,11 @@ import { StyleSheet, TextInput, View } from 'react-native';
 import * as Keychain from 'react-native-keychain';
 
 import { ColorButton } from '../components/ColorButton';
-import { addErrorAction, useErrorsContext } from '../context/Errors';
 import { setLoadingAction, useLoadingContext } from '../context/Loading';
+import {
+  addErrorNotificationAction,
+  useNotificationsContext,
+} from '../context/Notifications';
 import { useUserContext, userActions } from '../context/User';
 import { saveUserSession } from '../utils/asyncStorage';
 import { colors } from '../utils/colors';
@@ -14,7 +17,7 @@ export default function SignInModal(props) {
   const { onClose } = props;
   const { dispatch } = useUserContext();
   const { dispatch: dispatchLoading } = useLoadingContext();
-  const { dispatch: dispatchError } = useErrorsContext();
+  const { dispatch: dispatchNotification } = useNotificationsContext();
 
   const [password, setpassword] = useState('TestPasswordLeng1!');
   const [username, setusername] = useState('Ivan');
@@ -37,7 +40,7 @@ export default function SignInModal(props) {
       dispatch(userActions.set(user));
       onClose({ success: true });
     } catch (e) {
-      addErrorAction(dispatchError, e);
+      addErrorNotificationAction(dispatchNotification, e);
     }
     setLoadingAction(dispatchLoading, false);
   }, [password, username]);

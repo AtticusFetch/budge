@@ -18,6 +18,17 @@ const getDBUserById = (id) => {
   return ddbClient.send(command);
 };
 
+const getCategoryById = (id) => {
+  const command = new GetCommand({
+    TableName: TABLE_NAMES.CATEGORIES,
+    Key: {
+      id,
+    },
+  });
+
+  return ddbClient.send(command);
+};
+
 const getAllItems = (tableName) => {
   const command = new ScanCommand({
     TableName: tableName,
@@ -80,6 +91,7 @@ const addListItem = (id, listName, item) => {
   return ddbClient.send(command);
 };
 
+module.exports.getCategoryById = getCategoryById;
 module.exports.addListItem = addListItem;
 module.exports.removeListItemByIdx = removeListItemByIdx;
 module.exports.getDBUserById = getDBUserById;

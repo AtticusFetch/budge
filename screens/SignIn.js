@@ -3,8 +3,11 @@ import { Modal, StyleSheet, View } from 'react-native';
 import * as Keychain from 'react-native-keychain';
 
 import { ColorButton } from '../components/ColorButton';
-import { addErrorAction, useErrorsContext } from '../context/Errors';
 import { setLoadingAction, useLoadingContext } from '../context/Loading';
+import {
+  addErrorNotificationAction,
+  useNotificationsContext,
+} from '../context/Notifications';
 import { useUserContext, userActions } from '../context/User';
 import SignInModal from '../modals/SignInModal';
 import SignUpModal from '../modals/SignUpModal';
@@ -17,7 +20,7 @@ import { authUser, getUserById, verifyUserSession } from '../utils/plaidApi';
 
 export default function SignIn({ navigation, route }) {
   const { dispatch: dispatchUser } = useUserContext();
-  const { dispatch: dispatchError } = useErrorsContext();
+  const { dispatch: dispatchNotification } = useNotificationsContext();
   const { dispatch } = useLoadingContext();
   const [isSignUpVisible, setisSignUpVisible] = useState(false);
   const [isSignInVisible, setisSignInVisible] = useState(false);
@@ -52,7 +55,7 @@ export default function SignIn({ navigation, route }) {
           setLoadingAction(dispatch, false);
         }
       } catch (e) {
-        addErrorAction(dispatchError, e);
+        addErrorNotificationAction(dispatchNotification, e);
       }
     };
     getSession();

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
+import { setLoadingAction, useLoadingContext } from '../../context/Loading';
 import { useUserContext, userActions } from '../../context/User';
 import { AddCategoryBudgetModal } from '../../modals/AddCategoryBudgetModal';
 import { animateLayout } from '../../utils/animations';
@@ -23,6 +24,7 @@ export const CategorySpending = (props) => {
     state: { user = {} },
     dispatch,
   } = useUserContext();
+  const { dispatch: dispatchLoading } = useLoadingContext();
   const [categorySpending, setCategorySpending] = useState([]);
   const [categoryBudgetModalVisible, setCategoryBudgetModalVisible] =
     useState(false);
@@ -111,10 +113,12 @@ export const CategorySpending = (props) => {
   }, []);
 
   const onBudgetDelete = useCallback(async (category) => {
+    setLoadingAction(dispatchLoading, true);
     const updatedUser = await deleteCategoryBudget({
       categoryBudgetId: category.id,
       userId: user.id,
     });
+    setLoadingAction(dispatchLoading, false);
     dispatch(userActions.update(updatedUser));
   }, []);
 

@@ -10,23 +10,53 @@ const LINK_FIELD_MAP = {
   transactionId: 'id',
 };
 
-export const mapBudgetCategory = (
-  budgetLinks,
-  transaction,
-  categories,
-  budget,
-) => {
-  for (const link of budgetLinks) {
+export const isLinked = (transaction, manualLinks) => {
+  if (!manualLinks?.length) {
+    return false;
+  }
+  for (const link of manualLinks) {
     const predicateFields = omit(link, 'budgetId');
     const match = Object.keys(predicateFields).every(
       (field) => get(transaction, LINK_FIELD_MAP[field]) === link[field],
     );
+
     if (match) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+export const mapBudgetCategory = (
+  manualLinks,
+  transaction,
+  budget,
+  categories,
+) => {
+  for (const link of manualLinks) {
+    const predicateFields = omit(link, 'budgetId', 'newCategoryId');
+    const match = Object.keys(predicateFields).every(
+      (field) => get(transaction, LINK_FIELD_MAP[field]) === link[field],
+    );
+    if (!match) {
+      continue;
+    }
+    let targetCategory;
+    if (link.budgetId) {
       const targetBudget = budget.find((b) => b.id === link.budgetId);
-      return {
+      targetCategory = {
         ...targetBudget?.category,
         note: targetBudget?.note,
       };
     }
+    if (link.newCategoryId) {
+      targetCategory = categories.find((c) => c.id === link.newCategoryId);
+    }
+    if (!targetCategory) return;
+    return {
+      ...targetCategory,
+      isLinked: true,
+    };
   }
 };

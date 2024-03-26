@@ -16,6 +16,7 @@ import { useCategoriesContext } from '../context/Categories';
 import { setLoadingAction, useLoadingContext } from '../context/Loading';
 import { useUserContext, userActions } from '../context/User';
 import AddTransactionModal from '../modals/AddTransactionModal';
+import { ChangeCategoryModal } from '../modals/ChangeCategoryModal';
 import { LinkBudgetModal } from '../modals/LinkBudgetModal';
 import { animateLayout } from '../utils/animations';
 import { colors } from '../utils/colors';
@@ -23,6 +24,7 @@ import {
   createTransactionForUser,
   updateTransactionForUser,
   transferPlaidTransaction,
+  changeCategory,
   deleteTransaction,
   createBudgetLink,
 } from '../utils/plaidApi';
@@ -52,7 +54,7 @@ export default function Transactions() {
     state: { categories },
   } = useCategoriesContext();
   const { dispatch: dispatchLoadingState } = useLoadingContext();
-  const { transactions, plaidTransactions, budgetLinks, budget } = user;
+  const { transactions, plaidTransactions, manualLinks, budget } = user;
   const [refreshing] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedTransactions, setSelectedTransactions] = useState([]);
@@ -62,6 +64,8 @@ export default function Transactions() {
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
     useState(false);
   const [isLinkBudgetModalVisible, setIsLinkBudgetModalVisible] =
+    useState(false);
+  const [isChangeCategoryModalVisible, setIsChangeCategoryModalVisible] =
     useState(false);
 
   const onRefresh = useCallback(() => {}, []);
@@ -85,6 +89,10 @@ export default function Transactions() {
 
   const onMapCategoryClose = useCallback(() => {
     setIsLinkBudgetModalVisible(false);
+  }, []);
+
+  const onChangeCategoryClose = useCallback(() => {
+    setIsChangeCategoryModalVisible(false);
   }, []);
 
   const onSubmitTransaction = useCallback(async (transaction) => {
@@ -133,6 +141,14 @@ export default function Transactions() {
     [onSubmitTransaction],
   );
 
+  const onChangeCategory = useCallback(
+    (transaction) => {
+      setTransactionToMap(transaction);
+      setIsChangeCategoryModalVisible(true);
+    },
+    [onSubmitTransaction],
+  );
+
   const onSubmitLinkBudget = useCallback(
     async (linkData) => {
       setIsLinkBudgetModalVisible(false);
@@ -142,6 +158,22 @@ export default function Transactions() {
         userId: user.id,
       });
       setLoadingAction(dispatchLoadingState, false);
+      setTransactionToMap();
+      dispatch(userActions.update(updatedUser));
+    },
+    [user, dispatchLoadingState],
+  );
+
+  const onSubmitChangeCaegory = useCallback(
+    async (changeData) => {
+      setIsChangeCategoryModalVisible(false);
+      setLoadingAction(dispatchLoadingState, true);
+      const updatedUser = await changeCategory({
+        changeData,
+        userId: user.id,
+      });
+      setLoadingAction(dispatchLoadingState, false);
+      setTransactionToMap();
       dispatch(userActions.update(updatedUser));
     },
     [user, dispatchLoadingState],
@@ -232,11 +264,12 @@ export default function Transactions() {
               onIgnore={onIgnoreTransaction}
               showCheckbox={selectionMode}
               onLink={onLinkTransaction}
+              onChangeCategory={onChangeCategory}
               selected={selectedTransactions.includes(
                 item.id || item.transaction_id,
               )}
               budget={budget}
-              budgetLinks={budgetLinks}
+              manualLinks={manualLinks}
               onSelect={onTransactionSelect}
               onDelete={onDeleteTransaction}
               onEdit={onEditTransaction}
@@ -324,6 +357,13 @@ export default function Transactions() {
         transaction={transactionToMap}
         onSubmit={onSubmitLinkBudget}
         budget={user.budget}
+      />
+      <ChangeCategoryModal
+        visible={isChangeCategoryModalVisible}
+        onRequestClose={onChangeCategoryClose}
+        transaction={transactionToMap}
+        onSubmit={onSubmitChangeCaegory}
+        categories={categories}
       />
     </SafeAreaView>
   );

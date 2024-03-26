@@ -3,16 +3,16 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { ErrorsOverlay } from './components/ErrorsOverlay';
 import { LoadingOverlay } from './components/LoadingOverlay';
+import { Notifications } from './components/Notifications';
 import { BudgetTabBtn } from './components/TabButtons/Budget';
 import { FriendsTabBtn } from './components/TabButtons/Friends';
 import { OverviewTabBtn } from './components/TabButtons/Overview';
 import { SettingsTabBtn } from './components/TabButtons/Settings';
 import { TransactionsTabBtn } from './components/TabButtons/Transactions';
 import { CategoriesProvider } from './context/Categories';
-import { ErrorsProvider } from './context/Errors';
 import { LoadingProvider } from './context/Loading';
+import { NotificationsProvider } from './context/Notifications';
 import { TransactionsProvider } from './context/Transactions';
 import { UserProvider } from './context/User';
 import Budget from './screens/Budget';
@@ -78,12 +78,12 @@ const HomeStackTabs = () => (
 
 export default function App() {
   return (
-    <ErrorsProvider>
+    <NotificationsProvider>
       <LoadingProvider>
         <UserProvider>
           <CategoriesProvider>
             <TransactionsProvider>
-              <ErrorsOverlay />
+              <Notifications />
               <LoadingOverlay />
               <NavigationContainer>
                 <Stack.Navigator
@@ -105,6 +105,6 @@ export default function App() {
           </CategoriesProvider>
         </UserProvider>
       </LoadingProvider>
-    </ErrorsProvider>
+    </NotificationsProvider>
   );
 }

@@ -8,6 +8,7 @@ const express = require('express');
 
 const { acceptFriendRequest } = require('./api/acceptFriendRequest');
 const { authenticateUser } = require('./api/authenticateUser');
+const { changeCategoryMapping } = require('./api/changeCategoryMapping');
 const { confirmUser } = require('./api/confirmUser');
 const { createBudgetCategory } = require('./api/createBudgetCategory');
 const { createBudgetLink } = require('./api/createBudgetLink');
@@ -49,11 +50,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.post('/api/info', postInfo);
-
 app.post('/api/create_link_token', createLinkToken);
-
 app.get('/api/plaid/transactions/:userId/:sync?', getPlaidTransactions);
-
 app.get(
   '/api/plaid/transactions/filter/:userId/:forMonth',
   getTransactionsForMonth,
@@ -67,9 +65,10 @@ app.post('/api/user/signup', signUpUser);
 app.post('/api/user/confirm', confirmUser);
 app.post('/api/user/authenticate', authenticateUser);
 app.post('/api/user/create', createUser);
-app.post('/api/user/category/create', createUserCategory);
 app.post('/api/user/verify', verifyUser);
 app.post('/api/user/signOut', signOutUser);
+app.post('/api/user/category/create', createUserCategory);
+app.post('/api/user/category/change', changeCategoryMapping);
 
 app.post('/api/user/friend', sendFriendRequest);
 app.post('/api/user/friend/accept', acceptFriendRequest);

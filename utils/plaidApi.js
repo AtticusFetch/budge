@@ -13,6 +13,10 @@ const postToApi = (url, body = {}) => {
   });
 };
 
+export const updateUser = (data) => {
+  return postToApi('user', data);
+};
+
 export const createLinkToken = (userId) => {
   return postToApi('create_link_token', { userId });
 };
@@ -47,39 +51,15 @@ export const signOutUser = (username) => {
   });
 };
 
-export const createTransactionForUser = (transaction, id) => {
-  return postToApi('user/transaction/create', {
-    transaction,
-    userId: id,
-  });
-};
-
-export const updateTransactionForUser = (transaction, id) => {
-  return postToApi('user/transaction/update', {
-    transaction,
-    userId: id,
-  });
-};
-
-export const transferPlaidTransaction = (transaction, id) => {
-  return postToApi('user/transaction/transfer', {
-    transaction,
-    userId: id,
-  });
-};
-
-export const deleteTransaction = (transactionId, userId) => {
-  return postToApi('user/transaction/delete', {
-    transactionId,
-    userId,
-  });
-};
-
 export const createCategory = (category, userId) => {
   return postToApi('user/category/create', {
     category,
     userId,
   });
+};
+
+export const changeCategory = (data) => {
+  return postToApi('user/category/change', data);
 };
 
 export const acceptRequest = (requestId, userId) => {
@@ -153,33 +133,52 @@ export const exchangeToken = (publicToken, userId) => {
   });
 };
 
-export const createBudgetTransaction = (data) => {
-  return postToApi('budget/transaction/create', data);
-};
+/**
+ * ******************************
+ * ******** Transactions ********
+ * ******************************
+ */
 
-export const updateBudgetTransaction = (data) => {
-  return postToApi('budget/transaction/update', data);
-};
+export const createTransactionForUser = (transaction, id) =>
+  postToApi('user/transaction/create', {
+    transaction,
+    userId: id,
+  });
+export const updateTransactionForUser = (transaction, id) =>
+  postToApi('user/transaction/update', {
+    transaction,
+    userId: id,
+  });
+export const transferPlaidTransaction = (transaction, id) =>
+  postToApi('user/transaction/transfer', {
+    transaction,
+    userId: id,
+  });
+export const deleteTransaction = (transactionId, userId) =>
+  postToApi('user/transaction/delete', {
+    transactionId,
+    userId,
+  });
 
-export const deleteBudgetTransaction = (data) => {
-  return postToApi('budget/transaction/delete', data);
-};
+/**
+ * ************************
+ * ******** Budget ********
+ * ************************
+ */
+export const createBudgetTransaction = (data) =>
+  postToApi('budget/transaction/create', data);
+export const updateBudgetTransaction = (data) =>
+  postToApi('budget/transaction/update', data);
+export const deleteBudgetTransaction = (data) =>
+  postToApi('budget/transaction/delete', data);
 
-export const createCategoryBudget = (data) => {
-  return postToApi('budget/category/create', data);
-};
+export const createCategoryBudget = (data) =>
+  postToApi('budget/category/create', data);
+export const updateCategoryBudget = (data) =>
+  postToApi('budget/category/update', data);
+export const deleteCategoryBudget = (data) =>
+  postToApi('budget/category/delete', data);
 
-export const updateCategoryBudget = (data) => {
-  return postToApi('budget/category/update', data);
-};
-
-export const deleteCategoryBudget = (data) => {
-  return postToApi('budget/category/delete', data);
-};
 export const createBudgetLink = (data) => {
   return postToApi('budget/link/create', data);
-};
-
-export const updateUser = (data) => {
-  return postToApi('user', data);
 };
