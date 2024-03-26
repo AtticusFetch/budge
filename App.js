@@ -1,7 +1,9 @@
+import 'react-native-get-random-values';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { ErrorsOverlay } from './components/ErrorsOverlay';
 import { LoadingOverlay } from './components/LoadingOverlay';
 import { BudgetTabBtn } from './components/TabButtons/Budget';
 import { FriendsTabBtn } from './components/TabButtons/Friends';
@@ -9,6 +11,7 @@ import { OverviewTabBtn } from './components/TabButtons/Overview';
 import { SettingsTabBtn } from './components/TabButtons/Settings';
 import { TransactionsTabBtn } from './components/TabButtons/Transactions';
 import { CategoriesProvider } from './context/Categories';
+import { ErrorsProvider } from './context/Errors';
 import { LoadingProvider } from './context/Loading';
 import { TransactionsProvider } from './context/Transactions';
 import { UserProvider } from './context/User';
@@ -75,30 +78,33 @@ const HomeStackTabs = () => (
 
 export default function App() {
   return (
-    <LoadingProvider>
-      <UserProvider>
-        <CategoriesProvider>
-          <TransactionsProvider>
-            <LoadingOverlay />
-            <NavigationContainer>
-              <Stack.Navigator
-                screenOptions={defaultOptions}
-                initialRouteName="SignIn"
-              >
-                <Stack.Screen name="Sign In" component={SignIn} />
-                <Stack.Screen
-                  options={{
-                    headerBackVisible: false,
-                    headerShown: false,
-                  }}
-                  name="Home"
-                  component={HomeStackTabs}
-                />
-              </Stack.Navigator>
-            </NavigationContainer>
-          </TransactionsProvider>
-        </CategoriesProvider>
-      </UserProvider>
-    </LoadingProvider>
+    <ErrorsProvider>
+      <LoadingProvider>
+        <UserProvider>
+          <CategoriesProvider>
+            <TransactionsProvider>
+              <ErrorsOverlay />
+              <LoadingOverlay />
+              <NavigationContainer>
+                <Stack.Navigator
+                  screenOptions={defaultOptions}
+                  initialRouteName="SignIn"
+                >
+                  <Stack.Screen name="Sign In" component={SignIn} />
+                  <Stack.Screen
+                    options={{
+                      headerBackVisible: false,
+                      headerShown: false,
+                    }}
+                    name="Home"
+                    component={HomeStackTabs}
+                  />
+                </Stack.Navigator>
+              </NavigationContainer>
+            </TransactionsProvider>
+          </CategoriesProvider>
+        </UserProvider>
+      </LoadingProvider>
+    </ErrorsProvider>
   );
 }

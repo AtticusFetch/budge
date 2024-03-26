@@ -3,6 +3,7 @@ import { Modal, StyleSheet, View } from 'react-native';
 import * as Keychain from 'react-native-keychain';
 
 import { ColorButton } from '../components/ColorButton';
+import { addErrorAction, useErrorsContext } from '../context/Errors';
 import { setLoadingAction, useLoadingContext } from '../context/Loading';
 import { useUserContext, userActions } from '../context/User';
 import SignInModal from '../modals/SignInModal';
@@ -16,37 +17,43 @@ import { authUser, getUserById, verifyUserSession } from '../utils/plaidApi';
 
 export default function SignIn({ navigation, route }) {
   const { dispatch: dispatchUser } = useUserContext();
+  const { dispatch: dispatchError } = useErrorsContext();
   const { dispatch } = useLoadingContext();
   const [isSignUpVisible, setisSignUpVisible] = useState(false);
   const [isSignInVisible, setisSignInVisible] = useState(false);
 
   useEffect(() => {
     const getSession = async () => {
-      setLoadingAction(dispatch, true);
-      const session = await getUserSession();
-      let isValidSession;
-      if (session) {
-        const { isValid } = await verifyUserSession(session.token);
-        isValidSession = isValid;
-      }
-      if (isValidSession) {
-        const credentials = await Keychain.getGenericPassword();
-        const userInfo = await authUser(
-          credentials.password,
-          credentials.username,
-        );
-        const user = await getUserById(userInfo.id);
-        saveUserSession({
-          ...userInfo,
-          ...user,
-        });
-        dispatchUser(userActions.set(user));
-        navigation.navigate('Home');
-        setLoadingAction(dispatch, false);
-      } else {
-        clearUserSession();
-        await Keychain.resetGenericPassword();
-        setLoadingAction(dispatch, false);
+      try {
+        setLoadingAction(dispatch, true);
+        const session = await getUserSession();
+        let isValidSession;
+        if (session) {
+          const { isValid } = await verifyUserSession(session.token);
+          isValidSession = isValid;
+        }
+        if (isValidSession) {
+          const credentials = await Keychain.getGenericPassword();
+          const userInfo = await authUser(
+            credentials.password,
+            credentials.username,
+          );
+          const user = await getUserById(userInfo.id);
+          saveUserSession({
+            ...userInfo,
+            ...user,
+          });
+          dispatchUser(userActions.set(user));
+          navigation.navigate('Home');
+          setLoadingAction(dispatch, false);
+        } else {
+          clearUserSession();
+          await Keychain.resetGenericPassword();
+          setLoadingAction(dispatch, false);
+        }
+      } catch (e) {
+        console.log('e', e);
+        addErrorAction(dispatchError, e);
       }
     };
     getSession();
