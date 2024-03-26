@@ -11,7 +11,10 @@ const transferPlaidTransaction = async (request, response) => {
       userId,
       'plaidTransactions',
     );
-    addResult = await addTransaction(transaction, userId);
+    addResult = await addTransaction(
+      { ...transaction, transformedPlaid: true },
+      userId,
+    );
   } catch (e) {
     console.error(e);
   }

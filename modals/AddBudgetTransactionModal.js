@@ -85,7 +85,7 @@ export const AddBudgetTransactionModal = (props) => {
   const onSubmit = useCallback(async () => {
     const valueMultiplier = frequency ? getFrequencyMultiplier(frequency) : 1;
     const splitAmount = parseInt(split, 10) || 1;
-    const sign = isIncome ? -1 : 1;
+    const sign = isIncome && amount > 0 ? -1 : 1;
     const weeklyValue = ((amount * valueMultiplier) / splitAmount) * sign;
     const data = {
       category,

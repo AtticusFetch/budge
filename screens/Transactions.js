@@ -1,8 +1,7 @@
-import _, { concat, intersectionWith, without } from 'lodash';
+import _, { concat, intersectionWith, omit, without } from 'lodash';
 import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
 import {
-  Modal,
   SafeAreaView,
   StyleSheet,
   View,
@@ -12,12 +11,12 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 
 import { ColorButton } from '../components/ColorButton';
-import { DismissKeyboard } from '../components/DismissKeyboard';
 import { TransactionListItem } from '../components/TransactionListItem';
 import { useCategoriesContext } from '../context/Categories';
 import { setLoadingAction, useLoadingContext } from '../context/Loading';
 import { useUserContext, userActions } from '../context/User';
 import AddTransactionModal from '../modals/AddTransactionModal';
+import { LinkBudgetModal } from '../modals/LinkBudgetModal';
 import { animateLayout } from '../utils/animations';
 import { colors } from '../utils/colors';
 import {
@@ -25,23 +24,14 @@ import {
   updateTransactionForUser,
   transferPlaidTransaction,
   deleteTransaction,
+  createBudgetLink,
 } from '../utils/plaidApi';
 import { mapPlaidCategory } from '../utils/plaidCategoryMapper';
-
-const createPlaidTransformFunction = (categories) => (plaidTransaction) => ({
-  ...plaidTransaction,
-  transformedPlaid: true,
-  id: plaidTransaction.transaction_id,
-  category: mapPlaidCategory(
-    plaidTransaction.personal_finance_category,
-    categories,
-  ),
-});
 
 const transformPlaidTransaction = (plaidTransaction, categories) => {
   return {
     ...plaidTransaction,
-    transformedPlaid: true,
+    isTransfering: true,
     id: plaidTransaction.transaction_id,
     category: mapPlaidCategory(
       plaidTransaction.personal_finance_category,
@@ -49,6 +39,9 @@ const transformPlaidTransaction = (plaidTransaction, categories) => {
     ),
   };
 };
+
+const createPlaidTransformFunction = (categories) => (plaidTransaction) =>
+  transformPlaidTransaction(plaidTransaction, categories);
 
 export default function Transactions() {
   const {
@@ -59,19 +52,22 @@ export default function Transactions() {
     state: { categories },
   } = useCategoriesContext();
   const { dispatch: dispatchLoadingState } = useLoadingContext();
-  const { transactions, plaidTransactions } = user;
+  const { transactions, plaidTransactions, budgetLinks, budget } = user;
   const [refreshing] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedTransactions, setSelectedTransactions] = useState([]);
-  const [transaction, setTransaction] = useState();
+  const [transactionToEdit, setTransactionToEdit] = useState();
+  const [transactionToMap, setTransactionToMap] = useState();
   const [transactionSections, setTransactionSections] = useState([]);
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
+    useState(false);
+  const [isLinkBudgetModalVisible, setIsLinkBudgetModalVisible] =
     useState(false);
 
   const onRefresh = useCallback(() => {}, []);
 
   const onAddTransactionPress = useCallback(() => {
-    setTransaction();
+    setTransactionToEdit();
     setisAddTransactionModalVisible(true);
   }, []);
 
@@ -87,11 +83,18 @@ export default function Transactions() {
     setisAddTransactionModalVisible(false);
   }, []);
 
+  const onMapCategoryClose = useCallback(() => {
+    setIsLinkBudgetModalVisible(false);
+  }, []);
+
   const onSubmitTransaction = useCallback(async (transaction) => {
     let updatedUser;
     setisAddTransactionModalVisible(false);
-    if (transaction.transformedPlaid) {
-      updatedUser = await transferPlaidTransaction(transaction, user.id);
+    if (transaction.isTransfering) {
+      updatedUser = await transferPlaidTransaction(
+        omit(transaction, 'isTransfering'),
+        user.id,
+      );
     } else if (transaction.id) {
       updatedUser = await updateTransactionForUser(transaction, user.id);
     } else {
@@ -106,7 +109,7 @@ export default function Transactions() {
   }, []);
 
   const onEditTransaction = useCallback(async (transactionData) => {
-    setTransaction(transactionData);
+    setTransactionToEdit(transactionData);
     setisAddTransactionModalVisible(true);
   }, []);
 
@@ -122,7 +125,27 @@ export default function Transactions() {
     [selectedTransactions],
   );
 
-  const onLinkTransaction = useCallback((transaction) => {}, []);
+  const onLinkTransaction = useCallback(
+    (transaction) => {
+      setTransactionToMap(transaction);
+      setIsLinkBudgetModalVisible(true);
+    },
+    [onSubmitTransaction],
+  );
+
+  const onSubmitLinkBudget = useCallback(
+    async (linkData) => {
+      setIsLinkBudgetModalVisible(false);
+      setLoadingAction(dispatchLoadingState, true);
+      const updatedUser = await createBudgetLink({
+        linkData,
+        userId: user.id,
+      });
+      setLoadingAction(dispatchLoadingState, false);
+      dispatch(userActions.update(updatedUser));
+    },
+    [user, dispatchLoadingState],
+  );
 
   const onTransferConfirm = useCallback(async () => {
     setLoadingAction(dispatchLoadingState, true);
@@ -212,6 +235,8 @@ export default function Transactions() {
               selected={selectedTransactions.includes(
                 item.id || item.transaction_id,
               )}
+              budget={budget}
+              budgetLinks={budgetLinks}
               onSelect={onTransactionSelect}
               onDelete={onDeleteTransaction}
               onEdit={onEditTransaction}
@@ -282,24 +307,24 @@ export default function Transactions() {
           </ColorButton>
         </View>
       )}
-      <Modal
-        animationType="slide"
+      <AddTransactionModal
+        categories={categories}
+        userCategories={user.categories}
+        onClose={onAddTransactionClose}
         visible={isAddTransactionModalVisible}
-        transparent
         onRequestClose={onAddTransactionClose}
-      >
-        <DismissKeyboard>
-          <AddTransactionModal
-            categories={categories}
-            userCategories={user.categories}
-            onClose={onAddTransactionClose}
-            onSubmit={onSubmitTransaction}
-            transaction={transaction}
-            friends={user.friends}
-            notes={user.personalNotes}
-          />
-        </DismissKeyboard>
-      </Modal>
+        onSubmit={onSubmitTransaction}
+        transaction={transactionToEdit}
+        friends={user.friends}
+        notes={user.personalNotes}
+      />
+      <LinkBudgetModal
+        visible={isLinkBudgetModalVisible}
+        onRequestClose={onMapCategoryClose}
+        transaction={transactionToMap}
+        onSubmit={onSubmitLinkBudget}
+        budget={user.budget}
+      />
     </SafeAreaView>
   );
 }

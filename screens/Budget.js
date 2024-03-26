@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BudgetInfo } from '../components/BudgetInfo';
 import { ColorButton } from '../components/ColorButton';
 import { useCategoriesContext } from '../context/Categories';
+import { setLoadingAction, useLoadingContext } from '../context/Loading';
 import { useUserContext, userActions } from '../context/User';
 import { AddBudgetTransactionModal } from '../modals/AddBudgetTransactionModal';
 import { colors } from '../utils/colors';
@@ -20,6 +21,7 @@ export default function Budget(props) {
     state: { user = {} },
     dispatch,
   } = useUserContext();
+  const { dispatch: dispatchLoading } = useLoadingContext();
   const {
     state: { categories },
   } = useCategoriesContext();
@@ -38,6 +40,7 @@ export default function Budget(props) {
   }, []);
 
   const onCreateTransaction = useCallback(async (transaction) => {
+    setLoadingAction(dispatchLoading, true);
     LayoutAnimation.configureNext({
       duration: 200,
       update: { type: 'spring', springDamping: 0.4 },
@@ -53,6 +56,7 @@ export default function Budget(props) {
     } else {
       updatedUser = await createBudgetTransaction(data);
     }
+    setLoadingAction(dispatchLoading, false);
     dispatch(userActions.update(updatedUser));
   }, []);
 
@@ -66,10 +70,12 @@ export default function Budget(props) {
   }, []);
 
   const onDeleteTransaction = useCallback(async (transactionId) => {
+    setLoadingAction(dispatchLoading, true);
     const updatedUser = await deleteBudgetTransaction({
       userId: user.id,
       transactionId,
     });
+    setLoadingAction(dispatchLoading, false);
     dispatch(userActions.update(updatedUser));
   }, []);
 

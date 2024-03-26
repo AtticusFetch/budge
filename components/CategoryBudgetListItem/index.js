@@ -65,7 +65,7 @@ export const CategoryBudgetListItem = (props) => {
               name={categoryBudget.category?.icon}
             />
             <Text style={styles.categoryName}>
-              {categoryBudget.category?.name}
+              {categoryBudget.note || categoryBudget.category?.name}
             </Text>
           </View>
         }

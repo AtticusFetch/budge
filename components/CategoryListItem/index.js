@@ -7,20 +7,21 @@ import { Icon } from '../Icon';
 
 export const CategoryListItem = (props) => {
   const {
-    category,
+    category: maybeCategory,
     selected,
     onPress,
     btnStyle,
     btnContainerStyle,
     btnContentStyle,
   } = props;
+  const category = maybeCategory.category || maybeCategory;
 
   const [categoryColor, setCategoryColor] = useState('blue');
   const [categoryName, setCategoryName] = useState('');
 
   const onItemPress = useCallback(() => {
-    props.onPress(category);
-  }, [category, onPress]);
+    props.onPress(maybeCategory);
+  }, [maybeCategory, onPress]);
 
   useEffect(() => {
     if (category.color) {
@@ -51,7 +52,12 @@ export const CategoryListItem = (props) => {
         {!!category?.icon && (
           <Icon color={colors.grey} name={category?.icon} size={25} />
         )}
-        {!!categoryName && <Text style={styles.label}>{categoryName}</Text>}
+        <View style={styles.labelsContainer}>
+          {!!maybeCategory.note && (
+            <Text style={styles.label}>{maybeCategory.note}</Text>
+          )}
+          {!!categoryName && <Text style={styles.label}>{categoryName}</Text>}
+        </View>
       </ColorButton>
     </View>
   );
@@ -61,6 +67,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  labelsContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   label: {

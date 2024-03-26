@@ -52,7 +52,6 @@ export default function SignIn({ navigation, route }) {
           setLoadingAction(dispatch, false);
         }
       } catch (e) {
-        console.log('e', e);
         addErrorAction(dispatchError, e);
       }
     };
@@ -62,7 +61,9 @@ export default function SignIn({ navigation, route }) {
   const showSignUpModal = useCallback(() => setisSignUpVisible(true), []);
   const closeSignUpModal = useCallback(() => setisSignUpVisible(false), []);
 
-  const showSignInModal = useCallback(() => setisSignInVisible(true), []);
+  const showSignInModal = useCallback(() => {
+    setisSignInVisible(true);
+  }, []);
   const closeSignInModal = useCallback(async ({ success }) => {
     if (success) {
       await navigation.navigate('Home');

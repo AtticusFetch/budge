@@ -13,7 +13,11 @@
       }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_SERVER_BASE": "https://crw3iayqbx.us-east-2.awsapprunner.com",
+        "APP_NAME": "Budge"
+      }
     },
     "production": {}
   },

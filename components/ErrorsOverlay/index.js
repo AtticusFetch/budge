@@ -12,7 +12,6 @@ export const ErrorsOverlay = (props) => {
   useEffect(() => {
     animateLayout();
   }, [errors]);
-  console.log(errors);
   return (
     !!errors?.length && (
       <View style={styles.container}>

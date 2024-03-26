@@ -1,9 +1,16 @@
 import moment from 'moment';
 import numbro from 'numbro';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, LayoutAnimation, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  LayoutAnimation,
+  Modal,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import { AmountStage } from './Stages/Amount';
+import { DismissKeyboard } from '../../components/DismissKeyboard';
 import { getTipAmount } from '../../utils/getTipAmount';
 
 export default function AddTransactionModal(props) {
@@ -124,31 +131,40 @@ export default function AddTransactionModal(props) {
   };
 
   return (
-    <View style={styles.wrapper}>
-      <AmountStage
-        rememberCheckboxVisible={rememberCheckboxVisible}
-        setShouldRememberNote={setShouldRememberNote}
-        onIncomeCheckboxPress={onIncomeCheckboxPress}
-        onCategoryChange={onCategoryChange}
-        userCategories={userCategories}
-        categories={props.categories}
-        onDateChange={onDateChange}
-        setSplitWith={setSplitWith}
-        onNoteChange={onNoteChange}
-        onChange={onAmountChange}
-        stageProps={stageProps}
-        friends={props.friends}
-        splitWith={splitWith}
-        isIncome={isIncome}
-        notes={props.notes}
-        category={category}
-        setTips={setTips}
-        amount={amount}
-        date={date}
-        tips={tips}
-        note={note}
-      />
-    </View>
+    <Modal
+      animationType="slide"
+      visible={props.visible}
+      transparent
+      onRequestClose={props.onRequestClose}
+    >
+      <DismissKeyboard>
+        <View style={styles.wrapper}>
+          <AmountStage
+            rememberCheckboxVisible={rememberCheckboxVisible}
+            setShouldRememberNote={setShouldRememberNote}
+            onIncomeCheckboxPress={onIncomeCheckboxPress}
+            onCategoryChange={onCategoryChange}
+            userCategories={userCategories}
+            categories={props.categories}
+            onDateChange={onDateChange}
+            setSplitWith={setSplitWith}
+            onNoteChange={onNoteChange}
+            onChange={onAmountChange}
+            stageProps={stageProps}
+            friends={props.friends}
+            splitWith={splitWith}
+            isIncome={isIncome}
+            notes={props.notes}
+            category={category}
+            setTips={setTips}
+            amount={amount}
+            date={date}
+            tips={tips}
+            note={note}
+          />
+        </View>
+      </DismissKeyboard>
+    </Modal>
   );
 }
 

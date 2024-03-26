@@ -5,7 +5,10 @@ import { ActionSheetIOS, StyleSheet, Text, View } from 'react-native';
 import { useCategoriesContext } from '../../context/Categories';
 import { colors } from '../../utils/colors';
 import { formatCurrency } from '../../utils/formatCurrency';
-import { mapPlaidCategory } from '../../utils/plaidCategoryMapper';
+import {
+  mapBudgetCategory,
+  mapPlaidCategory,
+} from '../../utils/plaidCategoryMapper';
 import { ExpandableButton } from '../ExpandableButton';
 import { Icon } from '../Icon';
 import { LabeledCheckbox } from '../LabeledCheckbox';
@@ -14,7 +17,7 @@ const TRANSACTION_ACTIONS = {
   CANCEL: 'Cancel',
   DELETE: 'Delete',
   EDIT: 'Edit',
-  LINK: 'Link to a Budget',
+  LINK: 'Link To Budget',
 };
 
 const PLAID_TRANSACTION_ACTIONS = {
@@ -39,8 +42,10 @@ export const TransactionListItem = (props) => {
     onIgnore,
     onTransfer,
     onLink,
+    budgetLinks,
     showCheckbox,
     selected,
+    budget,
     onSelect,
     ...transactionData
   } = props;
@@ -48,7 +53,7 @@ export const TransactionListItem = (props) => {
     note,
     amount,
     date,
-    merchant_name,
+    name,
     splitWith,
     tips,
     id,
@@ -56,12 +61,19 @@ export const TransactionListItem = (props) => {
   } = transactionData;
 
   useEffect(() => {
-    if (personal_finance_category) {
-      setMappedCategory(
-        mapPlaidCategory(personal_finance_category, categories),
+    let mappedCategory;
+    if (budgetLinks) {
+      mappedCategory = mapBudgetCategory(
+        budgetLinks,
+        transactionData,
+        categories,
+        budget,
       );
+    } else if (personal_finance_category) {
+      mappedCategory = mapPlaidCategory(personal_finance_category, categories);
     }
-  }, [personal_finance_category, categories]);
+    mappedCategory && setMappedCategory(mappedCategory);
+  }, [personal_finance_category, categories, budgetLinks]);
 
   const onTransactionSelect = useCallback(() => {
     onSelect(transactionData);
@@ -164,7 +176,7 @@ export const TransactionListItem = (props) => {
               )}
               {!!mappedCategory && (
                 <Text style={[styles.labelText, styles.noteText]}>
-                  {mappedCategory?.name}
+                  {mappedCategory?.note || mappedCategory?.name}
                 </Text>
               )}
             </View>
@@ -180,11 +192,9 @@ export const TransactionListItem = (props) => {
       }
       extraContent={
         <View style={styles.extraContainer}>
-          {merchant_name && (
+          {name && (
             <View style={[styles.labelContainer, styles.noteContainer]}>
-              <Text style={[styles.labelText, styles.noteText]}>
-                {merchant_name}
-              </Text>
+              <Text style={[styles.labelText, styles.noteText]}>{name}</Text>
             </View>
           )}
           {date && (
