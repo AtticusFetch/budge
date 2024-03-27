@@ -84,36 +84,42 @@ export const TransactionListItem = (props) => {
   const isPositiveFlow = amount <= 0;
   const isUpcoming = moment(date).isAfter(moment());
   const formattedAmount = formatCurrency(0 - amount);
-  const onActionSelected = useCallback(async (actionIndex) => {
-    switch (actionSheetOptions[actionIndex]) {
-      case TRANSACTION_ACTIONS.CANCEL:
-        break;
-      case TRANSACTION_ACTIONS.DELETE:
-        await onDelete(id);
-        break;
-      case TRANSACTION_ACTIONS.EDIT:
-        await onEdit(transactionData);
-        break;
-      case TRANSACTION_ACTIONS.LINK:
-        await onLink(transactionData);
-        break;
-      case TRANSACTION_ACTIONS.CHANGE_CATEGORY:
-        await onChangeCategory(transactionData);
-        break;
-    }
-  }, []);
-  const onPlaidActionSelected = useCallback(async (actionIndex) => {
-    switch (plaidActionSheetOptions[actionIndex]) {
-      case PLAID_TRANSACTION_ACTIONS.CANCEL:
-        break;
-      case PLAID_TRANSACTION_ACTIONS.IGNORE:
-        await onIgnore(transactionData);
-        break;
-      case PLAID_TRANSACTION_ACTIONS.TRANSFER:
-        await onTransfer(transactionData);
-        break;
-    }
-  }, []);
+  const onActionSelected = useCallback(
+    async (actionIndex) => {
+      switch (actionSheetOptions[actionIndex]) {
+        case TRANSACTION_ACTIONS.CANCEL:
+          break;
+        case TRANSACTION_ACTIONS.DELETE:
+          await onDelete(id);
+          break;
+        case TRANSACTION_ACTIONS.EDIT:
+          await onEdit(transactionData);
+          break;
+        case TRANSACTION_ACTIONS.LINK:
+          await onLink(transactionData);
+          break;
+        case TRANSACTION_ACTIONS.CHANGE_CATEGORY:
+          await onChangeCategory(transactionData);
+          break;
+      }
+    },
+    [id, transactionData],
+  );
+  const onPlaidActionSelected = useCallback(
+    async (actionIndex) => {
+      switch (plaidActionSheetOptions[actionIndex]) {
+        case PLAID_TRANSACTION_ACTIONS.CANCEL:
+          break;
+        case PLAID_TRANSACTION_ACTIONS.IGNORE:
+          await onIgnore(transactionData);
+          break;
+        case PLAID_TRANSACTION_ACTIONS.TRANSFER:
+          await onTransfer(transactionData);
+          break;
+      }
+    },
+    [transactionData],
+  );
   const onTransactionLongPress = useCallback(() => {
     ActionSheetIOS.showActionSheetWithOptions(
       {

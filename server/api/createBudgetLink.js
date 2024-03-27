@@ -19,10 +19,15 @@ const createBudgetLink = async (request, response) => {
         'categoryBudget',
       );
     }
-    const budgetLinkResult = await addListItem(userId, 'manualLinks', {
+    const uniqueLink = {
       ...linkData,
-      id: uuidv4,
-    });
+      id: uuidv4(),
+    };
+    const budgetLinkResult = await addListItem(
+      userId,
+      'manualLinks',
+      uniqueLink,
+    );
     result = {
       ...createBudgetResult,
       ...budgetLinkResult.Attributes,

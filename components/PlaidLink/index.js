@@ -47,11 +47,6 @@ export const PlaidLink = (props) => {
   }, [linkToken]);
 
   return (
-    <ColorButton
-      inverted
-      colorName="green"
-      onPress={onPress}
-      text="Add Account"
-    />
+    <ColorButton inverted size="slim" onPress={onPress} text="Add Account" />
   );
 };

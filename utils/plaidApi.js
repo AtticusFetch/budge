@@ -179,6 +179,5 @@ export const updateCategoryBudget = (data) =>
 export const deleteCategoryBudget = (data) =>
   postToApi('budget/category/delete', data);
 
-export const createBudgetLink = (data) => {
-  return postToApi('budget/link/create', data);
-};
+export const createBudgetLink = (data) => postToApi('budget/link/create', data);
+export const deleteManualLink = (data) => postToApi('budget/link/delete', data);

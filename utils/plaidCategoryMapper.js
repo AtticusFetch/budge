@@ -35,7 +35,7 @@ export const mapBudgetCategory = (
   categories,
 ) => {
   for (const link of manualLinks) {
-    const predicateFields = omit(link, 'budgetId', 'newCategoryId');
+    const predicateFields = omit(link, 'budgetId', 'newCategoryId', 'id');
     const match = Object.keys(predicateFields).every(
       (field) => get(transaction, LINK_FIELD_MAP[field]) === link[field],
     );

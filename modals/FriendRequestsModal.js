@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import { ColorButton } from '../components/ColorButton';
 import { FriendRequestItem } from '../components/FriendRequestItem';

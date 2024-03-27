@@ -3,6 +3,7 @@ import { Modal, StyleSheet, View } from 'react-native';
 import * as Keychain from 'react-native-keychain';
 
 import { ColorButton } from '../components/ColorButton';
+import { LoadingOverlay } from '../components/LoadingOverlay';
 import { setLoadingAction, useLoadingContext } from '../context/Loading';
 import {
   addErrorNotificationAction,
@@ -99,6 +100,7 @@ export default function SignIn({ navigation, route }) {
         }}
       >
         <SignInModal onClose={closeSignInModal} />
+        <LoadingOverlay />
       </Modal>
     </View>
   );
