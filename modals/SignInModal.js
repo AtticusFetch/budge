@@ -14,13 +14,13 @@ import { colors } from '../utils/colors';
 import { authUser, getUserById } from '../utils/plaidApi';
 
 export default function SignInModal(props) {
-  const { onClose } = props;
+  const { onClose, credentials } = props;
   const { dispatch } = useUserContext();
   const { dispatch: dispatchLoading } = useLoadingContext();
   const { dispatch: dispatchNotification } = useNotificationsContext();
 
-  const [password, setpassword] = useState('TestPasswordLeng1!');
-  const [username, setusername] = useState('Ivan');
+  const [password, setpassword] = useState(credentials.password);
+  const [username, setusername] = useState(credentials.username);
 
   const onPasswordChange = useCallback((e) => {
     setpassword(e);

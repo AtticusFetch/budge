@@ -25,19 +25,21 @@ export default function SignIn({ navigation, route }) {
   const { dispatch } = useLoadingContext();
   const [isSignUpVisible, setisSignUpVisible] = useState(false);
   const [isSignInVisible, setisSignInVisible] = useState(false);
+  const [credentials, setCredentials] = useState();
 
   useEffect(() => {
     const getSession = async () => {
       try {
         setLoadingAction(dispatch, true);
         const session = await getUserSession();
+        const credentials = await Keychain.getGenericPassword();
+        setCredentials(credentials);
         let isValidSession;
         if (session) {
           const { isValid } = await verifyUserSession(session.token);
           isValidSession = isValid;
         }
         if (isValidSession) {
-          const credentials = await Keychain.getGenericPassword();
           const userInfo = await authUser(
             credentials.password,
             credentials.username,
@@ -99,7 +101,7 @@ export default function SignIn({ navigation, route }) {
           setisSignInVisible(false);
         }}
       >
-        <SignInModal onClose={closeSignInModal} />
+        <SignInModal onClose={closeSignInModal} credentials={credentials} />
         <LoadingOverlay />
       </Modal>
     </View>

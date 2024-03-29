@@ -11,11 +11,12 @@ const LINK_FIELD_MAP = {
 };
 
 export const isLinked = (transaction, manualLinks) => {
-  if (!manualLinks?.length) {
+  const links = manualLinks instanceof Array ? manualLinks : [manualLinks];
+  if (!links?.length) {
     return false;
   }
-  for (const link of manualLinks) {
-    const predicateFields = omit(link, 'budgetId');
+  for (const link of links) {
+    const predicateFields = omit(link, 'budgetId', 'newCategoryId', 'id');
     const match = Object.keys(predicateFields).every(
       (field) => get(transaction, LINK_FIELD_MAP[field]) === link[field],
     );
@@ -35,11 +36,8 @@ export const mapBudgetCategory = (
   categories,
 ) => {
   for (const link of manualLinks) {
-    const predicateFields = omit(link, 'budgetId', 'newCategoryId', 'id');
-    const match = Object.keys(predicateFields).every(
-      (field) => get(transaction, LINK_FIELD_MAP[field]) === link[field],
-    );
-    if (!match) {
+    const linked = isLinked(transaction, link);
+    if (!linked) {
       continue;
     }
     let targetCategory;

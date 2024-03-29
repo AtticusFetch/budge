@@ -16,7 +16,7 @@ export default function Overview({ navigation }) {
   const {
     state: { user },
   } = useUserContext();
-  const { budget, transactions } = user;
+  const { budget, transactions, manualLinks } = user;
   const {
     state: { categories },
     dispatch: dispatchCategoriesAction,
@@ -36,8 +36,8 @@ export default function Overview({ navigation }) {
 
   useEffect(() => {
     const allExpenses = transactions?.filter((t) => parseFloat(t.amount) > 0);
-    const unLinkedExpenses = allExpenses.filter(
-      (t) => !isLinked(t, user.manualLinks),
+    const unLinkedExpenses = allExpenses?.filter(
+      (t) => !isLinked(t, manualLinks),
     );
     setExpenses(allExpenses);
     setExtraExpenses(unLinkedExpenses);
@@ -65,6 +65,8 @@ export default function Overview({ navigation }) {
           transactions={expenses}
           categories={categories}
           chartConfig={chartConfig}
+          manualLinks={manualLinks}
+          budget={budget}
         />
         {!!user.budget && (
           <ProgressSpending

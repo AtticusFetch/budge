@@ -12,14 +12,19 @@ import { animateLayout } from '../../utils/animations';
 import { colors } from '../../utils/colors';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { deleteCategoryBudget } from '../../utils/plaidApi';
+import { mapBudgetCategory } from '../../utils/plaidCategoryMapper';
 import { CategoryBudgetListItem } from '../CategoryBudgetListItem';
 import { ColorButton } from '../ColorButton';
 import { DatePicker } from '../DatePicker';
 import { Icon } from '../Icon';
 import { colorRoulette } from '../UserListItem';
 
+const categoryMapperFnFactory =
+  (manualLinks, budget, categories) => (transaction) =>
+    mapBudgetCategory(manualLinks, transaction, budget, categories);
+
 export const CategorySpending = (props) => {
-  const { transactions, chartConfig, categories } = props;
+  const { transactions, chartConfig, categories, manualLinks, budget } = props;
   const {
     state: { user = {} },
     dispatch,
@@ -53,9 +58,14 @@ export const CategorySpending = (props) => {
 
   useEffect(() => {
     animateLayout();
-    const timedTransactions = transactions?.filter((t) =>
-      moment(t.date).isBetween(...dateRange),
+    const categoryMapperFn = categoryMapperFnFactory(
+      manualLinks,
+      budget,
+      categories,
     );
+    const timedTransactions = transactions
+      ?.filter((t) => moment(t.date).isBetween(...dateRange))
+      ?.map((t) => ({ ...t, category: categoryMapperFn(t) || t.category }));
     const groupedTransactions = groupBy(timedTransactions, 'category.name');
     const spending = Object.keys(groupedTransactions).map(
       (categoryName, index) => {
@@ -74,7 +84,7 @@ export const CategorySpending = (props) => {
       },
     );
     setCategorySpending(sortBy(spending, 'total').reverse());
-  }, [transactions, dateRange]);
+  }, [transactions, dateRange, manualLinks, budget]);
 
   useEffect(() => {
     animateLayout();
