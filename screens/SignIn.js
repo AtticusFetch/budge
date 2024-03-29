@@ -33,7 +33,9 @@ export default function SignIn({ navigation, route }) {
         setLoadingAction(dispatch, true);
         const session = await getUserSession();
         const credentials = await Keychain.getGenericPassword();
-        setCredentials(credentials);
+        if (credentials?.username && credentials?.password) {
+          setCredentials(credentials);
+        }
         let isValidSession;
         if (session) {
           const { isValid } = await verifyUserSession(session.token);

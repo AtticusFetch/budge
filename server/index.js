@@ -21,6 +21,7 @@ const { declineFriendRequest } = require('./api/declineFriendRequest');
 const { deleteBudgetCategory } = require('./api/deleteBudgetCategory');
 const { deleteBudgetLink } = require('./api/deleteBudgetLink');
 const { deleteBudgetTransaction } = require('./api/deleteBudgetTransaction');
+const { deleteItem } = require('./api/deleteItem');
 const { deleteUserTransaction } = require('./api/deleteUserTransaction');
 const { exchangeToken } = require('./api/exchangeToken');
 const { getCategories } = require('./api/getCategories');
@@ -70,6 +71,7 @@ app.post('/api/user/verify', verifyUser);
 app.post('/api/user/signOut', signOutUser);
 app.post('/api/user/category/create', createUserCategory);
 app.post('/api/user/category/change', changeCategoryMapping);
+app.post('/api/user/item/delete', deleteItem);
 
 app.post('/api/user/friend', sendFriendRequest);
 app.post('/api/user/friend/accept', acceptFriendRequest);

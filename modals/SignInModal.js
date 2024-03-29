@@ -18,9 +18,18 @@ export default function SignInModal(props) {
   const { dispatch } = useUserContext();
   const { dispatch: dispatchLoading } = useLoadingContext();
   const { dispatch: dispatchNotification } = useNotificationsContext();
+  let defaultCredentials = {};
 
-  const [password, setpassword] = useState(credentials.password);
-  const [username, setusername] = useState(credentials.username);
+  if (credentials?.password && credentials?.username) {
+    defaultCredentials = credentials;
+  }
+
+  const [password, setpassword] = useState(
+    defaultCredentials.password || 'TestPasswordLeng1!',
+  );
+  const [username, setusername] = useState(
+    defaultCredentials.username || 'Ivan',
+  );
 
   const onPasswordChange = useCallback((e) => {
     setpassword(e);

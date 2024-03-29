@@ -25,6 +25,7 @@ import { clearUserSession } from '../utils/asyncStorage';
 import {
   getPlaidTransactionUpdates,
   deleteManualLink,
+  deleteItem,
   signOutUser,
 } from '../utils/plaidApi';
 
@@ -79,6 +80,17 @@ export default function Settings(props) {
     dispatchUserAction(userActions.update(updatedUser));
   }, []);
 
+  const onItemDelete = useCallback(async (itemId, shouldDeleteTransactions) => {
+    setLoadingAction(dispatch, true);
+    const updatedUser = await deleteItem({
+      itemId,
+      userId: user.id,
+      shouldDeleteTransactions,
+    });
+    setLoadingAction(dispatch, false);
+    dispatchUserAction(userActions.update(updatedUser));
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
@@ -102,7 +114,11 @@ export default function Settings(props) {
             <View style={styles.items}>
               <Text style={styles.accountsHeader}>Linked Accounts:</Text>
               {user.plaidItems.map((p) => (
-                <PlaidItem key={p.itemId} item={p} />
+                <PlaidItem
+                  onDeleteAllAccounts={onItemDelete}
+                  key={p.itemId}
+                  item={p}
+                />
               ))}
             </View>
           )}

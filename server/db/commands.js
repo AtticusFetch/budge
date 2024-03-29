@@ -48,6 +48,18 @@ const removeListItemByIdx = (id, listName, idx) => {
   return ddbClient.send(command);
 };
 
+const removeListItemsByIdx = (id, listName, idxArr) => {
+  const itemsToRemove = idxArr.map((idx) => `${listName}[${idx}]`).join(',');
+  const command = new UpdateCommand({
+    TableName: TABLE_NAMES.USERS,
+    Key: { id },
+    ReturnValues: 'ALL_NEW',
+    UpdateExpression: `REMOVE ${itemsToRemove}`,
+  });
+
+  return ddbClient.send(command);
+};
+
 const addUserAttribute = (id, attrName, value) => {
   const command = new UpdateCommand({
     TableName: TABLE_NAMES.USERS,
@@ -92,6 +104,7 @@ const addListItem = (id, listName, item) => {
 };
 
 module.exports.getCategoryById = getCategoryById;
+module.exports.removeListItemsByIdx = removeListItemsByIdx;
 module.exports.addListItem = addListItem;
 module.exports.removeListItemByIdx = removeListItemByIdx;
 module.exports.getDBUserById = getDBUserById;

@@ -57,6 +57,9 @@ export const CategorySpending = (props) => {
   }, [expanded]);
 
   useEffect(() => {
+    if (!transactions || !manualLinks || !budget) {
+      return;
+    }
     animateLayout();
     const categoryMapperFn = categoryMapperFnFactory(
       manualLinks,
@@ -65,7 +68,7 @@ export const CategorySpending = (props) => {
     );
     const timedTransactions = transactions
       ?.filter((t) => moment(t.date).isBetween(...dateRange))
-      ?.map((t) => ({ ...t, category: categoryMapperFn(t) || t.category }));
+      ?.map((t) => ({ ...t, category: categoryMapperFn(t) || t?.category }));
     const groupedTransactions = groupBy(timedTransactions, 'category.name');
     const spending = Object.keys(groupedTransactions).map(
       (categoryName, index) => {

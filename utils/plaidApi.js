@@ -135,6 +135,14 @@ export const exchangeToken = (publicToken, userId) => {
 
 /**
  * ******************************
+ * ******** Plaid Items/Accounts ********
+ * ******************************
+ */
+
+export const deleteItem = (data) => postToApi('user/item/delete', data);
+
+/**
+ * ******************************
  * ******** Transactions ********
  * ******************************
  */
