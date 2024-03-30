@@ -44,6 +44,7 @@ export default function SignInModal(props) {
     try {
       const userInfo = await authUser(password, username);
       const user = await getUserById(userInfo.id);
+      // const user = await getUserById('815b9520-f0c1-707a-d784-90d52d1096512');
       saveUserSession(userInfo);
       await Keychain.setGenericPassword(username, password);
       dispatch(userActions.set(user));

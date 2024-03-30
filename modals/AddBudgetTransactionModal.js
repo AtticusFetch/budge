@@ -1,3 +1,4 @@
+import moment from 'moment';
 import numbro from 'numbro';
 import { useCallback, useEffect, useState } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
@@ -89,6 +90,7 @@ export const AddBudgetTransactionModal = (props) => {
     const weeklyValue = ((amount * valueMultiplier) / splitAmount) * sign;
     const data = {
       category,
+      dateSubmitted: moment().toDate(),
       amount: weeklyValue,
       split,
       shouldRememberNote,

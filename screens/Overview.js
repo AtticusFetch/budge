@@ -4,6 +4,7 @@ import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 
 import { CashFlow } from '../components/Charts/CashFlow';
 import { CategorySpending } from '../components/Charts/CategorySpending';
+import { OverSpending } from '../components/Charts/OverSpending';
 import { ProgressSpending } from '../components/Charts/ProgressSpending';
 import { categoriesActions, useCategoriesContext } from '../context/Categories';
 import { setLoadingAction, useLoadingContext } from '../context/Loading';
@@ -83,6 +84,7 @@ export default function Overview({ navigation }) {
           />
         )}
         <CashFlow transactions={transactions} />
+        <OverSpending transactions={extraExpenses} budget={budget} />
       </ScrollView>
     </SafeAreaView>
   );

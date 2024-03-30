@@ -11,6 +11,7 @@ export const ColorButton = (props) => {
     colorName = 'orange',
     size = '',
     style,
+    disabled = false,
     type = 'hollow',
     transparent = false,
     childrenWrapperStyle,
@@ -38,9 +39,10 @@ export const ColorButton = (props) => {
         styles.buttonWrapper,
         sizedStyles[size]?.buttonWrapper,
         containerStyle,
+        disabled && styles.disabled,
         style,
       ]}
-      disabled={!pressable}
+      disabled={disabled || !pressable}
       onPress={onPress}
       onPressIn={() => {
         Animated.timing(buttonOpacity, {
@@ -101,6 +103,9 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 8,
     height: 70,
+  },
+  disabled: {
+    opacity: 0.5,
   },
   button: {
     flex: 1,

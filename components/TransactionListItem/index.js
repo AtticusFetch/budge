@@ -57,14 +57,17 @@ export const TransactionListItem = (props) => {
     date,
     name,
     splitWith,
+    transaction_id,
     tips,
+    transformedPlaid,
     id,
     personal_finance_category,
   } = transactionData;
 
   useEffect(() => {
     let mappedCategory;
-    if (manualLinks) {
+    const isPlaidTransaction = !transformedPlaid && !!transaction_id;
+    if (manualLinks && !isPlaidTransaction) {
       mappedCategory = mapBudgetCategory(
         manualLinks,
         transactionData,
@@ -75,7 +78,15 @@ export const TransactionListItem = (props) => {
       mappedCategory = mapPlaidCategory(personal_finance_category, categories);
     }
     mappedCategory && setMappedCategory(mappedCategory);
-  }, [personal_finance_category, categories, manualLinks, name, categories]);
+  }, [
+    personal_finance_category,
+    categories,
+    manualLinks,
+    transaction_id,
+    transformedPlaid,
+    name,
+    categories,
+  ]);
 
   const onTransactionSelect = useCallback(() => {
     onSelect(transactionData);
@@ -146,7 +157,7 @@ export const TransactionListItem = (props) => {
     !transactionData.transformedPlaid && !!transactionData.transaction_id;
 
   const checkBoxVisible = showCheckbox && isPlaidTransaction;
-  const label = mappedCategory.isLinked ? name : note;
+  const label = mappedCategory?.isLinked ? name : note;
   return (
     <ExpandableButton
       onLongPress={

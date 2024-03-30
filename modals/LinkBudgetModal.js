@@ -93,6 +93,7 @@ export const LinkBudgetModal = (props) => {
             size="slim"
             colorName="green"
             text="Link"
+            disabled={!linkMode || !selectedBudget}
             onPress={onSubmit}
           />
           <ColorButton

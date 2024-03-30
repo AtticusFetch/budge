@@ -25,7 +25,7 @@ export const CategoryBudgetListItem = (props) => {
 
   useEffect(() => {
     setRelevantTransactions(
-      transactions.filter((t) => t.category.id === categoryBudget.category.id),
+      transactions?.filter((t) => t.category.id === categoryBudget.category.id),
     );
   }, [transactions]);
 

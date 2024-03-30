@@ -8,6 +8,7 @@ import { setLoadingAction, useLoadingContext } from '../../context/Loading';
 import { colors } from '../../utils/colors';
 import { FREQUENCY_TYPES } from '../../utils/constants';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { getBudgetTotalsForTimeFrame } from '../../utils/getBudgetTotals';
 import { getFrequencyMultiplier } from '../../utils/getFrequencyMultiplier';
 import { globalStyles } from '../../utils/globalStyles';
 import { ColorButton } from '../ColorButton';
@@ -44,36 +45,25 @@ export const BudgetInfo = (props) => {
   const [totalOutcome, setTotalOutcome] = useState('');
   const [timeFrame, setTimeFrame] = useState(FREQUENCY_TYPES.weekly);
   const [sortedBudget, setSortedBudget] = useState([]);
+  const [availableCash, setAvailableCash] = useState(0);
 
   useEffect(() => {
-    const multiplier = getFrequencyMultiplier(timeFrame);
-    const sorted = _.sortBy(budget, (t) => {
-      const amount = parseFloat(t.amount);
+    const parsed = budget.map((b) => ({ ...b, amount: parseFloat(b.amount) }));
+    const sorted = _.sortBy(parsed, ({ amount }) => {
       if (amount > 0) {
         return -amount;
       }
       return amount * 1000;
     });
     setSortedBudget(sorted);
-    setTotalIncome(
-      _.sumBy(budget, (t) => {
-        const amount = parseFloat(t.amount);
-        if (amount < 0) {
-          return -amount / multiplier;
-        }
-        return 0;
-      }),
-    );
-    setTotalOutcome(
-      _.sumBy(budget, (t) => {
-        const amount = parseFloat(t.amount);
-        if (amount > 0) {
-          return amount / multiplier;
-        }
-        return 0;
-      }),
-    );
+    const [income, outcome] = getBudgetTotalsForTimeFrame(parsed, timeFrame);
+    setTotalIncome(income);
+    setTotalOutcome(outcome);
   }, [budget, timeFrame]);
+
+  useEffect(() => {
+    setAvailableCash(totalIncome - totalOutcome);
+  }, [totalIncome, totalOutcome]);
 
   const onDelete = useCallback(async (transactionId) => {
     await props.onDeleteTransaction(transactionId);
@@ -117,6 +107,9 @@ export const BudgetInfo = (props) => {
             text={TIME_FRAMES[frame]}
           />
         ))}
+      </View>
+      <View style={[styles.cash, availableCash < 0 && styles.cashNegative]}>
+        <Text style={styles.cashLabel}>{formatCurrency(availableCash, 0)}</Text>
       </View>
       <View style={[globalStyles.row, styles.headerContainer]}>
         <View style={[styles.headerSection, styles.incomeSection]}>
@@ -216,6 +209,27 @@ const styles = StyleSheet.create({
   listContent: {},
   transaction: {
     flex: 1,
+  },
+  cash: {
+    flex: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.green,
+    paddingVertical: 10,
+    marginHorizontal: 30,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  cashNegative: {
+    backgroundColor: colors.red,
+  },
+  cashLabel: {
+    flex: 0,
+    fontWeight: 'bold',
+    fontSize: 20,
+    color: 'white',
+    textAlign: 'center',
   },
   titleText: {
     fontSize: 20,
