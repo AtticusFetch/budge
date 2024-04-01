@@ -125,6 +125,12 @@ export const authUser = (password, username) => {
     username,
   });
 };
+export const updateCarryOverSelection = (userId, selection) => {
+  return postToApi('user/carryover/update', {
+    userId,
+    selection,
+  });
+};
 
 export const exchangeToken = (publicToken, userId) => {
   return postToApi('exchange', {

@@ -1,18 +1,56 @@
-import { groupBy, mapValues, sumBy, sortBy, map } from 'lodash';
+import {
+  groupBy,
+  mapValues,
+  sumBy,
+  sortBy,
+  zipObject,
+  map,
+  throttle,
+  omit,
+} from 'lodash';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 
 import { colors } from '../../utils/colors';
 import { FREQUENCY_TYPES } from '../../utils/constants';
+import { formatCurrency } from '../../utils/formatCurrency';
 import { getBudgetTotalsForTimeFrame } from '../../utils/getBudgetTotals';
+import { updateCarryOverSelection } from '../../utils/plaidApi';
+import { LabeledCheckbox } from '../LabeledCheckbox';
+
+const updateCarryOver = throttle(
+  (userId, newValues, history = {}, possibleNew) => {
+    const updated = {
+      ...history,
+      ...newValues,
+    };
+    for (const value in history) {
+      if (!newValues[value] && possibleNew[value]) {
+        delete updated[value];
+      }
+    }
+    if (JSON.stringify(history) !== JSON.stringify(updated)) {
+      updateCarryOverSelection(userId, updated);
+    }
+  },
+  3000,
+  { leading: false },
+);
+
+const M_KEY_FORMAT = 'MMM-YYYY';
+const M_LABEL_FORMAT = 'MMM';
 
 const monthsOffset = new Array(6).fill(0).map((v, i) => i);
 const months = monthsOffset
   .map((offset) => {
     const mDate = moment().subtract(offset, 'month');
-    return { label: mDate.format('MMM'), mDate };
+    return {
+      label: mDate.format(M_LABEL_FORMAT),
+      mDate,
+      mKey: mDate.format(M_KEY_FORMAT),
+    };
   })
   .reverse();
 
@@ -21,14 +59,18 @@ const isPast6Months = (t, dateKey = 'date') =>
     moment().subtract(6, 'months'),
   );
 const groupByMonth = (data) =>
-  groupBy(data, (t) => moment(t.date).format('MMM'));
+  groupBy(data, (t) => moment(t.date).format(M_LABEL_FORMAT));
 
 export const OverSpending = (props) => {
-  const { transactions, budget } = props;
+  const { transactions, budget, userId, carryOverSelection } = props;
   const [spendTotals, setSpendTotals] = useState();
   const [budgetTotals, setBudgetTotals] = useState();
   const [expenseData, setExpenseData] = useState(monthsOffset);
   const [budgetData, setBudgetData] = useState(monthsOffset);
+  const [diffData, setDiffData] = useState([]);
+  const [selectedMonths, setSelectedMonths] = useState(
+    carryOverSelection || {},
+  );
 
   useEffect(() => {
     const last6Months = transactions.filter(isPast6Months);
@@ -49,7 +91,7 @@ export const OverSpending = (props) => {
     const budgetsBase = monthsOffset.map(() => undated);
     const groupedBudgets = monthsOffset.reduce((acc, curr) => {
       const monthM = moment().subtract(curr, 'month');
-      const monthLabel = monthM.format('MMM');
+      const monthLabel = monthM.format(M_LABEL_FORMAT);
       const budgetForMonth = dated.filter((b) =>
         moment(b.dateSubmitted).isSame(monthM, 'month'),
       );
@@ -72,8 +114,15 @@ export const OverSpending = (props) => {
 
   useEffect(() => {
     if (!budgetTotals || !spendTotals) return;
-    const chartData = months.map(({ label, mDate }) => {
-      const data = [budgetTotals[label], spendTotals[label] || 0];
+    let carryOver = 0;
+    const chartData = months.map(({ label, mDate, mKey }) => {
+      const budgetValue = budgetTotals[label];
+      const spentValue = spendTotals[label] || 0;
+      const budgetWithCarryOver = budgetTotals[label] + carryOver;
+      if (selectedMonths[mKey]) {
+        carryOver += budgetValue - spentValue;
+      }
+      const data = [budgetWithCarryOver, spentValue];
       return {
         data,
         label,
@@ -85,13 +134,70 @@ export const OverSpending = (props) => {
     );
     const budgetData = map(sorted, 'data[0]');
     const spendingData = map(sorted, 'data[1]');
+    const diff = map(budgetData, (b, i) => {
+      const value = b - spendingData[i];
+      return {
+        value: formatCurrency(value),
+        monthLabel: months[i].label,
+        mKey: months[i].mDate.format(M_KEY_FORMAT),
+        positive: value >= 0,
+      };
+    });
+    setDiffData(diff);
     setBudgetData(budgetData);
     setExpenseData(spendingData);
-  }, [budgetTotals, spendTotals]);
+  }, [budgetTotals, spendTotals, selectedMonths, carryOverSelection]);
+
+  const onCarryOverSelected = useCallback(
+    (selectedMonthData) => {
+      if (!selectedMonths[selectedMonthData.mKey]) {
+        setSelectedMonths({
+          ...selectedMonths,
+          [selectedMonthData.mKey]: true,
+        });
+      } else {
+        setSelectedMonths(omit(selectedMonths, selectedMonthData.mKey));
+      }
+    },
+    [selectedMonths],
+  );
+
+  useEffect(() => {
+    updateCarryOver(
+      userId,
+      selectedMonths,
+      carryOverSelection,
+      zipObject(
+        map(diffData, 'mKey'),
+        map(diffData, () => true),
+      ),
+    );
+  }, [selectedMonths, userId, carryOverSelection, diffData]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Spending Over Budget</Text>
+      <View style={styles.diffContainer}>
+        {diffData.map((d) => (
+          <View
+            key={`${d.monthLabel}-${d.value}`}
+            style={styles.diffLabelContainer}
+          >
+            <LabeledCheckbox
+              isChecked={selectedMonths[d.mKey]}
+              onPress={() => onCarryOverSelected(d)}
+              style={styles.checkbox}
+              labelStyle={styles.checkboxLabel}
+            />
+            <Text
+              style={[styles.diffLabel, d.positive && styles.diffLabelPositive]}
+            >
+              {d.monthLabel}: {d.positive && '+'}
+              {d.value}
+            </Text>
+          </View>
+        ))}
+      </View>
       <LineChart
         data={{
           labels: map(months, 'label'),
@@ -121,9 +227,6 @@ export const OverSpending = (props) => {
           style: {
             borderRadius: 16,
           },
-          propsForDots: {
-            r: '6',
-          },
         }}
         bezier
         style={{
@@ -152,4 +255,36 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginVertical: 20,
   },
+  diffContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    backgroundColor: colors.grey,
+    marginHorizontal: 30,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    padding: 5,
+  },
+  diffLabelContainer: {
+    flexDirection: 'row',
+    width: '50%',
+  },
+  diffLabel: {
+    color: colors.red,
+    fontWeight: 'bold',
+    fontSize: 15,
+    margin: 10,
+  },
+  diffLabelPositive: {
+    color: colors.green,
+  },
+  checkbox: {
+    padding: 0,
+    flex: 0,
+    alignSelf: 'center',
+    height: '100%',
+    borderWidth: 0,
+  },
+  checkboxLabel: {},
 });

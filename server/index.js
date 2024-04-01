@@ -37,6 +37,7 @@ const { signUpUser } = require('./api/signUp');
 const { transferPlaidTransaction } = require('./api/transferPlaidTransaction');
 const { updateBudgetCategory } = require('./api/updateBudgetCategory');
 const { updateBudgetTransaction } = require('./api/updateBudgetTransaction');
+const { updateUserCarryOver } = require('./api/updateUserCarryOver');
 const { updateUserTransaction } = require('./api/updateUserTransaction');
 const { verifyUser } = require('./api/verifyUser');
 
@@ -82,6 +83,7 @@ app.post('/api/user/transaction/create', createUserTransaction);
 app.post('/api/user/transaction/delete', deleteUserTransaction);
 app.post('/api/user/transaction/update', updateUserTransaction);
 app.post('/api/user/transaction/transfer', transferPlaidTransaction);
+app.post('/api/user/carryover/update', updateUserCarryOver);
 
 app.post('/api/budget/transaction/create', createBudgetTransaction);
 app.post('/api/budget/transaction/update', updateBudgetTransaction);

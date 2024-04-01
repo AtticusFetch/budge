@@ -17,7 +17,7 @@ export default function Overview({ navigation }) {
   const {
     state: { user },
   } = useUserContext();
-  const { budget, transactions, manualLinks } = user;
+  const { budget, transactions, manualLinks, carryOverSelection, id } = user;
   const {
     state: { categories },
     dispatch: dispatchCategoriesAction,
@@ -84,7 +84,12 @@ export default function Overview({ navigation }) {
           />
         )}
         <CashFlow transactions={transactions} />
-        <OverSpending transactions={extraExpenses} budget={budget} />
+        <OverSpending
+          userId={id}
+          carryOverSelection={carryOverSelection}
+          transactions={extraExpenses}
+          budget={budget}
+        />
       </ScrollView>
     </SafeAreaView>
   );
