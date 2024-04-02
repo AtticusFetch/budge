@@ -66,6 +66,7 @@ export default function AddTransactionModal(props) {
     amount,
     category,
     note,
+    date,
     shouldRememberNote,
     tips,
     isIncome,

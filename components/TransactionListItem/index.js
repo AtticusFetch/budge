@@ -34,7 +34,6 @@ export const TransactionListItem = (props) => {
   const {
     state: { categories },
   } = useCategoriesContext();
-  const [mappedCategory, setMappedCategory] = useState(props.category);
   const {
     onDelete,
     onEdit,
@@ -56,6 +55,7 @@ export const TransactionListItem = (props) => {
     amount,
     date,
     name,
+    category,
     splitWith,
     transaction_id,
     tips,
@@ -63,6 +63,7 @@ export const TransactionListItem = (props) => {
     id,
     personal_finance_category,
   } = transactionData;
+  const [mappedCategory, setMappedCategory] = useState(category);
 
   useEffect(() => {
     let mappedCategory;
@@ -85,6 +86,7 @@ export const TransactionListItem = (props) => {
     transaction_id,
     transformedPlaid,
     name,
+    category,
     categories,
   ]);
 

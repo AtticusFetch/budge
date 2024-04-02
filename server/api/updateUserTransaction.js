@@ -5,7 +5,7 @@ const updateUserTransaction = async (request, response) => {
   let result;
 
   try {
-    result = updateTransaction(transaction, userId);
+    result = await updateTransaction(transaction, userId);
   } catch (e) {
     console.error(e);
   }

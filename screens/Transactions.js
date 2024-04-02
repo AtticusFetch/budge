@@ -97,6 +97,7 @@ export default function Transactions() {
 
   const onSubmitTransaction = useCallback(async (transaction) => {
     let updatedUser;
+    setLoadingAction(dispatchLoadingState, true);
     setisAddTransactionModalVisible(false);
     if (transaction.isTransfering) {
       updatedUser = await transferPlaidTransaction(
@@ -108,6 +109,7 @@ export default function Transactions() {
     } else {
       updatedUser = await createTransactionForUser(transaction, user.id);
     }
+    setLoadingAction(dispatchLoadingState, false);
     dispatch(userActions.update(updatedUser));
   }, []);
 

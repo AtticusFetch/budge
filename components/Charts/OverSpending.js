@@ -9,8 +9,15 @@ import {
   omit,
 } from 'lodash';
 import moment from 'moment';
-import { useCallback, useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Animated,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 
 import { colors } from '../../utils/colors';
@@ -18,6 +25,7 @@ import { FREQUENCY_TYPES } from '../../utils/constants';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { getBudgetTotalsForTimeFrame } from '../../utils/getBudgetTotals';
 import { updateCarryOverSelection } from '../../utils/plaidApi';
+import { Icon } from '../Icon';
 import { LabeledCheckbox } from '../LabeledCheckbox';
 
 const updateCarryOver = throttle(
@@ -71,6 +79,8 @@ export const OverSpending = (props) => {
   const [selectedMonths, setSelectedMonths] = useState(
     carryOverSelection || {},
   );
+  const [expanded, setExpanded] = useState(false);
+  const height = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const last6Months = transactions.filter(isPast6Months);
@@ -118,9 +128,13 @@ export const OverSpending = (props) => {
     const chartData = months.map(({ label, mDate, mKey }) => {
       const budgetValue = budgetTotals[label];
       const spentValue = spendTotals[label] || 0;
-      const budgetWithCarryOver = budgetTotals[label] + carryOver;
+      let budgetWithCarryOver = budgetValue;
+      if (carryOver !== 0) {
+        budgetWithCarryOver += carryOver;
+        carryOver = 0;
+      }
       if (selectedMonths[mKey]) {
-        carryOver += budgetValue - spentValue;
+        carryOver += budgetWithCarryOver - spentValue;
       }
       const data = [budgetWithCarryOver, spentValue];
       return {
@@ -174,10 +188,42 @@ export const OverSpending = (props) => {
     );
   }, [selectedMonths, userId, carryOverSelection, diffData]);
 
+  const toggleExpand = useCallback(() => {
+    if (expanded) {
+      Animated.timing(height, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start(() => setExpanded(false));
+    } else {
+      setExpanded(true);
+      Animated.timing(height, {
+        toValue: 182,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    }
+  }, [expanded]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Spending Over Budget</Text>
-      <View style={styles.diffContainer}>
+      <TouchableOpacity onPress={toggleExpand} style={[styles.pullBtn]}>
+        <Icon
+          style={expanded && styles.pullBtnExpanded}
+          name="chevron-up"
+          color="white"
+          size={30}
+        />
+      </TouchableOpacity>
+      <Animated.View
+        style={[
+          styles.diffContainer,
+          { height },
+          expanded && styles.diffContainerExpanded,
+        ]}
+      >
+        <Text style={styles.diffHeader}>Choose Months to carry over:</Text>
         {diffData.map((d) => (
           <View
             key={`${d.monthLabel}-${d.value}`}
@@ -197,7 +243,7 @@ export const OverSpending = (props) => {
             </Text>
           </View>
         ))}
-      </View>
+      </Animated.View>
       <LineChart
         data={{
           labels: map(months, 'label'),
@@ -255,16 +301,38 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginVertical: 20,
   },
+  diffHeader: {
+    fontSize: 15,
+    color: 'white',
+    opacity: 0.8,
+    fontWeight: '500',
+    marginVertical: 10,
+  },
+  pullBtn: {
+    backgroundColor: colors.grey,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  pullBtnExpanded: {
+    transform: [{ rotate: '180deg' }],
+  },
+  diffContainerExpanded: {
+    display: 'flex',
+  },
   diffContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
     backgroundColor: colors.grey,
-    marginHorizontal: 30,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    padding: 5,
+    display: 'none',
+    marginHorizontal: 30,
+    paddingHorizontal: 5,
   },
   diffLabelContainer: {
     flexDirection: 'row',

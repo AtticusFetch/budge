@@ -75,10 +75,11 @@ export default function Overview({ navigation }) {
             budget={budget}
             slim={false}
             extraDays={
-              daysPassed &&
-              new Array(daysPassed)
-                .fill({})
-                .map((i, index) => moment().subtract(index + 1, 'day'))
+              daysPassed
+                ? new Array(daysPassed)
+                    .fill({})
+                    .map((i, index) => moment().subtract(index + 1, 'day'))
+                : []
             }
             chartConfig={chartConfig}
           />

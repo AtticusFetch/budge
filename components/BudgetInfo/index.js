@@ -95,7 +95,7 @@ export const BudgetInfo = (props) => {
 
   return (
     <View style={[styles.overviewHeader]}>
-      <Text style={styles.titleText}>Breakdown For</Text>
+      <Text style={styles.titleText}>Budget Breakdown For</Text>
       <View style={styles.buttonsContainer}>
         {Object.keys(TIME_FRAMES).map((frame) => (
           <ColorButton
@@ -212,6 +212,8 @@ const styles = StyleSheet.create({
   },
   cash: {
     flex: 0,
+    width: 80,
+    alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
