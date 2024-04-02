@@ -69,14 +69,14 @@ const styles = StyleSheet.create({
     right: {
       borderTopLeftRadius: 0,
       borderBottomLeftRadius: 0,
-      borderTopRightRadius: 20,
-      borderBottomRightRadius: 20,
+      borderTopRightRadius: 15,
+      borderBottomRightRadius: 15,
     },
     left: {
       borderTopRightRadius: 0,
       borderBottomRightRadius: 0,
-      borderTopLeftRadius: 20,
-      borderBottomLeftRadius: 20,
+      borderTopLeftRadius: 15,
+      borderBottomLeftRadius: 15,
     },
     none: {
       borderTopLeftRadius: 0,

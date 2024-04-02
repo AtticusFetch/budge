@@ -1,14 +1,4 @@
-import {
-  groupBy,
-  mapValues,
-  sumBy,
-  sortBy,
-  zipObject,
-  map,
-  throttle,
-  omit,
-} from 'lodash';
-import moment from 'moment';
+import { sortBy, zipObject, map, throttle, omit, partition } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
@@ -21,10 +11,16 @@ import {
 import { LineChart } from 'react-native-chart-kit';
 
 import { colors } from '../../utils/colors';
-import { FREQUENCY_TYPES } from '../../utils/constants';
+import { MONTH_KEY_FORMAT } from '../../utils/constants';
 import { formatCurrency } from '../../utils/formatCurrency';
-import { getBudgetTotalsForTimeFrame } from '../../utils/getBudgetTotals';
 import { updateCarryOverSelection } from '../../utils/plaidApi';
+import {
+  getBudgetMonthsTotals,
+  getMonths,
+  getMonthsOffset,
+  getTransactionsExpenseTotals,
+  isPast6Months,
+} from '../../utils/transactions';
 import { Icon } from '../Icon';
 import { LabeledCheckbox } from '../LabeledCheckbox';
 
@@ -47,32 +43,16 @@ const updateCarryOver = throttle(
   { leading: false },
 );
 
-const M_KEY_FORMAT = 'MMM-YYYY';
-const M_LABEL_FORMAT = 'MMM';
+const monthsOffset = getMonthsOffset(6);
 
-const monthsOffset = new Array(6).fill(0).map((v, i) => i);
-const months = monthsOffset
-  .map((offset) => {
-    const mDate = moment().subtract(offset, 'month');
-    return {
-      label: mDate.format(M_LABEL_FORMAT),
-      mDate,
-      mKey: mDate.format(M_KEY_FORMAT),
-    };
-  })
-  .reverse();
-
-const isPast6Months = (t, dateKey = 'date') =>
-  moment(t[dateKey] || new Date()).isSameOrAfter(
-    moment().subtract(6, 'months'),
-  );
-const groupByMonth = (data) =>
-  groupBy(data, (t) => moment(t.date).format(M_LABEL_FORMAT));
+const past6Months = getMonths(6);
 
 export const OverSpending = (props) => {
   const { transactions, budget, userId, carryOverSelection } = props;
   const [spendTotals, setSpendTotals] = useState();
   const [budgetTotals, setBudgetTotals] = useState();
+  const [pastSpendTotals, setPastSpendTotals] = useState();
+  const [pastBudgetTotals, setPastBudgetTotals] = useState();
   const [expenseData, setExpenseData] = useState(monthsOffset);
   const [budgetData, setBudgetData] = useState(monthsOffset);
   const [diffData, setDiffData] = useState([]);
@@ -83,51 +63,34 @@ export const OverSpending = (props) => {
   const height = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const last6Months = transactions.filter(isPast6Months);
-    const groupedByMonth = groupByMonth(last6Months);
-    const totals = mapValues(groupedByMonth, (t) =>
-      sumBy(t, (t) => parseFloat(t.amount)),
+    const [last6Months, pastTransactions] = partition(
+      transactions,
+      isPast6Months,
     );
+    const totals = getTransactionsExpenseTotals(last6Months);
+    const pastTotals = getTransactionsExpenseTotals(pastTransactions);
 
     setSpendTotals(totals);
+    setPastSpendTotals(pastTotals);
   }, [transactions]);
 
   useEffect(() => {
-    const relevantBudget = budget.filter((b) =>
+    const [relevantBudget] = partition(budget, (b) =>
       isPast6Months(b, 'dateSubmitted'),
     );
-    const undated = relevantBudget.filter((b) => !b.dateSubmitted);
-    const dated = relevantBudget.filter((b) => !!b.dateSubmitted);
-    const budgetsBase = monthsOffset.map(() => undated);
-    const groupedBudgets = monthsOffset.reduce((acc, curr) => {
-      const monthM = moment().subtract(curr, 'month');
-      const monthLabel = monthM.format(M_LABEL_FORMAT);
-      const budgetForMonth = dated.filter((b) =>
-        moment(b.dateSubmitted).isSame(monthM, 'month'),
-      );
+    const totals = getBudgetMonthsTotals(relevantBudget);
+    const pastTotals = getBudgetMonthsTotals(budget, 6);
 
-      return {
-        ...acc,
-        [monthLabel]: [...budgetsBase[curr], ...budgetForMonth],
-      };
-    }, {});
-    const groupedTotals = mapValues(groupedBudgets, (budgetTransactions) => {
-      const [income, outcome] = getBudgetTotalsForTimeFrame(
-        budgetTransactions,
-        FREQUENCY_TYPES.monthly,
-      );
-      const total = income - outcome;
-      return total;
-    });
-    setBudgetTotals(groupedTotals);
+    setBudgetTotals(totals);
+    setPastBudgetTotals(pastTotals);
   }, [budget]);
 
   useEffect(() => {
     if (!budgetTotals || !spendTotals) return;
     let carryOver = 0;
-    const chartData = months.map(({ label, mDate, mKey }) => {
-      const budgetValue = budgetTotals[label];
-      const spentValue = spendTotals[label] || 0;
+    const chartData = past6Months.map(({ label, mDate, mKey }) => {
+      const budgetValue = budgetTotals[mKey];
+      const spentValue = spendTotals[mKey] || 0;
       let budgetWithCarryOver = budgetValue;
       if (carryOver !== 0) {
         budgetWithCarryOver += carryOver;
@@ -152,15 +115,15 @@ export const OverSpending = (props) => {
       const value = b - spendingData[i];
       return {
         value: formatCurrency(value),
-        monthLabel: months[i].label,
-        mKey: months[i].mDate.format(M_KEY_FORMAT),
+        monthLabel: past6Months[i].label,
+        mKey: past6Months[i].mDate.format(MONTH_KEY_FORMAT),
         positive: value >= 0,
       };
     });
     setDiffData(diff);
     setBudgetData(budgetData);
     setExpenseData(spendingData);
-  }, [budgetTotals, spendTotals, selectedMonths, carryOverSelection]);
+  }, [budgetTotals, spendTotals, selectedMonths]);
 
   const onCarryOverSelected = useCallback(
     (selectedMonthData) => {
@@ -246,7 +209,7 @@ export const OverSpending = (props) => {
       </Animated.View>
       <LineChart
         data={{
-          labels: map(months, 'label'),
+          labels: map(past6Months, 'label'),
           datasets: [
             {
               data: budgetData,

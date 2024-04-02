@@ -10,3 +10,6 @@ export const FREQUENCY_TYPES = {
   semiMonthly: 'semiMonthly',
   weekly: 'weekly',
 };
+
+export const MONTH_KEY_FORMAT = 'MMM-YYYY';
+export const MONTH_LABEL_FORMAT = 'MMM';
