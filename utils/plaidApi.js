@@ -173,6 +173,11 @@ export const deleteTransaction = (transactionId, userId) =>
     transactionId,
     userId,
   });
+export const ignoreTransaction = (transaction, userId) =>
+  postToApi('user/transaction/ignore', {
+    transaction,
+    userId,
+  });
 
 /**
  * ************************

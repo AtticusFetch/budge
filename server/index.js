@@ -28,6 +28,7 @@ const { getCategories } = require('./api/getCategories');
 const { getPlaidTransactions } = require('./api/getPlaidTransactions');
 const { getTransactionsForMonth } = require('./api/getTransactionsForMonth');
 const { getUserById } = require('./api/getUserById');
+const { ignorePlaidTransaction } = require('./api/ignorePlaidTransaction');
 const { postInfo } = require('./api/info');
 const { postUser } = require('./api/postUser');
 const { removeFriend } = require('./api/removeFriend');
@@ -83,6 +84,7 @@ app.post('/api/user/transaction/create', createUserTransaction);
 app.post('/api/user/transaction/delete', deleteUserTransaction);
 app.post('/api/user/transaction/update', updateUserTransaction);
 app.post('/api/user/transaction/transfer', transferPlaidTransaction);
+app.post('/api/user/transaction/ignore', ignorePlaidTransaction);
 app.post('/api/user/carryover/update', updateUserCarryOver);
 
 app.post('/api/budget/transaction/create', createBudgetTransaction);

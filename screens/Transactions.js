@@ -27,6 +27,7 @@ import {
   changeCategory,
   deleteTransaction,
   createBudgetLink,
+  ignoreTransaction,
 } from '../utils/plaidApi';
 import { mapPlaidCategory } from '../utils/plaidCategoryMapper';
 
@@ -217,7 +218,12 @@ export default function Transactions() {
     [onEditTransaction, categories],
   );
 
-  const onIgnoreTransaction = useCallback(async (plaidTransaction) => {}, []);
+  const onIgnoreTransaction = useCallback(async (plaidTransaction) => {
+    setLoadingAction(dispatchLoadingState, true);
+    const updatedUser = await ignoreTransaction(plaidTransaction, user.id);
+    dispatch(userActions.update(updatedUser));
+    setLoadingAction(dispatchLoadingState, false);
+  }, []);
 
   useEffect(() => {
     const allTransactions = concat([], transactions, plaidTransactions).filter(

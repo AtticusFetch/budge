@@ -58,6 +58,7 @@ export const TransactionListItem = (props) => {
     category,
     splitWith,
     transaction_id,
+    plaidIgnored,
     tips,
     transformedPlaid,
     id,
@@ -144,15 +145,20 @@ export const TransactionListItem = (props) => {
     );
   }, []);
   const onPlaidTransactionLongPress = useCallback(() => {
+    const sheetOptions = [...plaidActionSheetOptions];
+    if (plaidIgnored) {
+      const ignoreIdx = sheetOptions.indexOf(PLAID_TRANSACTION_ACTIONS.IGNORE);
+      sheetOptions.splice(ignoreIdx, 1, 'Un-ignore');
+    }
     ActionSheetIOS.showActionSheetWithOptions(
       {
-        options: plaidActionSheetOptions,
+        options: sheetOptions,
         destructiveButtonIndex: 1,
         cancelButtonIndex: 0,
       },
       onPlaidActionSelected,
     );
-  }, []);
+  }, [plaidIgnored]);
 
   const hasSplit = !!splitWith?.length;
   const isPlaidTransaction =
@@ -161,6 +167,8 @@ export const TransactionListItem = (props) => {
   const checkBoxVisible = showCheckbox && isPlaidTransaction;
   const label = mappedCategory?.isLinked ? name : note;
   const amountColor = isPositiveFlow ? 'green' : 'orange';
+  const isIgnored = transactionData.plaidIgnored;
+  const isSeeThrough = isUpcoming || isIgnored;
   return (
     <ExpandableButton
       onLongPress={
@@ -172,7 +180,8 @@ export const TransactionListItem = (props) => {
       style={[
         styles.btnContainer,
         isPlaidTransaction && styles.plaidItem,
-        isUpcoming && { opacity: 0.5 },
+        isSeeThrough && { opacity: 0.5 },
+        isIgnored && { maxWidth: '40%' },
         style,
       ]}
       childrenWrapperStyle={styles.btnStyle}

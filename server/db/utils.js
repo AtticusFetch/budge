@@ -45,6 +45,9 @@ const addTransaction = async (transaction, userId, key = 'transactions') => {
     amount: transactionAmount,
     ...(!transaction.id && { id: uid() }),
   };
+  if (key === 'plaidTransactions') {
+    delete uniqueTransaction.id;
+  }
   let result;
 
   try {
@@ -131,9 +134,10 @@ const deleteTransaction = async (
   return result.Attributes;
 };
 
-const updateTransaction = async (transaction, userId) => {
-  const deleteResult = await deleteTransaction(transaction.id, userId);
-  const addResult = await addTransaction(transaction, userId);
+const updateTransaction = async (transaction, userId, key) => {
+  const transactionId = transaction.id || transaction.transaction_id;
+  const deleteResult = await deleteTransaction(transactionId, userId, key);
+  const addResult = await addTransaction(transaction, userId, key);
 
   return {
     ...deleteResult,
