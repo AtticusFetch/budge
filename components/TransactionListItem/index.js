@@ -160,6 +160,7 @@ export const TransactionListItem = (props) => {
 
   const checkBoxVisible = showCheckbox && isPlaidTransaction;
   const label = mappedCategory?.isLinked ? name : note;
+  const amountColor = isPositiveFlow ? 'green' : 'orange';
   return (
     <ExpandableButton
       onLongPress={
@@ -167,7 +168,7 @@ export const TransactionListItem = (props) => {
           ? onPlaidTransactionLongPress
           : onTransactionLongPress
       }
-      colorName={isUpcoming || isPlaidTransaction ? 'grey' : 'blue'}
+      colorName={isUpcoming || isPlaidTransaction ? 'grey' : amountColor}
       style={[
         styles.btnContainer,
         isPlaidTransaction && styles.plaidItem,
