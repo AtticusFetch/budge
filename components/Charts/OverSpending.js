@@ -51,8 +51,8 @@ export const OverSpending = (props) => {
   const { transactions, budget, userId, carryOverSelection } = props;
   const [spendTotals, setSpendTotals] = useState();
   const [budgetTotals, setBudgetTotals] = useState();
-  const [pastSpendTotals, setPastSpendTotals] = useState();
-  const [pastBudgetTotals, setPastBudgetTotals] = useState();
+  // const [pastSpendTotals, setPastSpendTotals] = useState();
+  // const [pastBudgetTotals, setPastBudgetTotals] = useState();
   const [expenseData, setExpenseData] = useState(monthsOffset);
   const [budgetData, setBudgetData] = useState(monthsOffset);
   const [diffData, setDiffData] = useState([]);
@@ -63,15 +63,15 @@ export const OverSpending = (props) => {
   const height = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const [last6Months, pastTransactions] = partition(
+    const [last6Months /*, pastTransactions*/] = partition(
       transactions,
       isPast6Months,
     );
     const totals = getTransactionsExpenseTotals(last6Months);
-    const pastTotals = getTransactionsExpenseTotals(pastTransactions);
+    // const pastTotals = getTransactionsExpenseTotals(pastTransactions);
 
     setSpendTotals(totals);
-    setPastSpendTotals(pastTotals);
+    // setPastSpendTotals(pastTotals);
   }, [transactions]);
 
   useEffect(() => {
@@ -79,10 +79,10 @@ export const OverSpending = (props) => {
       isPast6Months(b, 'dateSubmitted'),
     );
     const totals = getBudgetMonthsTotals(relevantBudget);
-    const pastTotals = getBudgetMonthsTotals(budget, 6);
+    // const pastTotals = getBudgetMonthsTotals(budget, 6);
 
     setBudgetTotals(totals);
-    setPastBudgetTotals(pastTotals);
+    // setPastBudgetTotals(pastTotals);
   }, [budget]);
 
   useEffect(() => {

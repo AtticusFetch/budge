@@ -8,6 +8,9 @@ const express = require('express');
 
 const { acceptFriendRequest } = require('./api/acceptFriendRequest');
 const { authenticateUser } = require('./api/authenticateUser');
+const {
+  batchTransferPlaidTransaction,
+} = require('./api/batchTransferPlaidTransaction');
 const { changeCategoryMapping } = require('./api/changeCategoryMapping');
 const { confirmUser } = require('./api/confirmUser');
 const { createBudgetCategory } = require('./api/createBudgetCategory');
@@ -84,6 +87,7 @@ app.post('/api/user/transaction/create', createUserTransaction);
 app.post('/api/user/transaction/delete', deleteUserTransaction);
 app.post('/api/user/transaction/update', updateUserTransaction);
 app.post('/api/user/transaction/transfer', transferPlaidTransaction);
+app.post('/api/user/transaction/batch/transfer', batchTransferPlaidTransaction);
 app.post('/api/user/transaction/ignore', ignorePlaidTransaction);
 app.post('/api/user/carryover/update', updateUserCarryOver);
 

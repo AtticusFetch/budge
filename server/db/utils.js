@@ -4,6 +4,7 @@ const {
   addListItem,
   getDBUserById,
   removeListItemByIdx,
+  removeListItemsByIdx,
 } = require('./commands');
 
 const uid = () => uuidv4();
@@ -134,6 +135,20 @@ const deleteTransaction = async (
   return result.Attributes;
 };
 
+const batchDeleteListItem = async (userId, items, listName) => {
+  const user = (await getDBUserById(userId))?.Item;
+  const idxs = items.map((itemToRemove) =>
+    user[listName].findIndex((item) => {
+      const idToRemove = itemToRemove.id || itemToRemove.transaction_id;
+      const id = item.id || item.transaction_id;
+      return id === idToRemove;
+    }),
+  );
+  const result = await removeListItemsByIdx(userId, listName, idxs);
+
+  return result.Attributes;
+};
+
 const updateTransaction = async (transaction, userId, key) => {
   const transactionId = transaction.id || transaction.transaction_id;
   const deleteResult = await deleteTransaction(transactionId, userId, key);
@@ -145,6 +160,14 @@ const updateTransaction = async (transaction, userId, key) => {
   };
 };
 
+const batchAddListItem = async (userId, items, listName) => {
+  const result = await addListItem(userId, listName, items);
+
+  return result.Attributes;
+};
+
+module.exports.batchDeleteListItem = batchDeleteListItem;
+module.exports.batchAddListItem = batchAddListItem;
 module.exports.getUserTransactionById = getUserTransactionById;
 module.exports.updateTransaction = updateTransaction;
 module.exports.addTransaction = addTransaction;

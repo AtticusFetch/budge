@@ -164,10 +164,10 @@ export const TransactionListItem = (props) => {
   const isPlaidTransaction =
     !transactionData.transformedPlaid && !!transactionData.transaction_id;
 
-  const checkBoxVisible = showCheckbox && isPlaidTransaction;
+  const isIgnored = transactionData.plaidIgnored;
+  const checkBoxVisible = showCheckbox && isPlaidTransaction && !isIgnored;
   const label = mappedCategory?.isLinked ? name : note;
   const amountColor = isPositiveFlow ? 'green' : 'orange';
-  const isIgnored = transactionData.plaidIgnored;
   const isSeeThrough = isUpcoming || isIgnored;
   return (
     <ExpandableButton

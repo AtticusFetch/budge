@@ -168,6 +168,11 @@ export const transferPlaidTransaction = (transaction, id) =>
     transaction,
     userId: id,
   });
+export const transferBatchPlaidTransaction = (transactions, id) =>
+  postToApi('user/transaction/batch/transfer', {
+    transactions,
+    userId: id,
+  });
 export const deleteTransaction = (transactionId, userId) =>
   postToApi('user/transaction/delete', {
     transactionId,

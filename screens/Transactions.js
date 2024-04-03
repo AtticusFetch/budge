@@ -21,6 +21,7 @@ import { LinkBudgetModal } from '../modals/LinkBudgetModal';
 import { animateLayout } from '../utils/animations';
 import { colors } from '../utils/colors';
 import {
+  transferBatchPlaidTransaction,
   createTransactionForUser,
   updateTransactionForUser,
   transferPlaidTransaction,
@@ -182,6 +183,44 @@ export default function Transactions() {
     [user, dispatchLoadingState],
   );
 
+  const transformBatch = useCallback(
+    async (transactions) => {
+      try {
+        const updatedUser = await transferBatchPlaidTransaction(
+          transactions,
+          user.id,
+        );
+        dispatch(userActions.update(updatedUser));
+      } catch (e) {
+        console.error(e);
+        setLoadingAction(dispatchLoadingState, false);
+      }
+    },
+    [user.id],
+  );
+
+  const transformIndividual = useCallback(
+    async (transactions) => {
+      try {
+        for (const tToTransform of transactions) {
+          const updatedUser = await transferPlaidTransaction(
+            tToTransform,
+            user.id,
+          );
+          dispatch(userActions.update(updatedUser));
+        }
+      } catch (e) {
+        console.error(e);
+        setLoadingAction(dispatchLoadingState, false);
+      }
+    },
+    [user.id],
+  );
+
+  const onSelectAll = useCallback(() => {
+    setSelectedTransactions(plaidTransactions.map((t) => t.transaction_id));
+  }, [plaidTransactions]);
+
   const onTransferConfirm = useCallback(async () => {
     setLoadingAction(dispatchLoadingState, true);
     const transactionsToTransform = intersectionWith(
@@ -191,21 +230,20 @@ export default function Transactions() {
     );
     const transformFn = createPlaidTransformFunction(categories);
     const transformed = transactionsToTransform.map(transformFn);
-    try {
-      for (const tToTransform of transformed) {
-        const updatedUser = await transferPlaidTransaction(
-          tToTransform,
-          user.id,
-        );
-        dispatch(userActions.update(updatedUser));
-      }
-    } catch (e) {
-      console.error(e);
-      setLoadingAction(dispatchLoadingState, false);
+    if (transformed.length > 3) {
+      await transformBatch(transformed);
+    } else {
+      await transformIndividual(transformed);
     }
     setSelectedTransactions([]);
     setLoadingAction(dispatchLoadingState, false);
-  }, [selectedTransactions, plaidTransactions, categories, user]);
+  }, [
+    selectedTransactions,
+    plaidTransactions,
+    categories,
+    transformBatch,
+    transformIndividual,
+  ]);
 
   const onTransferTransaction = useCallback(
     async (plaidTransaction) => {
@@ -342,8 +380,28 @@ export default function Transactions() {
             type="fill"
             onPress={onTransferConfirm}
           >
+            <Icon name="arrow-left" color={colors.orange} size={30} />
             <Text style={styles.btnLabel}>
-              Transfer {selectedTransactions.length} transactions
+              Transfer {selectedTransactions.length}
+            </Text>
+          </ColorButton>
+        </View>
+      )}
+      {selectionMode && (
+        <View
+          style={[
+            styles.globalSideButtonWrapper,
+            styles.selectAllButtonWrapper,
+          ]}
+        >
+          <ColorButton
+            style={[styles.gloablButtonContainer]}
+            childrenWrapperStyle={[styles.globalSideButton]}
+            colorName="grey"
+            onPress={onSelectAll}
+          >
+            <Text style={[styles.btnLabel, styles.selectAllLabel]}>
+              Select All
             </Text>
           </ColorButton>
         </View>
@@ -402,6 +460,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 2,
   },
+  selectAllLabel: {
+    color: colors.blue,
+  },
   globalSideButton: {
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
@@ -427,6 +488,9 @@ const styles = StyleSheet.create({
   selectionButton: {},
   selectionButtonWrapper: {
     bottom: 200,
+  },
+  selectAllButtonWrapper: {
+    bottom: 280,
   },
   section: {
     backgroundColor: colors.blue,
