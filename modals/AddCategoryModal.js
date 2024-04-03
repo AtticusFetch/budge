@@ -16,8 +16,6 @@ import { iconsList } from '../utils/iconsList';
 
 const iconsObj = iconsList.map((n) => ({ icon: n }));
 
-const icons = [...iconsObj.slice(0, 150)];
-
 export default function AddCategoryModal(props) {
   const { visible, onSubmit, onClose } = props;
   const [categoryName, setCategoryName] = useState('');
@@ -94,7 +92,7 @@ export default function AddCategoryModal(props) {
       >
         <SafeAreaView style={styles.iconsListWrapper}>
           <CategoriesList
-            categories={icons}
+            categories={iconsObj}
             onSelectedCategoryChange={onSetIcon}
             btnStyle={styles.iconBtnStyle}
             columns={6}

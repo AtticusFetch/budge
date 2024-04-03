@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 
 import { CategoryListItem } from '../CategoryListItem';
 
@@ -56,37 +56,42 @@ export const CategoriesList = (props) => {
     [onSelectedCategoryChange, selectedCategory],
   );
   return (
-    <>
-      <ScrollView style={styles.container}>
-        {splitCategories.map((row, i) => (
-          <View key={i} style={styles.row}>
-            {row.map((category) => (
-              <CategoryListItem
-                onPress={onItemPress}
-                size="slim"
-                btnStyle={btnStyle}
-                btnContainerStyle={btnContainerStyle}
-                btnContentStyle={btnContentStyle}
-                key={getCategoryId(category)}
-                selected={
-                  getCategoryId(selectedCategory) === getCategoryId(category)
-                }
-                category={category}
-              />
-            ))}
-          </View>
-        ))}
-      </ScrollView>
-    </>
+    <FlatList
+      data={splitCategories}
+      style={styles.list}
+      contentContainerStyle={styles.container}
+      renderItem={({ item, index }) => (
+        <View key={index} style={styles.row}>
+          {item.map((category) => (
+            <CategoryListItem
+              onPress={onItemPress}
+              size="slim"
+              btnStyle={btnStyle}
+              btnContainerStyle={btnContainerStyle}
+              btnContentStyle={btnContentStyle}
+              key={getCategoryId(category)}
+              selected={
+                getCategoryId(selectedCategory) === getCategoryId(category)
+              }
+              category={category}
+            />
+          ))}
+        </View>
+      )}
+    />
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    maxHeight: '80%',
+  },
+  list: {
+    flex: 1,
+    width: '100%',
   },
   row: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 5,
