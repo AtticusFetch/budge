@@ -5,6 +5,12 @@
   },
   "build": {
     "development": {
+      "android": {
+        "image": "latest"
+      },
+      "ios": {
+        "image": "latest"
+      },
       "developmentClient": true,
       "distribution": "internal",
       "env": {
@@ -13,6 +19,12 @@
       }
     },
     "preview": {
+      "android": {
+        "image": "latest"
+      },
+      "ios": {
+        "image": "latest"
+      },
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_SERVER_BASE": "https://crw3iayqbx.us-east-2.awsapprunner.com",
@@ -20,6 +32,12 @@
       }
     },
     "production": {
+      "android": {
+        "image": "latest"
+      },
+      "ios": {
+        "image": "latest"
+      },
       "env": {
         "EXPO_PUBLIC_SERVER_BASE": "https://crw3iayqbx.us-east-2.awsapprunner.com",
         "APP_NAME": "Budge"
