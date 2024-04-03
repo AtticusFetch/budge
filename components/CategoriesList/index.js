@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   list: {
-    flex: 1,
     width: '100%',
   },
   row: {

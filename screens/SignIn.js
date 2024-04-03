@@ -32,8 +32,13 @@ export default function SignIn({ navigation, route }) {
       try {
         setLoadingAction(dispatch, true);
         const session = await getUserSession();
-        const credentials = await Keychain.getGenericPassword();
+        const options = {
+          accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_ANY,
+        };
+        const credentials = await Keychain.getGenericPassword(options);
+        let hasCredentials = false;
         if (credentials?.username && credentials?.password) {
+          hasCredentials = true;
           setCredentials(credentials);
         }
         let isValidSession;
@@ -41,7 +46,7 @@ export default function SignIn({ navigation, route }) {
           const { isValid } = await verifyUserSession(session.token);
           isValidSession = isValid;
         }
-        if (isValidSession) {
+        if (isValidSession && hasCredentials) {
           const userInfo = await authUser(
             credentials.password,
             credentials.username,

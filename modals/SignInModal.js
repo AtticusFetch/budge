@@ -46,7 +46,11 @@ export default function SignInModal(props) {
       const user = await getUserById(userInfo.id);
       // const user = await getUserById('815b9520-f0c1-707a-d784-90d52d1096512');
       saveUserSession(userInfo);
-      await Keychain.setGenericPassword(username, password);
+      const options = {
+        accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_ANY,
+        accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
+      };
+      await Keychain.setGenericPassword(username, password, options);
       dispatch(userActions.set(user));
       onClose({ success: true });
     } catch (e) {

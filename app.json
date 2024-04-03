@@ -14,7 +14,10 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ibudge"
+      "bundleIdentifier": "com.ibudge",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Budge uses Face ID for secure user authentication with stored password."
+      }
     },
     "android": {
       "adaptiveIcon": {

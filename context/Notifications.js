@@ -48,8 +48,16 @@ export const notificationsActions = {
 };
 
 export const addNotificationAction = (dispatch, payload) => {
+  let message = payload.message;
+  if (!message) {
+    try {
+      message = JSON.stringify(payload);
+    } catch (e) {
+      console.error(e);
+    }
+  }
   const uniqueNotification = {
-    message: payload.message,
+    message,
     code: payload.code,
     id: uuidv4(),
   };

@@ -23,6 +23,7 @@ export const LabeledCheckbox = (props) => (
 const styles = StyleSheet.create({
   checkboxLabel: {
     marginLeft: 10,
+    maxWidth: '90%',
   },
   checkbox: {
     flex: 1,

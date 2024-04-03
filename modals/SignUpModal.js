@@ -64,7 +64,11 @@ export default function SignUpModal(props) {
       const userInfo = await authUser(password, username);
       await createUser(userInfo.username, userInfo.id);
       saveUserSession(userInfo);
-      await Keychain.setGenericPassword(username, password);
+      const options = {
+        accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_ANY,
+        accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
+      };
+      await Keychain.setGenericPassword(username, password, options);
       dispatch(userActions.set(userInfo));
       setisLoading(false);
       onClose();

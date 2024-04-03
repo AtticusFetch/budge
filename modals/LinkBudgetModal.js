@@ -71,24 +71,30 @@ export const LinkBudgetModal = (props) => {
             label="Only this transaction"
             onPress={onTransactionModePress}
           />
-          <LabeledCheckbox
-            style={styles.checkbox}
-            isChecked={linkMode === LINK_MODES.CATEGORY}
-            label={`All ${transaction?.category?.name} transactions`}
-            onPress={onCategoryModePress}
-          />
-          <LabeledCheckbox
-            style={styles.checkbox}
-            isChecked={linkMode === LINK_MODES.MERCHANT}
-            label={`All ${transaction?.name} transactions`}
-            onPress={onMerchantModePress}
-          />
-          <LabeledCheckbox
-            style={styles.checkbox}
-            isChecked={linkMode === LINK_MODES.CATEGORY_MERCHANT}
-            label={`All ${transaction?.category?.name} and ${transaction?.name} transactions`}
-            onPress={onCategoryMerchantModePress}
-          />
+          {!!transaction?.category?.name && (
+            <LabeledCheckbox
+              style={styles.checkbox}
+              isChecked={linkMode === LINK_MODES.CATEGORY}
+              label={`All ${transaction?.category?.name} transactions`}
+              onPress={onCategoryModePress}
+            />
+          )}
+          {!!transaction?.name && (
+            <LabeledCheckbox
+              style={styles.checkbox}
+              isChecked={linkMode === LINK_MODES.MERCHANT}
+              label={`All ${transaction?.name} transactions`}
+              onPress={onMerchantModePress}
+            />
+          )}
+          {!!transaction?.category?.name && !!transaction?.name && (
+            <LabeledCheckbox
+              style={styles.checkbox}
+              isChecked={linkMode === LINK_MODES.CATEGORY_MERCHANT}
+              label={`All ${transaction?.category?.name} and ${transaction?.name} transactions`}
+              onPress={onCategoryMerchantModePress}
+            />
+          )}
           <ColorButton
             size="slim"
             colorName="green"
