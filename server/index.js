@@ -34,6 +34,7 @@ const { getUserById } = require('./api/getUserById');
 const { ignorePlaidTransaction } = require('./api/ignorePlaidTransaction');
 const { postInfo } = require('./api/info');
 const { postUser } = require('./api/postUser');
+const { refreshPlaidTransactions } = require('./api/refreshPlaidTransactions');
 const { removeFriend } = require('./api/removeFriend');
 const { sendFriendRequest } = require('./api/sendFriendRequest');
 const { signOutUser } = require('./api/signOutUser');
@@ -59,6 +60,7 @@ app.use(cors());
 app.post('/api/info', postInfo);
 app.post('/api/create_link_token', createLinkToken);
 app.get('/api/plaid/transactions/:userId/:sync?', getPlaidTransactions);
+app.get('/api/plaid/transactions/:userId/refresh', refreshPlaidTransactions);
 app.get(
   '/api/plaid/transactions/filter/:userId/:forMonth',
   getTransactionsForMonth,

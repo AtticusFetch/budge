@@ -4,9 +4,10 @@ import { useCallback } from 'react';
 export const DatePicker = (props) => {
   const { value, onChange } = props;
   const onDateChange = useCallback(
-    (event, value) => {
+    (event, newDate) => {
       if (event.type === 'set') {
-        onChange(value);
+        console.log('onChange', newDate);
+        onChange(newDate);
       }
     },
     [onChange, value],
@@ -17,7 +18,6 @@ export const DatePicker = (props) => {
       value={value.toDate ? value.toDate() : value}
       mode="date"
       is24Hour
-      timeZoneName="Universal"
       onChange={onDateChange}
     />
   );

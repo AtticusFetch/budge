@@ -1,20 +1,11 @@
-const { GetCommand } = require('@aws-sdk/lib-dynamodb');
-
-const { ddbClient } = require('../db/client');
-const { TABLE_NAMES } = require('../db/constants');
+const { getDBUserById } = require('../db/commands');
 
 const getUserById = async (request, response) => {
   const { id } = request.params;
   let user;
-  const getCommand = new GetCommand({
-    TableName: TABLE_NAMES.USERS,
-    Key: {
-      id,
-    },
-  });
 
   try {
-    user = await ddbClient.send(getCommand);
+    user = await getDBUserById(id);
   } catch (e) {
     console.error(e);
   }

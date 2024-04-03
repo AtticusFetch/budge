@@ -29,8 +29,12 @@ export const getMonthlyTransactions = (userId, date) => {
   return fetchFromApi(`plaid/transactions/filter/${userId}/${date}`);
 };
 
-export const getPlaidTransactionUpdates = (userId) => {
-  return fetchFromApi(`plaid/transactions/${userId}/sync`);
+export const getPlaidTransactionUpdates = (userId, refresh) => {
+  if (refresh) {
+    return fetchFromApi(`plaid/transactions/${userId}/refresh`);
+  } else {
+    return fetchFromApi(`plaid/transactions/${userId}/sync`);
+  }
 };
 
 export const getAccaounts = () => {

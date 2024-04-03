@@ -29,6 +29,7 @@ import {
   deleteTransaction,
   createBudgetLink,
   ignoreTransaction,
+  getUserById,
 } from '../utils/plaidApi';
 import { mapPlaidCategory } from '../utils/plaidCategoryMapper';
 
@@ -57,7 +58,7 @@ export default function Transactions() {
   } = useCategoriesContext();
   const { dispatch: dispatchLoadingState } = useLoadingContext();
   const { transactions, plaidTransactions, manualLinks, budget } = user;
-  const [refreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedTransactions, setSelectedTransactions] = useState([]);
   const [transactionToEdit, setTransactionToEdit] = useState();
@@ -70,7 +71,12 @@ export default function Transactions() {
   const [isChangeCategoryModalVisible, setIsChangeCategoryModalVisible] =
     useState(false);
 
-  const onRefresh = useCallback(() => {}, []);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    const updatedUser = await getUserById(user.id);
+    dispatch(userActions.update(updatedUser));
+    setRefreshing(false);
+  }, [user.id]);
 
   const onAddTransactionPress = useCallback(() => {
     setTransactionToEdit();

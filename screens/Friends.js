@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
   FlatList,
   Modal,
   SafeAreaView,
@@ -12,6 +11,7 @@ import Icon from 'react-native-vector-icons/Feather';
 
 import { ColorButton } from '../components/ColorButton';
 import { FriendListItem } from '../components/FriendListItem';
+import { setLoadingAction, useLoadingContext } from '../context/Loading';
 import { useUserContext, userActions } from '../context/User';
 import AddFriendModal from '../modals/AddFriendModal';
 import FriendRequestsModal from '../modals/FriendRequestsModal';
@@ -20,6 +20,7 @@ import {
   acceptRequest,
   addFriend,
   declineRequest,
+  getUserById,
   removeFriend,
 } from '../utils/plaidApi';
 
@@ -28,11 +29,12 @@ export default function Home(props) {
     state: { user },
     dispatch,
   } = useUserContext();
-  const [isLoading, setIsLoading] = useState(false);
+  const { dispatch: dispatchLoading } = useLoadingContext();
   const [addFriendError, setaddFriendError] = useState(null);
   const [isAddTransactionModalVisible, setisAddTransactionModalVisible] =
     useState(false);
   const [isRequestsModalVisible, setIsRequestsModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const onAddFriendPress = useCallback(() => {
     setisAddTransactionModalVisible(true);
@@ -90,9 +92,9 @@ export default function Home(props) {
 
   const onDeleteFriend = useCallback(
     async (friendId) => {
-      setIsLoading(true);
+      setLoadingAction(dispatchLoading, true);
       const updatedUser = await removeFriend(friendId, user?.id);
-      setIsLoading(false);
+      setLoadingAction(dispatchLoading, false);
 
       if (updatedUser.error) {
         console.error(updatedUser.error);
@@ -103,54 +105,54 @@ export default function Home(props) {
     [user],
   );
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    const updatedUser = await getUserById(user.id);
+    dispatch(userActions.update(updatedUser));
+    setRefreshing(false);
+  }, [user.id]);
+
   return (
     <SafeAreaView style={styles.container}>
-      {isLoading ? (
-        <ActivityIndicator size="large" color={colors.orange} />
-      ) : (
-        <>
-          <FlatList
-            data={user?.friends}
-            style={styles.list}
-            renderItem={(friend) => {
-              return (
-                <FriendListItem
-                  onDeleteFriend={onDeleteFriend}
-                  {...friend.item}
-                />
-              );
-            }}
-            keyExtractor={(friend) => friend?.id || friend?.username}
-          />
-          <View style={styles.addButtonWrapper}>
-            <ColorButton
-              childrenWrapperStyle={styles.addButton}
-              colorName="blue"
-              type="fill"
-              onPress={onAddFriendPress}
-            >
-              <Icon color="white" name="plus" size={30} />
-            </ColorButton>
-          </View>
-          <View style={styles.requestsButtonWrapper}>
-            <ColorButton
-              childrenWrapperStyle={styles.requestsButton}
-              colorName="grey"
-              type="fill"
-              onPress={onViewRequestsPress}
-            >
-              <Icon color={colors.red} name="user-plus" size={30} />
-              {!!user?.friendRequests?.length && (
-                <View style={styles.requestsNotification}>
-                  <Text style={styles.notificationText}>
-                    {user?.friendRequests.length}
-                  </Text>
-                </View>
-              )}
-            </ColorButton>
-          </View>
-        </>
-      )}
+      <FlatList
+        data={user?.friends}
+        style={styles.list}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        renderItem={(friend) => {
+          return (
+            <FriendListItem onDeleteFriend={onDeleteFriend} {...friend.item} />
+          );
+        }}
+        keyExtractor={(friend) => friend?.id || friend?.username}
+      />
+      <View style={styles.addButtonWrapper}>
+        <ColorButton
+          childrenWrapperStyle={styles.addButton}
+          colorName="blue"
+          type="fill"
+          onPress={onAddFriendPress}
+        >
+          <Icon color="white" name="plus" size={30} />
+        </ColorButton>
+      </View>
+      <View style={styles.requestsButtonWrapper}>
+        <ColorButton
+          childrenWrapperStyle={styles.requestsButton}
+          colorName="grey"
+          type="fill"
+          onPress={onViewRequestsPress}
+        >
+          <Icon color={colors.red} name="user-plus" size={30} />
+          {!!user?.friendRequests?.length && (
+            <View style={styles.requestsNotification}>
+              <Text style={styles.notificationText}>
+                {user?.friendRequests.length}
+              </Text>
+            </View>
+          )}
+        </ColorButton>
+      </View>
       <Modal
         animationType="slide"
         visible={isAddTransactionModalVisible}

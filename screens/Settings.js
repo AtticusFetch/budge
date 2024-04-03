@@ -73,6 +73,18 @@ export default function Settings(props) {
     }
   }, []);
 
+  const refreshTransactions = useCallback(async () => {
+    setLoadingAction(dispatch, true);
+    const updatedUser = await getPlaidTransactionUpdates(user.id, true);
+    addNotificationAction(dispatchNotification, {
+      message: `New transactions: ${updatedUser?.plaidTransactions?.length}`,
+    });
+    setLoadingAction(dispatch, false);
+    if (updatedUser?.plaidTransactions?.length) {
+      dispatchUserAction(userActions.update(updatedUser));
+    }
+  }, []);
+
   const onLinkDelete = useCallback(async (linkId) => {
     setLoadingAction(dispatch, true);
     const updatedUser = await deleteManualLink({ linkId, userId: user.id });
@@ -102,6 +114,11 @@ export default function Settings(props) {
               onPress={fetchTransactions}
               size="slim"
               text="Pull Transactions"
+            />
+            <ColorButton
+              onPress={refreshTransactions}
+              size="slim"
+              text="Refresh Transactions"
             />
             <ColorButton
               onPress={showLinksModal}

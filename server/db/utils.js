@@ -5,7 +5,9 @@ const {
   getDBUserById,
   removeListItemByIdx,
   removeListItemsByIdx,
+  deleteUserAttribute,
 } = require('./commands');
+const { plaidClient } = require('../config');
 
 const uid = () => uuidv4();
 
@@ -166,6 +168,69 @@ const batchAddListItem = async (userId, items, listName) => {
   return result.Attributes;
 };
 
+const getTransactionsForItem = async function (item) {
+  let cursor = item.cursor || null;
+
+  // New transaction updates since "cursor"
+  let added = [];
+  let modified = [];
+  // Removed transaction ids
+  let removed = [];
+  let hasMore = true;
+  // Iterate through each page of new transaction updates for item
+  while (hasMore) {
+    const request = {
+      access_token: item.accessToken,
+      cursor,
+    };
+    const response = await plaidClient().transactionsSync(request);
+    const data = response.data;
+    // Add this page of results
+    added = added.concat(data.added);
+    modified = modified.concat(data.modified);
+    removed = removed.concat(data.removed);
+    hasMore = data.has_more;
+    // Update cursor to the next cursor
+    cursor = data.next_cursor;
+    item.cursor = cursor;
+  }
+
+  return {
+    added,
+    modified,
+    removed,
+  };
+};
+
+const fetchPlaidTransactions = async (userId, plaidItems) => {
+  const allTransactions = await Promise.all(
+    plaidItems.map(getTransactionsForItem),
+  );
+  const mergedTransactions = allTransactions.reduce(
+    (acc, curr) => {
+      acc.added = [...acc.added, ...curr.added];
+      acc.modified = [...acc.modified, ...curr.modified];
+      acc.removed = [...acc.removed, ...curr.removed];
+      return acc;
+    },
+    {
+      added: [],
+      modified: [],
+      removed: [],
+    },
+  );
+  await deleteUserAttribute(userId, 'plaidItems');
+  await addListItem(userId, 'plaidItems', plaidItems);
+  const result = await addListItem(
+    userId,
+    'plaidTransactions',
+    mergedTransactions.added,
+  );
+
+  return result?.Attributes;
+};
+
+module.exports.fetchPlaidTransactions = fetchPlaidTransactions;
 module.exports.batchDeleteListItem = batchDeleteListItem;
 module.exports.batchAddListItem = batchAddListItem;
 module.exports.getUserTransactionById = getUserTransactionById;
