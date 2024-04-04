@@ -1,4 +1,12 @@
-import _, { concat, intersectionWith, omit, without } from 'lodash';
+import {
+  concat,
+  intersectionWith,
+  omit,
+  without,
+  map,
+  sortBy,
+  groupBy,
+} from 'lodash';
 import moment from 'moment';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -193,7 +201,7 @@ export default function Transactions() {
     async (transactions) => {
       try {
         const updatedUser = await transferBatchPlaidTransaction(
-          transactions,
+          map(transactions, (t) => omit(t, 'isTransfering')),
           user.id,
         );
         dispatch(userActions.update(updatedUser));
@@ -210,7 +218,7 @@ export default function Transactions() {
       try {
         for (const tToTransform of transactions) {
           const updatedUser = await transferPlaidTransaction(
-            tToTransform,
+            omit(tToTransform, 'isTransfering'),
             user.id,
           );
           dispatch(userActions.update(updatedUser));
@@ -273,10 +281,10 @@ export default function Transactions() {
     const allTransactions = concat([], transactions, plaidTransactions).filter(
       (v) => !!v,
     );
-    const sortedTransactions = _.sortBy(allTransactions, (t) =>
+    const sortedTransactions = sortBy(allTransactions, (t) =>
       new Date(t.date).getTime(),
     ).reverse();
-    const groupedTransactions = _.groupBy(sortedTransactions, (t) => {
+    const groupedTransactions = groupBy(sortedTransactions, (t) => {
       const tDate = moment(t.date);
       const now = moment();
       if (tDate.isAfter(now)) {

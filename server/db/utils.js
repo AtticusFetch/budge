@@ -84,7 +84,9 @@ const deleteUserTransactionById = async (
   );
 
   if (transactionToRemoveIdx < 0) {
-    throw new Error('Transaction Not Found');
+    throw new Error(
+      `Transaction Not Found. Removing ${transactionId} from ${key} for ${user.username}`,
+    );
   }
 
   const result = await removeListItemByIdx(
@@ -121,11 +123,15 @@ const deleteTransaction = async (
     transactionId,
     key,
   );
-  if (transactionToRemove?.splitWith) {
-    for (const splitterId of transactionToRemove.splitWith) {
-      const splitter = await getDBUserById(splitterId);
-      await deleteUserTransactionById(splitter?.Item, transactionId, key);
+  try {
+    if (transactionToRemove?.splitWith) {
+      for (const splitterId of transactionToRemove.splitWith) {
+        const splitter = await getDBUserById(splitterId);
+        await deleteUserTransactionById(splitter?.Item, transactionId, key);
+      }
     }
+  } catch (e) {
+    console.error(e);
   }
 
   const result = await deleteUserTransactionById(
@@ -153,8 +159,8 @@ const batchDeleteListItem = async (userId, items, listName) => {
 
 const updateTransaction = async (transaction, userId, key) => {
   const transactionId = transaction.id || transaction.transaction_id;
-  const deleteResult = await deleteTransaction(transactionId, userId, key);
   const addResult = await addTransaction(transaction, userId, key);
+  const deleteResult = await deleteTransaction(transactionId, userId, key);
 
   return {
     ...deleteResult,
