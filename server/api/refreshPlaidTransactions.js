@@ -8,7 +8,11 @@ const refreshPlaidTransactions = async (request, response) => {
   const user = userDb?.Item;
   let result;
   try {
-    await plaidClient().transactionsRefresh(request);
+    for (const item of user.plaidItems || []) {
+      await plaidClient().transactionsRefresh({
+        access_token: item.accessToken,
+      });
+    }
     result = await fetchPlaidTransactions(user.id, user.plaidItems);
   } catch (e) {
     console.error(e);
